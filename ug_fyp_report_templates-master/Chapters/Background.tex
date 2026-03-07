@@ -1,0 +1,147 @@
+\chapter{Literature Review}
+
+\section{Brief}
+This chapter examines the literature on how the design of online messaging platforms shapes users’ ability to understand, manage, and revoke consent, with a specific focus on photo sharing on WhatsApp. It begins with a brief overview of digital messaging and photo-based communication to situate the social and privacy-sensitive nature of image sharing. It then reviews relevant theoretical and consent-related perspectives to explain why consent revocation is not only a technical issue but also a contextual and interpersonal one. The chapter subsequently examines research on instant messaging, photo sharing, and interface design to assess how current platform features support or constrain meaningful user control. Finally, it synthesises the literature to identify research gaps that motivate the proposed user-centred revocation design.
+
+
+\section{Overview of Digital Messaging and Photo-Based Communication}
+Digital messaging has developed from earlier forms of computer-mediated communication into mobile, app-based, and increasingly multimodal communication environments, where text, images, and other media are integrated within the same platforms. Herring’s historical overview highlights this shift from predominantly text-based CMC toward convergent and multimodal communication systems, providing a useful background for understanding contemporary messaging platforms \cite{Herring2019Coevolution}. Research on mobile messaging also shows how texting became embedded in everyday social contact, particularly in peer communication shaped by social norms and situational constraints \cite{ito_mobile_2005}. In parallel, early camera-phone studies show that images were used not only for personal capture but also for communication with absent others and remote tasks, helping establish photo messaging as a routine social practice \cite{kindberg_i_2005}. This transition is important because it created communication settings in which image sharing carries social meaning and privacy expectations that may later complicate consent revocation.
+
+
+\section{Digital Privacy in Modern Communication}
+This section grounds the dissertation in theories that explain why consent revocation is not simply a delete button, but a socially negotiated and context-dependent action.
+
+\subsection{Communication Privacy Management (CPM)}
+Communication Privacy Management (CPM) theory explains privacy as an ongoing process of boundary management rather than a fixed state, making it useful for analysing disclosure in interpersonal and mediated communication \cite{child_petronio_cmc_privacy_2011, petronio_cpm_2020}. Petronio and Child (2020) describe CPM as a framework in which individuals treat private information as something they own and control, and they manage access to it through privacy rules shaped by context, relationship, perceived risk, and expectations about appropriate use after disclosure \cite{petronio_cpm_2020}. A key concept is co-ownership: once information is shared, recipients may become legitimate co-owners who develop their own assumptions about how that information can be retained, discussed, or circulated \cite{petronio_cpm_2020}. CPM therefore shifts attention from information itself to the negotiated rules and expectations that organise its flow. 
+
+This matters for the present topic because consent revocation in messaging is not only a technical question of whether content can be deleted; it is also a social question about whether previously established privacy expectations can be changed after disclosure \cite{child_petronio_cmc_privacy_2011, petronio_cpm_2020}. CPM helps explain why post-sharing control is often contentious: a sender may understand revocation as a reassertion of personal control, while a recipient may interpret the same act as changing the rules after access has already been granted \cite{petronio_cpm_2020}. In this sense, CPM provides a strong theoretical foundation for studying consent and control in messaging-based photo sharing, where interpersonal expectations are central to how users judge fairness, trust, and appropriateness.
+
+Applied to revocable or dynamic consent in messaging, CPM suggests that revocation should be understood as an attempt to re-coordinate privacy boundaries rather than simply erasing data \cite{petronio_cpm_2020}. The theory’s concept of boundary turbulence is especially relevant here, as turbulence occurs when co-owners hold conflicting privacy rules or when expected information flows break down \cite{petronio_cpm_2020}. In messaging environments such as WhatsApp-style photo sharing, this framework helps explain why consent may need to be updated over time and why platform mechanisms for revocation must operate within the tension between social boundary expectations and the technical ease of retention, copying, or redistribution \cite{child_petronio_cmc_privacy_2011, petronio_cpm_2020}.
+
+
+\subsection{Contextual Integrity (CI)}
+Contextual Integrity (CI) reframes privacy as appropriateness of information flows, not simply secrecy or access control \cite{nissenbaum_contextual_2011}. Nissenbaum (2011) argues that information sharing is governed by contextual norms: who is involved (actors), what is shared (attributes), and how it moves (transmission principles) \cite{nissenbaum_contextual_2011}. This is directly relevant to WhatsApp photo sharing because users often treat a private chat as a bounded context with an implied “right audience,” even when the content is not technically protected from recipient-side redistribution. Under CI, harm occurs when a photo’s flow changes context (e.g., from a one-to-one chat into a group, another platform, or offline circulation) because the transfer violates the original contextual expectations, even if the sender originally shared willingly \cite{nissenbaum_contextual_2011}.
+
+CI is also useful for critiquing the limits of the notice-and-consent paradigm in everyday messaging. Nissenbaum (2011) critiques notice-and-consent as insufficient for online privacy governance, while Bourgeus and Vandercruysse (2024) argue that overreliance on consent often fails to produce meaningful privacy control in complex data ecosystems and motivate contextual and communal alternatives \cite{nissenbaum_contextual_2011,bourgeus_vandercruysse_2024}. This matters for photo sharing because images frequently involve group privacy: a photo can affect the sender, the recipient, and any depicted co-subjects, each with potentially different expectations about appropriate sharing \cite{bourgeus_vandercruysse_2024}. Design implication: revocation mechanisms should be framed as restoring context-appropriate flow (limiting further redistribution and future access within WhatsApp), and the UI should represent that permissions apply to a social context (audience and transmission rules), not just to an individual recipient or a one-time send action.
+
+\subsection{Media Richness Theory (MRT) and Social Presence}
+Daft and Lengel’s Media Richness Theory helps explain why people choose richer media (such as instant messaging with photos) for emotionally complex, equivocal, or socially sensitive communication. Dennis and Kinney (1998) and Ishii et al. (2019) support the idea that users may choose rich media like WhatsApp for relational interaction despite privacy risks, creating a recurring trade-off between social presence and security. Closely related, Social Presence Theory (Short, Williams \& Christie, 1976) suggests that higher social presence can increase trust and sharing but also increases the social sensitivity of withdrawing consent. Together, this supports the core relation I want to highlight richer media → higher intimacy/social presence → stronger boundary expectations → revocation becomes socially hard, not merely technically hard.
+
+
+
+\section{The Concept of Consent}
+This section proceeds from legal requirements to user reality. It defines key concepts of consent and explains why a legal definition does not automatically produce meaningful consent in interpersonal messaging contexts.
+\subsection{The Legal Mendate}
+This subsection defines consent under regulatory frameworks such as the GDPR and the Indian DPDP Act, focusing on the requirement that withdrawing consent must be as easy as giving it. It introduces the legal expectation of revocability and discusses how the “Right to be Forgotten” relates to revocation aims, while highlighting that forgetting/erasure becomes difficult in distributed peer-to-peer contexts where recipients may retain copies. Politou et al. (2018) is used to examine practical challenges of forgetting personal data and revoking consent under the GDPR, and Chaurasiya (2025) is used to compare the consent architectures of the GDPR versus the CCPA and the Indian DPDP Act.
+
+\subsection{Consent Fatigue, the Validity Gap, and Non-Use}
+This subsection contrasts the legal ideal with the reality of “consent fatigue,” where users often ignore consent prompts due to cognitive overload, producing a validity gap (legal consent may exist while meaningful consent does not). I will discuss Baruh and Popescu (2017) to discuss market avoidance (users withdrawing because they cannot manage privacy) and market assimilation (users giving up and accepting reduced control). I will also use Waldman (2018) to critique how privacy is operationalised in different organisational roles (e.g., engineers framing privacy as security versus CPOs framing it as trust), often overlooking whether the user can realistically understand and exercise consent and revocation controls.
+
+\subsection{Consent Models}
+This subsection reviews consent models with a focus on how they address (or fail to address) time, relationships, and revocation in everyday messaging. I will begin by briefly discussing traditional assumptions in consent (static, singular, transactional, opt-in/out etc.) and why these assumptions break down in ongoing interpersonal communication (Burkhardt et al. 2023, Delasalle, Scott 2022). I will then present improved models and argue that even strengthened models (layered, granular, just-in-time, informed consent etc.) still struggle with routine messaging contexts, particularly when content spreads beyond the sender’s direct control. I will cover the following models deeper:
+\begin{itemize}
+\item Dynamic Consent: (Kaye et al. 2015, Lee et al. 2023, Scott 2022, Wilbanks 2018, Narkhede 2025)
+\item Revocable Consent: (Nouwens et al. 2020, Robol et al. 2023, Merlec et al. 2021, Delasalle, Politou et al.2018)
+\item Ephemeral Consent: (Im et al. 2021)
+\item Retroactive Consent: (Robol et al. 2023)
+\end{itemize}
+
+Finally, I will introduce affirmative and ongoing consent as originating in feminist legal and ethical scholarship, using Im et al. (2021) to frame affirmative/ongoing consent through principles such as: voluntary, informed, revertible, specific, and unburdensome. The overall aim is to show that consent in messaging should be treated as ongoing and socially situated, not a single event.
+
+
+\section{Consent in Instant Messaging and Photo Sharing}
+This section connects the consent concepts and theories to the specific realities of photo sharing in instant messaging, focusing on WhatsApp context.
+
+\subsection{Multi-Party Privacy Conflicts (MPCs)}
+In this subsection, I will review literature on conflicts between uploaders/senders and co-owners/co-subjects of photos. The aim is to show that photo sharing frequently affects more than two parties: the sender, the recipient, and any depicted individuals. I will discuss Cherubini et al. (2021) to discuss the conflict between uploaders and data subjects and to compare precautionary mechanisms (prevent sharing until approved) versus dissuasion mechanisms (nudging or discouraging risky sharing). (In this chapter I use this distinction primarily to frame MPs; the HCI implications and interface-level operationalisation of these strategies are discussed in subsection 2.6.5) I will also use Xu et al. (2019) and Zhang et al. (2023) to discuss technical approaches for privacy-preserving photo sharing in social networks, using them to motivate why co-ownership cannot be solved purely by sender-side settings.
+
+\subsection{Persistence, Recipient Control, and the Limits of Revocation}
+In this subsection, I explain why consent revocation in instant messaging is structurally constrained by recipient-side control: messaging systems deliver content rather than enforce ongoing access control, so they cannot guarantee take-back after delivery.
+
+Even when platforms provide deletion or ephemerality features, photos can remain accessible through device-level retention (e.g., local storage, notification previews, auto-download), re-sharing, or external capture (e.g., screenshots).
+This creates a boundary condition for consent revocation: revocation cannot be treated as guaranteed erasure once a photo has been delivered to another person’s device.
+
+I use WhatsApp as a concrete case to illustrate these constraints.
+Although WhatsApp provides privacy-oriented features such as end-to-end encryption, photos are still delivered onto recipients’ devices and can therefore fall outside the sender’s control after sharing. As a result, revocation mechanisms in WhatsApp should be understood as limited post-delivery controls rather than guaranteed erasure, and interface design needs to communicate this limitation clearly to avoid misleading mental models (WhatsApp Help Center; WhatsApp Privacy Policy – UK). 
+Deletion is the clearest example of this limitation: deletion delay means that “deleted” content can remain accessible (e.g., through lingering availability or indirect access) even after a sender attempts removal (Liang et al., 2015). WhatsApp states that recipients might see a message before it is deleted, and that deletion may not always be successful (WhatsApp Help Center), creating a mismatch between what users intend and what occurs (partial or failed removal).
+Relatedly, WhatsApp provides disappearing messages and view-once media as privacy-oriented controls (WhatsApp Help Center), but these do not fully resolve persistence in practice because deletion and ephemerality can leave recoverable artefacts at the device/cloud level and can be bypassed through capture and re-sharing routes (Heath et al., 2023).
+
+Deletion also has social trace effects: revocation becomes visible and socially meaningful when messaging interfaces signal removal (e.g., “This message was deleted”), which can create relational friction and boundary turbulence, especially in intimate contexts.
+
+This raises a key question (“Even if revocation is possible, will people use it?”) because in interpersonal contexts, social pressure can discourage users from deleting or requesting deletion, particularly when deletion produces suspicion or conflict. 
+Finally, I use Schnitzler et al. (2020) to show that users may misunderstand what deletion removes (local vs global deletion), producing overconfidence in control and inaccurate mental models of revocation outcomes (Schnitzler et al., 2020).
+Therefore, revocation in WhatsApp photo sharing is an interface and expectation-management problem as much as a technical one: design must communicate what is and is not achievable, rather than implying that deletion produces universal forgetting.
+
+\subsection{The Screenshot Threat}
+In this subsection, I will review how screenshots and secondary sharing undermine revocation and ephemerality features, and how platform affordances shape both norms and misuse. While platforms introduce revocation-oriented controls (e.g., disappearing messages, view-once media), screenshots and external capture routes create a parallel persistence layer that exists outside of sender control and outside platform enforcement. WhatsApp’s view-once feature is explicitly designed to reduce retention and redistribution by preventing saving to the recipient’s gallery and limiting forwarding/copying within the app (WhatsApp Help Center). However, even where screenshot blocking is claimed or implemented in limited forms, capture and persistence can still occur through alternative pathways (e.g., other devices, screen recording in some contexts, or post-view replication), which means view-once operates more as a deterrent and norm signal than a guarantee of revocability.
+
+To ground the screenshot issue socially (not only technically), but I will also use work on screenshot collection and sharing in messaging platforms to show that screenshots are often treated as a socially meaningful act that can violate privacy expectations and trigger CPM-style turbulence (Ingber, 2025). This supports the idea that screenshot risk is not merely a technical bypass but part of the interpersonal governance problem: users may assume contained sharing, while recipients may interpret screenshots as legitimate keeping, evidence, or sharing, producing conflict at the level of norms and expectations.
+
+I will also connect screenshots and ephemeral messaging to evidence from forensic work showing that disappearing or ephemeral content can leave recoverable traces across devices and platforms, reinforcing that ephemerality does not necessarily eliminate persistence (Heath, 2023). In WhatsApp specifically, I will also note that the platform introduces partial safeguards such as chat-level restrictions (e.g., advanced chat privacy settings that limit certain forms of external sharing), but these remain limited relative to the broader ecosystem of copying, capture, and forwarding (WhatsApp Help Center). Overall, this subsection argues that the screenshot/secondary sharing threat is central to why consent revocation in WhatsApp photo sharing is difficult to operationalise as enforceable control, and why design must avoid overpromising revocation outcomes. 
+
+\section{Human Computer Interaction (HCI) and Interface Design}
+This section reviews HCI literature relevant to designing usable consent and revocation mechanisms, focusing on how design shapes understanding, decision-making, and control.
+\subsection{Foundational Concepts and Goals of Usable Policy}
+This subsection defines what usable privacy and consent controls mean in practice, focusing on how interface design shapes whether users can actually understand and exercise control. Building on Albesher and Alhussain (2021), usability in privacy contexts is treated as more than having settings available: controls must be findable, comprehensible, and actionable under everyday time and attention constraints, and they must communicate outcomes clearly enough to support accurate user mental models.
+
+This subsection also draws on Privacy by Design to frame revocation as a core design responsibility rather than an afterthought. Cavoukian (2012) emphasises principles such as privacy as the default, proactive protection, and user-centricity, which are directly relevant to consent revocation because revocation is only meaningful when it is easy to access, simple to execute, and does not require expert knowledge. Taken together, these perspectives position consent revocation as a user-facing capability that must be designed for clarity, minimal friction, and realistic expectation-setting, rather than treated as a hidden compliance property that just exists “somewhere in settings.”
+
+\subsection{Critical Failures of Current Interfaces}
+This subsection examines the revocation gap, notice ineffectiveness, and design for obscurity (Albesher \& Alhussain, 2021; Bourgeus \& Vandercruysse, 2024; Schaub et al., 2018; Wilbanks, 2018). It focuses on how interface design can signal that control exists without supporting meaningful control in practice (e.g., vague labels, buried settings, unclear defaults, or ambiguous outcomes). This subsection also explains why mental models matter for revocation: if users misunderstand what a deletion or revocation feature actually changes, they cannot withdraw consent in an informed way.
+
+\subsection{Manipulative Design}
+This subsection examines dark patterns and manipulative consent interfaces (Bermejo Fernandez et al., 2021; Graßl et al.; Soe et al., 2020). It outlines common forms such as interface interference (Soe et al., 2020; Gray et al., 2021), obstruction and choice cascades (Soe et al., 2020), consent walls or forced action (Gray et al., 2021), unlabelled configuration sliders (Soe et al., 2020; Gray et al., 2021), and counterbalancing nudges (Bermejo Fernandez et al., 2021; Graßl et al.). The aim is to show how consent and control can be technically present while being practically discouraged, steered, or distorted through interaction design.
+
+\subsection{Interactive Design Solutions for Meaningful Consent}
+This subsection reviews interaction patterns intended to improve meaningful consent, focusing on how design can increase user understanding and reduce “automatic” agreement. It discusses the affirmative action requirement and the limitations of standard checkbox-based consent, drawing on Lindegren et al. (2021) to examine alternatives such as more engaged selection mechanisms (e.g., drag-and-drop or swipe actions) that can make the act of consenting more deliberate and potentially improve comprehension and intentionality. It also considers how the timing and format of consent interactions can affect whether users notice and interpret them during real tasks.
+
+In addition, this subsection covers visual communication for clarity using Albesher and Alhussain (2021), highlighting how visual signifiers such as clearly differentiated states, consistent icons, and immediate feedback can improve users’ interpretation of privacy controls and reduce misunderstandings about what a setting will do. The overall focus is on interaction patterns that support informed choice without adding excessive friction or cognitive load.
+
+
+\subsection{Designing for Revocation}
+This subsection focuses on revocation-oriented design strategies by comparing precautionary mechanisms (e.g., pre-sharing approval or permission setting) with dissuasive mechanisms (e.g., nudges or warnings before sharing). It uses Schaub et al. (2018) to frame the design space for privacy notices particularly timing, channel, and modality and argues that just-in-time, contextual notices can support better decision-making than static policies, especially in photo-sharing moments where attention is limited and sharing is fast-paced.
+
+\subsection{Operationalising Dynamic Consent in Messaging UI}
+This subsection discusses dynamic consent as a design model that allows users to revise preferences over time, focusing on how ongoing control can be translated into messaging interfaces. Rather than repeating the conceptual definitions introduced in Section 2.4, it will concentrate on operationalising dynamic consent as usable, granular UI flows how permissions can be set, reviewed, updated, and understood in-context during everyday messaging.
+
+
+
+\section{Empirical Usability Assessments of Current Platforms}
+This section synthesises studies evaluating the usability of consent settings and revocation-related controls in WhatsApp and comparable platforms to ground the current state of practice. Albesher and Alhussain (2021) highlights severity usability problems affecting WhatsApp users’ ability to manage privacy controls, with particular emphasis on the STRAP heuristic (Specific, Transparent, Revocable, Actionable, Proportional) of the ability to revoke consent, which is reported as one of the most notable high-severity problem areas across the evaluated apps. Additionally, Kancherla et al. (2025)   discuss the technical reality of revocation and how platforms can fail to meet the practical expectations implied by revocability, including cases where revocation is harder than acceptance at the interface level and where revocation can fail “behind the UI” (e.g., not being properly stored, applied, or communicated). This supports the dissertation’s broader argument that “revocation availability” does not necessarily mean “revocation effectiveness.”
+
+To connect these findings to WhatsApp’s concrete mechanisms, the section will review how revocation-oriented features currently operate and what they communicate to users. For example, WhatsApp’s deletion feature acknowledges that recipients may see a message before it is deleted and that deletion may not always be successful (WhatsApp, n.d.-a). It will also consider controls that aim to reduce secondary sharing, such as Advanced Chat Privacy, which is positioned as limiting content being taken outside WhatsApp (e.g., blocking chat export and disabling auto-download to gallery), while still operating within constraints where capture and manual retention can remain possible (WhatsApp, n.d.-b; WhatsApp, 2025). Finally, it will situate disappearing messages and view-once media as partial revocation-like mechanisms (WhatsApp, n.d.-c; WhatsApp, n.d.-d), while drawing on forensic and behavioural research suggesting that disappearing designs can still leave recoverable traces and that screenshot practices remain a persistent interpersonal privacy risk in messaging environments (Heath et al., 2023; Ingber, 2025). It will conclude by identifying where features such as delete for everyone, disappearing messages, and chat-level restrictions exist but do not constitute robust, granular, or reliably revertible consent mechanisms aligned with user expectations or the theoretical requirements discussed earlier.
+
+\section{Research Gap and Summary}
+This final section summarises unresolved issues and motivates the dissertation contribution.
+\begin{itemize}
+\item \textbf{Gap G1:} Interface-level translation of dynamic/ongoing consent remains underdeveloped in instant messaging.
+
+Dynamic, ongoing, and revocable consent are discussed conceptually, but there is limited guidance on how to operationalise these models as usable UI flows within routine messaging.
+
+\item \textbf{Gap G2:} Post-delivery controls in real platforms are partial, ambiguous, and prone to misleading mental models.
+
+Features such as “delete for everyone” and disappearing options do not provide granular, policy-like control (e.g., per-photo expiry, download/forward restrictions) and can produce misleading mental models about what deletion achieves.
+
+\item \textbf{Gap G3:} Multi-party privacy and co-subject agency are rarely supported in messenger UI.
+
+Multi-party privacy conflicts show that depicted individuals may require agency, but most mainstream messenger tools assume only the sender controls the content.
+
+\item \textbf{Gap G4:} Secondary sharing (forwarding/screenshots) undermines revocation, and designs often overpromise control.
+
+Screenshot and forwarding practices make strict revocation difficult. Existing approaches provide partial deterrence rather than enforceable revocation.
+
+\item \textbf{Gap G5:} Lack of agreed fair interaction models for sender vs recipient in revocation design.
+
+Most work frames revocation primarily as a sender right, but less work specifies what “fair” and “intuitive” design means for both parties (e.g., notification, explanation, minimising blame while maintaining clarity).
+
+\item \textbf{Gap G6:} Limited empirical understanding of user expectations for revocable photo permissions specifically in WhatsApp contexts.
+Although privacy and safety concerns are documented, there is limited work on what WhatsApp users want from pre- and post-sharing control in everyday relational contexts, including the social friction and trace effects of revocation (e.g., deletion indicators).
+\end{itemize}
+This chapter therefore positions consent revocation as a socio-technical problem shaped by privacy theory, consent models, platform constraints, and interface design creating a clear need for user-centred revocation mechanisms for photo sharing in WhatsApp. 
+
+
+
+
+
+
+

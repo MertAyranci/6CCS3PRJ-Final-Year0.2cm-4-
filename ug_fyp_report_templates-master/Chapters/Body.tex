@@ -1,0 +1,221 @@
+\chapter{Requirements}
+\section{Brief}
+This chapter defines the requirements that guide the design of revocable consent features for WhatsApp photo sharing. It identifies key stakeholders, outlines realistic use cases, and translates these into functional and non-functional requirements that reflect user, legal and design expectations. The goal is to establish a clear foundation for the prototype by specifying what the system must behave, and the standards it must meet to support intuitive and trustworthy consent revocation.
+\section{Stakeholders}
+
+\begin{enumerate}
+  \item \textbf{Photo Sender:}
+  Must retain ongoing, modifiable consent rights. They need clarity about who can view the ability to modify or revoke access, and a sense of safety and social comfort in revocation.
+
+  \item \textbf{Photo Receiver:}
+  They consume the photo and are affected by revocation. They need clear expectations about visibility, fairness in communication, and transparency when access changes. Crucial for privacy, ethics, and contextual integrity.
+
+  \item \textbf{Co-Subjects Depicted in the Photo:}
+  This stakeholder is crucial for privacy, ethics, and contextual integrity. They need representation and agency over how they appear in shared content, including mechanisms to request revocation even if they are not the sender, to avoid non-consensual distribution.
+
+  \item \textbf{Secondary Receiver:}
+  They enter the system indirectly. This stakeholder is important because misuse typically occurs at this level; the system must contain information flow regardless of user intention. They need clarity about whether they are permitted to view or keep the content, and automatic enforcement of rules (e.g., cannot forward again, cannot save).
+\end{enumerate}
+
+
+
+\section{Use Cases}
+
+\begin{enumerate}
+  \item \textbf{UC-S0: Sender Applies Permissions Before Sending:}
+  Allow the sender to configure photo-sharing permissions before delivery, reducing unwanted redistribution and reliance on later revocation.
+
+  \item \textbf{UC-S1: Sender Manages Ongoing Consent Over Time:}
+  Enable the sender to modify or revoke consent after sharing to reflect changing circumstances. All receivers (primary and secondary) are affected by the sender’s changes.
+
+  \item \textbf{UC-R1: Receiver Encounters Controlled or Revoked Access:}
+  Ensure the receiver clearly understands restricted, time-limited, or revoked access.
+
+  \item \textbf{UC-C1: Co-Subject Requests Consent Changes from Sender:}
+  Allow individuals depicted in a photo to influence sharing decisions.
+
+  \item \textbf{UC-M1: Multiple Co-Subjects with Conflicting Consent:}
+  Handle situations where multiple depicted individuals have different consent preferences.
+
+  \item \textbf{UC-C2: Platform Mediated Co-Subject Consent Intervention:}
+  Provide a non-interpersonal way for co-subjects to request restriction or removal.
+
+  \item \textbf{UC-SR1: Secondary Receiver Attempts Access or Misuse:}
+  Enforce original consent rules when photos are forwarded and a secondary receiver attempts access or misuse.
+\end{enumerate}
+
+\clearpage
+\section{Requirements}
+\Needspace{12\baselineskip}
+\subsection{Functional Requirements}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|c|p{4cm}|p{6cm}|c|}
+\caption{Functional Requirements}
+\label{tab:functional-req} \\
+
+\hline
+\textbf{Requirement} & \textbf{Requirement Description} & \textbf{Specification} & \textbf{Priority} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Requirement} & \textbf{Requirement Description} & \textbf{Specification} & \textbf{Priority} \\
+\hline
+\endhead
+
+\hline
+\caption*{\textbf{Table~\thetable:} Functional Requirements}
+\endlastfoot
+
+FR1 &
+The system must allow the sender to modify permissions before the sending action. &
+Provide a permissions configuration interface prior to content submission. &
+High \\ \hline
+
+FR2 &
+The system must allow the sender to modify or revoke access to any previously shared photo. &
+Provide access control management for shared content. &
+High \\ \hline
+
+FR3 &
+The system must provide a “Manage Permissions” interface accessible via long-press on an already sent photo. &
+Implement a contextual permission management UI for sent content. &
+Medium \\ \hline
+
+FR4 &
+The system must provide fine-grained permissions including viewing, downloading, forwarding, screenshotting, and expiry. &
+Support granular permission flags enforced at the platform level. &
+High \\ \hline
+
+FR5 &
+The system must enforce the sender’s permissions across all recipient devices. &
+Synchronize permission enforcement across devices and sessions. &
+High \\ \hline
+
+FR6 &
+The system must allow co-subjects to temporarily restrict access to a photo containing them until review. &
+Allow co-subjects to request temporary access restriction pending sender approval. &
+Medium \\ \hline
+
+FR7 &
+The system must allow co-subjects to request platform-assisted removal when the sender does not respond or when unsafe. &
+Provide an escalation workflow for platform-assisted intervention. &
+High \\ \hline
+
+FR8 &
+The system must automatically revoke access to a shared photo when its expiry time is reached. &
+Implement time-based access expiration. &
+Medium \\ \hline
+
+FR9 &
+The system must display a confirmation message whenever permission changes are successfully applied. &
+Provide system feedback confirming permission updates. &
+Low \\ \hline
+
+FR10 &
+When multiple co-subjects request different actions, the system must provide conflict resolution. &
+Implement a conflict-resolution interface for competing requests. &
+Medium \\ \hline
+
+FR11 &
+The system must store a non-sensitive log of permission changes. &
+Maintain an audit log excluding sensitive personal data. &
+Low \\ \hline
+
+FR12 &
+The system must provide an optional text box allowing the sender to attach an explanation when revoking access. &
+Provide an optional justification input for permission revocation. &
+Low \\ \hline
+
+FR13 &
+The system must verify that a co-subject appears in the photo before processing a co-subject request for restriction. &
+Verify co-subject presence using identity/face matching before accepting restriction requests. &
+High \\ \hline
+
+FR14 &
+The system must warn recipients attempting to forward a photo whose permissions do not allow redistribution. &
+Display a warning and block forwarding when redistribution is not permitted. &
+Medium \\ \hline
+
+FR15 &
+The system must enforce the original sender’s permissions when a photo is forwarded, so that secondary receivers cannot bypass restrictions such as “no download” or “no forwarding”. &
+Propagate and enforce original permission rules for forwarded content across all recipients. &
+High \\ \hline
+
+FR16 &
+When a secondary receiver receives a photo they cannot view due to revoked or restricted access, the system must display a clear explanation that the original sender has limited access. &
+Show an access-denied message explaining the restriction is set by the original sender. &
+Low \\ \hline
+
+FR17 &
+The system must provide a short undo window (e.g., 5--10 seconds) after the sender revokes a photo, allowing them to cancel the revocation before it permanently applies. &
+Implement a time-limited undo action for revocation events. &
+Medium \\ \hline
+
+
+\end{longtable}
+
+\Needspace{12\baselineskip}
+\subsection{Non-Functional Requirements}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|c|p{8cm}|p{4cm}|}
+
+\hline
+\textbf{Requirement ID} & \textbf{Requirement Description} & \textbf{Category} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Requirement ID} & \textbf{Requirement Description} & \textbf{Category} \\
+\hline
+\endhead
+
+\hline
+\caption*{\textbf{Table~\thetable:} Non-Functional Requirements}
+\endlastfoot
+
+NFR1 &
+The system should work on all platforms. &
+Portability \\ \hline
+
+NFR2 &
+The revocation actions must be applied across devices with the lowest latency possible. &
+Performance \\ \hline
+
+NFR3 &
+The system must provide neutral, non-blaming language to avoid social tension between users (e.g., when the sender changes permissions). &
+Usability \\ \hline
+
+NFR4 &
+The interface must follow accessibility guidelines (WCAG~2.1~AA), including readable text for permission states. &
+Accessibility \\ \hline
+
+NFR5 &
+The interface for permission management must be easy to understand by first-time users. &
+Usability \\ \hline
+
+NFR6 &
+The system must not reveal any sensitive information about why access was revoked. &
+Privacy \\ \hline
+
+NFR7 &
+The system must maintain end-to-end encryption throughout all permission updates. &
+Security \\ \hline
+
+NFR8 &
+Permission icons and indicators must remain visually consistent with WhatsApp’s existing UI patterns. &
+Consistency \\ \hline
+
+NFR9 &
+The system must ensure that restricted content cannot be accessed offline unless explicitly allowed. &
+Security \\ \hline
+
+NFR10 &
+Revocation must not produce stigma, suspicion, or social penalty (e.g., avoid tombstone messages). &
+Social Impact \\ \hline
+
+\end{longtable}

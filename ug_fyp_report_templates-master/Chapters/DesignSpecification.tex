@@ -1,0 +1,131 @@
+\chapter{Design \& Specification}
+
+\section{Brief}
+This chapter presents the design and specification of a consent revocation system for photo sharing in WhatsApp, translating the research questions, literature findings and platform limitations into concrete interface mechanisms. The preceding chapters established that consent in interpersonal messaging should be dynamic and context-dependent, yet WhatsApp’s current photo-sharing controls provide limited post-delivery mechanisms and can create misunderstandings and social friction when users attempt to regain control. The research gaps identified in Chapter 2, together with observed platform constraints (Chapter 2), are therefore used to define actionable functional and non-functional requirements (Chapter 3) that a revocation feature must satisfy to be understandable, trustworthy, and socially workable within everyday messaging. The chapter operationalises these requirements through a conceptual model Smart Photos in which photos are shared with explicit, editable permission states that can be modified or revoked after sending.
+
+\section{Design Rationale and Principles}
+This section defines the design principles that guide the Smart Photos concept and justify why certain interaction choices are being prioritised. Drawing directly from Chapter 2, the rationale will be grounded in Communication Privacy Management, Contextual Integrity and consent models that emphasise dynamic, revocable, and ongoing consent rather than one-time permission. The design will aim to increase meaningful control without overpromising the application.
+
+This section will include the following principles:
+
+\subsection{Dynamic and Revocable Consent by Default}
+The design will treat photo permissions as modifiable over time, so that users can update or withdraw consent after sending when relationships or circumstances change.
+
+\begin{enumerate}
+\item Expectation Management over Absolute Control
+The interface will be designed to communicate realistic outcomes (e.g., “access is restricted going forward”) rather than implying universal erasure, acknowledging the constraints discussed in Chapter 2.
+\item Minimal Social Friction
+Revocation mechanisms will avoid blame, suspicion, and unnecessary confrontation. In particular, the design will explore alternatives to visible tombstone deletion cues (“This message was deleted”) and will use neutral, system-mediated language.
+\item Fair Interaction Between Sender and Receiver
+While prioritising sender agency, the design will ensure recipients receive understandable feedback when access changes occur, supporting perceived fairness and contextual integrity.
+\item Consistency with WhatsApp’s Existing UI
+To reduce cognitive load and improve adoption, interaction patterns, icons, and navigation will align closely with WhatsApp’s established design language. The prototype will follow WhatsApp’s interaction patterns (e.g., long-press menus, familiar icons, bottom sheets) to support adaptability and reduce cognitive load for first-time users.
+
+\end{enumerate}
+
+
+
+\section{Conceptual System Model: The Smart Photos}
+
+This section introduces the conceptual model that will be used to structure the prototype. The Smart Photos model treats each photo as an object that carries a persistent permission state, rather than as content that permanently transfers control at the moment it is delivered. 
+Under this model:
+
+Each photo is shared with a set of explicit permissions (e.g., view, download, forward) and optional constraints (e.g., expiry). 
+\begin{itemize}
+    \item The sender can later modify these permissions or revoke access via a “Manage Permissions” interface.
+    \item When the photo is forwarded, the original sender’s permissions persist so that secondary receivers cannot bypass restrictions. 
+
+\end{itemize}
+
+A key position taken in this design is that consent revocation in WhatsApp photo sharing cannot be treated as a guaranty of complete deletion once a photo has been delivered to another user’s device. Instead, the Smart Photos model conceptualises revocation primarily as a mechanism for withdrawing or modifying future access and platform-mediated redistribution. This framing follows directly from the constraints identified in Chapter 2. As discussed in Sections 2.5.2–2.5.3, messaging platforms such as WhatsApp operate within structural limits where recipients may retain local copies, capture content through screenshots or external devices, or view content before revocation actions propagate. As a result, treating revocation as equivalent to universal deletion would risk producing misleading user expectations and inaccurate mental models of control. The system seeks to support ongoing, revocable consent while remaining honest about what can realistically be enforced within the current messaging environment.
+
+\section{Interaction Design Specifications}
+This section specifies the planned interaction flows that will be designed and prototyped. As this project involves prototype-based design rather than backend development, which is out of backend development of a technology, the focus will be on user-facing behaviours, states, and feedbacks.
+The prototype will explore interaction models across the project’s target contexts (private chats, group chats, and semi-public spaces such as communities). The planned interaction flows include:
+
+
+\subsection{Pre-send permission configuration (sender)}
+This flow will allow the sender to optionally configure permissions before sending a photo (FR1, FR4). The design goal is to support preventative control without imposing excessive friction. The interface will explore lightweight permission presets and quick toggles (e.g., “Allow forwarding” on/off; “Expiry” selection for some amount of time etc.) so that the feature is usable during fast, everyday sharing.
+
+
+\subsection{Post-send permission management (sender)}
+This flow will support ongoing consent management after the photo has been delivered (FR2–FR3). The current plan is to make “Manage Permissions” accessible via long-press on a sent photo bubble, consistent with existing WhatsApp interaction patterns (icons etc.). The interface will display current permissions, allow modifications, and support full revocation where appropriate.
+The design will also explore an undo window after revocation (FR17), implemented as a short-duration reversible action to mitigate accidental revocation.
+
+
+\subsection{Recipient-side states and feedback (receiver and secondary receiver)}
+This flow will specify how recipients experience controlled content and permission changes. The design will ensure recipients understand:
+\begin{itemize}
+    \item when content is viewable but restricted (e.g., no download/forward),
+    \item when content is time-limited (expiry),
+    \item and when content has been revoked after shared.
+\end{itemize}
+
+Where recipients attempt prohibited actions (e.g., forwarding), the interface will provide immediate warnings (FR14) and clear explanations, including secondary receiver messaging when they receive content that is no longer accessible due to the original sender’s updated permissions (FR16).
+A central design goal here is to communicate access changes clearly while avoiding stigma or blame (NFR3, NFR6, NFR10). This is where the dissertation will explicitly explore alternatives to tombstone messages.
+
+
+\subsection{Co-subject request flows (co-subject)}
+This flow will outline how individuals depicted in a photo can request changes (FR6–FR7, FR13). The prototype will explore:
+\begin{itemize}
+    \item temporary restriction requests that pause access until the sender reviews the request (FR6),
+    \item and escalation to platform-assisted removal if the sender does not respond or the situation is unsafe (FR7).
+\end{itemize}
+
+Because co-subject requests may raise risks of abuse and false reporting, the prototype will include a planned verification step (FR13) at the interaction level (e.g., “confirm you appear in this photo”), while recognising that the technical feasibility of such verification is outside scope.
+
+\subsection{Conflict-resolution flow (sender with multiple co-subjects)}
+Where multiple co-subjects request different actions, the design will include a conflict-resolution interface for the sender (FR10). This will be treated as a fairness and transparency problem: the interface must support a decision without forcing the sender into adversarial framing, while still respecting co-subject requests. 
+The project acknowledges that automated appearance verification for both case of conflict resolution could require biometric processing, therefore the prototype models verification at the interaction level and treats implementation details as an open design constraint to avoid surveillance harms.
+
+
+\section{Functional Specifications}
+In this section I will translate the functional requirements from Chapter 3 into concrete interface behaviours, components, and states that will be implemented in the high-fidelity prototype. So, I will specify how the system will behave from a user perspective. To have an easy-to-understand specifications section a traceability matrix will be created.
+This section considers: 
+\begin{itemize}
+    \item Permission types and controls: viewing, downloading, forwarding, screenshotting (as deterrence/notification where applicable), and expiry settings (FR4, FR8).
+    \item Access enforcement cues: how restrictions are represented visually on the photo message (icons, labels, or status indicators) while remaining consistent with WhatsApp UI (NFR8).
+    \item Manage Permissions interface: layout, hierarchy of settings, and confirmation actions (FR3, FR9).
+    \item Recipient action handling: warnings and blocked actions when permissions do not allow forwarding or saving (FR14–FR16).
+    \item 	Permission change log (non-sensitive): a planned log of permission changes that avoids exposing private reasons (FR11, NFR6).
+    \item Optional explanation field: a sender-provided text box for group/community contexts where explanation may reduce confusion (FR12), designed carefully to avoid coercion or oversharing.
+    
+\end{itemize}
+
+
+\section{Non-Functional Specifications}
+In this section I will describe the non-functional constraints and quality goals that the prototype will aim to satisfy, focusing on usability, accessibility, trust, and social impact. Like the functional specifications section, a traceability matrix will also be created. 
+
+I am planning to consider:
+\begin{itemize}
+    \item Cross-platform consistency (NFR1): the interface patterns will be designed so they are plausible on both iOS and Android WhatsApp conventions.
+    \item Low-latency expectation (NFR2): Permission changes should be reflected across devices in a timely and predictable manner, with interface feedback designed to set realistic user expectations about propagation.
+    \item Neutral language and non-blaming tone (NFR3, NFR10): copy will be system-mediated, avoiding accusatory phrasing that could escalate conflict.
+    \item Accessibility compliance (NFR4): text size, contrast, and icon clarity will be considered in line with WCAG 2.1 AA such as sufficient contrast, readable text sizes etc.
+    \item First-time usability (NFR5): the design will prioritise recognisable interaction patterns, limited complexity, and clear permission explanations.
+    \item Privacy-preserving feedback (NFR6): recipient-facing messages will avoid revealing sensitive reasons for revocation.
+    \item Encryption continuity assumption (NFR7): The design will assume WhatsApp’s existing end-to-end encryption model remains unchanged, and that permission management is conceptually compatible with it.
+    \item Offline restrictions (NFR9): The interface should communicate when restricted content is not intended to be accessible offline and should reflect this state clearly in the user experience.
+
+\end{itemize}
+
+
+\section{System Constraints and Assumptions}
+In this section I will clarify the constraints under which the design is developed in order to prevent overclaiming.  I will also specify the assumptions required for the design to function properly within WhatsApp environment. 
+The following assumptions apply:
+\begin{itemize}
+    \item WhatsApp’s end-to-end encryption and core messaging model remain unchanged.
+    \item Revocation cannot guarantee universal deletion after delivery, particularly where screenshots, external capture, or device-level storage are involved.
+    \item The prototype focuses on interaction design, mental models, and perceived control, not on implementability accuracy.
+    \item Evaluation will therefore assess ethical aspects, usability, clarity, perceived fairness, and perceived trust rather than technical effectiveness against adversarial misuse.
+    \item In a real implementation, the permission state could be represented as metadata bound to the photo message (e.g., as message-level metadata or similar), but the prototype does not specify or evaluate backend feasibility
+
+\end{itemize}
+
+
+
+
+
+
+
+
