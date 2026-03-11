@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a web-based proof-of-concept developed for a final-year dissertation on consent revocation in WhatsApp-like photo sharing. The prototype focuses on how photo permissions may be configured, changed after sending, and observed across original and forwarded recipient views.
+This project is a web-based proof-of-concept developed for my final-year dissertation on consent revocation in WhatsApp photo sharing. The prototype focuses on how photo permissions may be configured, changed after sending, and observed across original and forwarded recipient views. 
 
 ## What The Prototype Demonstrates
 
@@ -42,7 +42,7 @@ Then open the local address shown in the terminal. In a normal case this will be
 http://localhost:3000
 ```
 
-If port `3000` is already in use, Next.js may automatically choose another local port such as `3001`.
+However, if port `3000` is already in use, Next.js may automatically choose another local port such as `3001`.
 
 ## Useful Commands
 
