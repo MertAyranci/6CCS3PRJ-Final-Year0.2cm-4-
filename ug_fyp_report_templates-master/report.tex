@@ -2,15 +2,17 @@
 % 6CCS3PRJ Final Year Individual Project Report
 % luke.day@kcl.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[11pt]{informatics-report}
+\documentclass[11pt]{informatics-report} 
 \usepackage{color}
 \usepackage[square,sort,comma,numbers]{natbib} %References
 \usepackage{parskip}
 \usepackage{float}
 \usepackage{adjustbox}
 \usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{longtable}
 \usepackage{needspace}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Front Matter - project title, name, supervisor name and date
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +132,7 @@ The project makes the following contributions:
 % Appendices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
-\include{Appendices/appendix}
+\include{Appendices/Appendix}
 \include{Appendices/UserGuide}
 \include{Appendices/SourceCode}
 \end{document}
