@@ -23,6 +23,7 @@ The current prototype is intentionally narrower than the full conceptual problem
 
 The following concerns are treated as out of scope for the present requirements set and are better positioned in discussion and future work: co-subject agency, platform-assisted removal, identity or face verification, screenshot prevention, persistent audit logging, cross-device synchronisation, and guarantees of universal deletion after disclosure.
 
+
 \section{Use Cases}
 
 \begin{enumerate}
@@ -54,6 +55,7 @@ For clarity, the functional requirements are divided into requirements already r
 \renewcommand{\arraystretch}{1.2}
 
 \begin{longtable}{|c|P{3.8cm}|P{3.8cm}|P{2.8cm}|P{2.2cm}|}
+
 \caption{Implemented Functional Requirements}
 \label{tab:functional-req-implemented} \\
 
@@ -176,9 +178,11 @@ RG3
 \end{longtable}
 
 \Needspace{12\baselineskip}
+
 \subsubsection{Deferred Concerns}
 
 The following issues remain important to the overall dissertation problem, but they are not included as core requirements for the present prototype: co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
+
 
 \Needspace{12\baselineskip}
 \subsection{Non-Functional Requirements}
@@ -205,7 +209,7 @@ The non-functional requirements below are limited to qualities that can be defen
 
 \multicolumn{5}{|l|}{\textbf{Usability}} \\ \hline
 NFR1 &
-The interface must be understandable to first-time users. &
+The interface must be easy to understand for first-time users. &
 Ensure that users can understand the permission model and core controls immediately without prior training or repeated use. &
 First-use interpretability; consent controls should be usable, legible, and consistently presented rather than hidden or ambiguous. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,albesher_2021,schnitzler_2020,bourgeus_vandercruysse_2024,nouwens_dark_2020} &
 RG1 and RG2
