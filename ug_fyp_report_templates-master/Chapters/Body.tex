@@ -250,14 +250,14 @@ First-use interpretability; consent controls should be usable, legible, and cons
 RG1 and RG2
 \\ \hline
 
-NFR7 &
+NFR2 &
 The system shall support quick completion of routine sharing tasks whilst introducing only proportionate friction for privacy-sensitive actions; enough to support reflection, but not so much that users avoid the feature. &
 Balance everyday efficiency with reflective intervention so privacy-sensitive actions receive attention without making the system feel burdensome or disruptive. &
 Consent interactions should be unburdensome but reflective: routine actions should stay low-friction, while privacy-sensitive sharing can justify proportionate prompts or warnings that support attention without causing fatigue or avoidance. \cite{im_yes_2021,schaub_notice_2015,wilbanks_design_2018,lindegren_evaluation_2021,cherubini_2021,lee_identifying_2023,baruh_big_2017} &
 RG1
 \\ \hline
 
-NFR4 &
+NFR3 &
 The interface must provide readable and distinguishable permission states, labels, and controls. &
 Make permission-related information easy to read, compare, and interpret so users can recognise states and act confidently. &
 Permission states and controls must be visually legible and clearly distinguishable so users can interpret privacy status changes, locate actions, and understand consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
@@ -265,7 +265,7 @@ RG1 and RG2
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Performance}} \\ \hline
-NFR2 &
+NFR4 &
 Permission-related actions and status changes should remain responsive enough for live demonstration in a local browser environment. &
 Preserve a smooth and credible interaction flow by ensuring that permission changes appear promptly during use and evaluation. &
 Low-friction interaction is important in fast-paced messaging; consent controls should remain usable at the moment of action and not introduce disruptive delay. \cite{wilbanks_design_2018,im_yes_2021,schaub_notice_2015,lindegren_evaluation_2021,lee_identifying_2023,albesher_2021} &
@@ -273,7 +273,7 @@ RG1
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Social Impact}} \\ \hline
-NFR3 &
+NFR5 &
 The interface must use neutral, non-blaming language to reduce unnecessary social tension when permissions change. &
 Reduce avoidable interpersonal friction by ensuring that permission changes are communicated in a socially careful and non-accusatory way. &
 Revocation is a socially meaningful boundary change, so interface wording should minimise blame, ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
@@ -281,15 +281,22 @@ RG3
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Consistency}} \\ \hline
-NFR5 &
+NFR6 &
 Permission menus, indicators, and states should remain consistent with familiar WhatsApp-like interaction patterns. &
 Improve learnability and reduce confusion by aligning new permission controls with interaction patterns users already recognise from WhatsApp-like messaging. &
 Consistency supports interpretable privacy control: revocation-related settings should follow familiar messaging patterns and avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG1 and RG4
 \\ \hline
 
+NFR7 &
+Permission management should assume continuity with WhatsApp’s existing end-to-end encryption model, without requiring changes to the underlying encryption architecture. &
+Preserve conceptual compatibility with users’ expectations of secure WhatsApp-like communication while introducing permission controls. &
+This assumption ensures that the proposed permission model is interpreted as operating alongside, rather than replacing or weakening, WhatsApp’s existing end-to-end encryption. It supports consistency by framing permission management as an additional layer of user control that remains compatible with familiar secure messaging expectations. &
+RG1 and RG4
+\\ \hline
+
 \multicolumn{5}{|l|}{\textbf{Transparency}} \\ \hline
-NFR6 &
+NFR8 &
 The system must not over-promise. It should clearly indicate that revocation may not affect screenshots, saved copies, exports, or prior viewing. &
 Calibrate user expectations by communicating the practical limits of revocation clearly and honestly. &
 Revocation in messaging is only partial and prospective, so the interface should communicate scope honestly and avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,ingber_2025,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
