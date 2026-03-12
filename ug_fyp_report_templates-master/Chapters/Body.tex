@@ -179,6 +179,97 @@ RG3
 
 \Needspace{12\baselineskip}
 
+\subsubsection{Deferred / Figma-Demonstrated Requirements for Co-Subject Support}
+
+The following requirements were not implemented in the coded proof-of-concept because of time and technical limitations, but are represented in the Figma prototype to address the multi-party privacy concerns identified in the literature review.
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|c|P{3.8cm}|P{3.8cm}|P{2.8cm}|P{2.2cm}|}
+\caption{Deferred / Figma-Demonstrated Functional Requirements for Co-Subject Support}
+\label{tab:functional-req-cosubject} \\
+
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\hline
+\endhead
+
+\hline
+\caption*{\textbf{Table~\thetable:} Conceptual and Figma-Level Requirements for Co-Subject Support}
+\endlastfoot
+
+FGR1 &
+The prototype should allow the sender to indicate that a photo contains one or more other people before sending. &
+Introduce co-subject visibility at the point of disclosure and avoid assuming that only the sender has privacy stakes in the image. &
+Multi-party privacy conflicts; co-owned content; depicted others may be affected by disclosure. \cite{cherubini_2021, liu_privacy_2023, nissenbaum_contextual_2011, petronio_cpm_2020} &
+RG3 and RG4
+\\ \hline
+
+FGR2 &
+The prototype should allow a depicted co-subject to receive a notification that they appear in a shared photo when the sender has marked the image as multi-party content. &
+Make co-subject involvement visible and support awareness that a privacy-relevant disclosure has occurred. &
+Co-subjects often lack opportunity to approve or shape disclosure; awareness is a prerequisite for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
+RG3
+\\ \hline
+
+FGR3 &
+The prototype should allow a co-subject to request restriction, revocation, or removal of access to a shared photo. &
+Represent co-subject agency within the permission lifecycle rather than treating privacy control as sender-only. &
+Co-owned image privacy; negotiated privacy boundaries; depicted others may have legitimate competing interests. \cite{cherubini_2021, liu_privacy_2023, petronio_cpm_2020, nissenbaum_contextual_2011} &
+RG3
+\\ \hline
+
+FGR4 &
+The prototype should allow a co-subject to attach an optional explanation when making a restriction or removal request. &
+Support socially intelligible negotiation without forcing disclosure of sensitive reasons. &
+Boundary renegotiation is interpersonal and contextual; explanation can reduce ambiguity while preserving dignity. \cite{petronio_cpm_2020, short_williams_christie_1976, daft_lengel_mrt_1986, wilbanks_design_2018} &
+RG3
+\\ \hline
+
+FGR5 &
+The prototype should allow the sender to review and respond to a co-subject’s request through a dedicated decision interface. &
+Demonstrate how multi-party privacy could be operationalised through negotiation rather than unilateral hidden system logic. &
+Precautionary/collaborative mechanisms; privacy negotiation among stakeholders; consent as revisable and relational. \cite{cherubini_2021, xu_my_2017, xu_trust-based_2019, petronio_cpm_2020, im_yes_2021} &
+RG3
+\\ \hline
+
+FGR6 &
+The prototype should provide neutral outcome notices to affected parties when a co-subject request leads to changed permissions. &
+Communicate changes clearly while minimising blame and interpersonal friction. &
+Revocation notices are socially meaningful; design should support face-saving and expectation management. \cite{schnitzler_2020, petronio_cpm_2020, ingber_2025, wilbanks_design_2018} &
+RG3
+\\ \hline
+
+FGR7 &
+The prototype should distinguish between sender-owned content and shared-stakes content in the interface. &
+Help users interpret why some photos are subject to additional review or multi-party controls. &
+Privacy depends on actors, attributes, and transmission principles; co-owned photos require different treatment from sender-only content. \cite{nissenbaum_contextual_2011, cherubini_2021, liu_privacy_2023} &
+RG3 and RG4
+\\ \hline
+
+FGR8 &
+The prototype should show how co-subject-related restrictions affect forwarding and secondary-recipient access within the platform model. &
+Demonstrate that co-subject privacy concerns continue after redistribution and are not limited to the original chat. &
+Forwarding changes context and audience; downstream dissemination intensifies multi-party privacy risk. \cite{zhang_go-sharing_2023, liu_privacy_2023, nissenbaum_contextual_2011, cherubini_2021} &
+RG3
+\\ \hline
+
+FGR9 &
+The prototype should allow the interface to explain the limits of co-subject protection, including that offline capture, screenshots, or prior viewing cannot be fully undone. &
+Keep co-subject controls realistic and avoid overstating the effect of platform-level revocation. &
+Revocation is prospective and partial; screenshotting and retention remain structural limits. \cite{politou_2018, heath_2023, ingber_2025, schnitzler_2020} &
+RG2 and RG3
+\\ \hline
+
+\end{longtable}
+
+\Needspace{12\baselineskip}
+
 \subsubsection{Deferred Concerns}
 
 The following issues remain important to the overall dissertation problem, but they are not included as core requirements for the present prototype: co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
