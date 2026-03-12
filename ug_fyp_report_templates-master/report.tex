@@ -9,6 +9,7 @@
 \usepackage{float}
 \usepackage{adjustbox}
 \usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{longtable}
 \usepackage{needspace}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +131,7 @@ The project makes the following contributions:
 % Appendices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
-\include{Appendices/appendix}
+\include{Appendices/Appendix}
 \include{Appendices/UserGuide}
 \include{Appendices/SourceCode}
 \end{document}
