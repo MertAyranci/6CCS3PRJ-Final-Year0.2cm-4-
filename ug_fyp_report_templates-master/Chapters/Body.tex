@@ -1,6 +1,6 @@
 \chapter{Requirements}
 \section{Brief}
-This chapter defines the requirements for the WhatsApp-like proof-of-concept developed in this dissertation. It translates the literature review into a scoped set of stakeholders, use cases, functional requirements, and non-functional requirements that are realistic for the present prototype. The emphasis is on sender-controlled photo permissions, post-send revocation, recipient understanding of changing access, and constrained forwarding to a secondary recipient. Broader multi-party mechanisms, such as co-subject intervention, remain important to the research problem but are not treated as core prototype requirements at this stage.
+This chapter defines the requirements for the WhatsApp-like proof-of-concept developed in this dissertation. It translates the literature review into a scoped set of stakeholders, use cases, functional requirements, and non-functional requirements that are realistic for the present prototype. The emphasis is on sender-controlled photo permissions, post-send revocation, recipient understanding of changing access, and constrained forwarding to a secondary recipient. Broader multi-party mechanisms, such as co-subject intervention, remain important to the research problem but are not treated as core functional prototype requirements at this stage.
 
 \section{Stakeholders}
 
@@ -9,7 +9,7 @@ This chapter defines the requirements for the WhatsApp-like proof-of-concept dev
   The sender shares the photo and configures its permissions. This stakeholder requires clear pre-send and post-send controls, visibility over the current state of a shared photo, and interaction patterns that allow revocation or permission change without unnecessary confusion.
 
   \item \textbf{Primary Recipient:}
-  The primary recipient receives the sender's photo in the original chat. This stakeholder requires clear feedback about whether a photo remains visible, whether it is limited to view-once access, and whether forwarding is allowed or blocked.
+  The primary recipient receives the sender's photo in the original chat. This stakeholder requires clear feedback about whether a photo remains visible, or whether any kind of revocation action has been taken.
 
   \item \textbf{Secondary Recipient:}
   The secondary recipient appears only when the primary recipient forwards a photo. This stakeholder is necessary because the prototype examines whether sender-defined permissions continue to shape access after redistribution within the platform model.
@@ -19,9 +19,9 @@ This chapter defines the requirements for the WhatsApp-like proof-of-concept dev
 \end{enumerate}
 
 \section{Prototype Scope}
-The current prototype is intentionally narrower than the full conceptual problem described in the literature review. It implements sender-side configuration of photo permissions, sender-side revision of those permissions after sending, recipient-side feedback about active or revoked access, view-once behaviour, and a constrained forwarding flow to a secondary recipient. It demonstrates these mechanisms at the interface and interaction level rather than as a production-grade messaging infrastructure. It does not implement co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, full screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
+The current functional prototype is intentionally narrower than the full conceptual problem described in the literature review. It implements sender-side configuration of photo permissions, sender-side revision of those permissions after sending, recipient-side feedback about active or revoked access, and a constrained forwarding flow to a secondary recipient. It demonstrates these mechanisms at the interface and interaction level rather than as a production-grade messaging infrastructure. It does not implement co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, full screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
 
-The following concerns are treated as out of scope for the present requirements set and are better positioned in discussion and future work: co-subject agency, platform-assisted removal, identity or face verification, screenshot prevention, persistent audit logging, cross-device synchronisation, and guarantees of universal deletion after disclosure.
+The following concerns are treated as out of scope for the present requirements set and are better positioned in discussion and future work chapters: co-subject agency, platform-assisted removal, identity or face verification, screenshot prevention, persistent audit logging, cross-device synchronisation, and guarantees of universal deletion after disclosure.
 
 
 \section{Use Cases}
