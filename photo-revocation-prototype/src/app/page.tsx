@@ -1,10 +1,10 @@
 "use client";
 
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 type PermissionStatus = "active" | "revoked";
 type MainParticipant = "sender" | "recipient";
-type Participant = MainParticipant | "forwardedRecipient";
+type Participant = MainParticipant | "forwardedRecipient" | "coOwner";
 type ConversationThread = "main" | "forwarded";
 type PhotoAssetKind = "preset" | "upload";
 
@@ -16,10 +16,20 @@ type PhotoAsset = {
   previewUrl?: string;
 };
 
+type TimeLimitDuration = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
 type PhotoPermissions = {
   status: PermissionStatus;
   canForward: boolean;
   viewOnce: boolean;
+  expiresAt: number | null;
+  canDownload: boolean;
+  hasCoSubject: boolean;
 };
 
 type ChatMessage =
@@ -29,6 +39,9 @@ type ChatMessage =
       type: "text";
       text: string;
       time: string;
+      replyToMessageId?: number;
+      replyToAssetLabel?: string;
+      replyToAsset?: PhotoAsset;
     }
   | {
       id: number;
@@ -40,6 +53,108 @@ type ChatMessage =
       permissions: PhotoPermissions;
       sourcePhotoId: number;
     };
+
+const ROW_HEIGHT = 36;
+const WHEEL_VISIBLE_ROWS = 3;
+
+function ScrollWheelColumn({
+  min,
+  max,
+  value,
+  onChange,
+  label,
+}: {
+  min: number;
+  max: number;
+  value: number;
+  onChange: (n: number) => void;
+  label: string;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isUserScroll = useRef(false);
+
+  useEffect(() => {
+    if (!scrollRef.current || !isUserScroll.current) {
+      const clamped = Math.min(max, Math.max(min, value));
+      scrollRef.current?.scrollTo({ top: (clamped - min) * ROW_HEIGHT, behavior: "auto" });
+    }
+    isUserScroll.current = false;
+  }, [min, max, value]);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const index = Math.round(el.scrollTop / ROW_HEIGHT);
+    const clamped = Math.min(max, Math.max(min, min + index));
+    if (clamped !== value) {
+      isUserScroll.current = true;
+      onChange(clamped);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const next = value <= min ? max : value - 1;
+      onChange(next);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = value >= max ? min : value + 1;
+      onChange(next);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <span className="mb-1 text-[10px] font-medium uppercase tracking-wider text-slate-400">
+        {label}
+      </span>
+      <div
+        className="relative overflow-hidden rounded-xl bg-slate-100"
+        style={{ height: ROW_HEIGHT * WHEEL_VISIBLE_ROWS }}
+      >
+        <div
+          className="absolute left-0 right-0 z-10 pointer-events-none border-y border-slate-300/90 bg-white/30"
+          style={{ top: ROW_HEIGHT, height: ROW_HEIGHT }}
+          aria-hidden
+        />
+        <div
+          ref={scrollRef}
+          tabIndex={0}
+          role="spinbutton"
+          aria-valuenow={value}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-label={label}
+          onScroll={handleScroll}
+          onKeyDown={handleKeyDown}
+          className="scrollbar-hide overflow-y-auto overflow-x-hidden scroll-smooth outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-100 rounded-xl"
+          style={{
+            height: ROW_HEIGHT * WHEEL_VISIBLE_ROWS,
+            scrollSnapType: "y mandatory",
+            scrollPaddingTop: ROW_HEIGHT,
+            scrollPaddingBottom: ROW_HEIGHT,
+          }}
+        >
+          <div style={{ height: ROW_HEIGHT }} />
+          {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((n) => (
+            <div
+              key={n}
+              className="flex items-center justify-center text-lg font-semibold tabular-nums text-slate-700"
+              style={{
+                height: ROW_HEIGHT,
+                scrollSnapAlign: "center",
+              }}
+            >
+              {n}
+            </div>
+          ))}
+          <div style={{ height: ROW_HEIGHT }} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const presetAlbum: PhotoAsset[] = [
   {
@@ -98,7 +213,44 @@ export default function Home() {
     status: "active",
     canForward: false,
     viewOnce: false,
+    expiresAt: null,
+    canDownload: true,
+    hasCoSubject: false,
   });
+  const [accessRequestOpen, setAccessRequestOpen] = useState<{
+    messageId: number;
+    thread: ConversationThread;
+    owner: Participant;
+    assetLabel: string;
+  } | null>(null);
+  const [accessRequestDraft, setAccessRequestDraft] = useState("");
+  const [revocationRequestOpen, setRevocationRequestOpen] = useState<{
+    assetLabel: string;
+  } | null>(null);
+  const [revocationRequestDraft, setRevocationRequestDraft] = useState("");
+  const [replyingTo, setReplyingTo] = useState<{
+    owner: Participant;
+    messageId: number;
+    thread: ConversationThread;
+    assetLabel: string;
+    asset: PhotoAsset;
+  } | null>(null);
+  const [coOwnerReplyInput, setCoOwnerReplyInput] = useState("");
+  const [draftTimeLimit, setDraftTimeLimit] = useState<TimeLimitDuration>({
+    days: 0,
+    hours: 0,
+    minutes: 5,
+    seconds: 0,
+  });
+  const [draftTimeLimitOpen, setDraftTimeLimitOpen] = useState(false);
+  const [panelTimeLimit, setPanelTimeLimit] = useState<TimeLimitDuration>({
+    days: 0,
+    hours: 1,
+    minutes: 0,
+    seconds: 0,
+  });
+  const [panelTimeLimitOpen, setPanelTimeLimitOpen] = useState(false);
+  const [timeLimitModalOpen, setTimeLimitModalOpen] = useState(false);
   const [senderInput, setSenderInput] = useState("");
   const [recipientInput, setRecipientInput] = useState("");
   const [lastSendSummary, setLastSendSummary] = useState(
@@ -126,6 +278,9 @@ export default function Home() {
         status: "active",
         canForward: false,
         viewOnce: false,
+        expiresAt: null,
+        canDownload: true,
+        hasCoSubject: false,
       },
       sourcePhotoId: 2,
     },
@@ -138,8 +293,16 @@ export default function Home() {
     },
   ]);
   const [forwardedMessages, setForwardedMessages] = useState<ChatMessage[]>([]);
+  const [senderOnlyMessages, setSenderOnlyMessages] = useState<ChatMessage[]>([]);
+  const [, setCountdownTick] = useState(0);
 
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const permissionsPanelRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const id = setInterval(() => setCountdownTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
   const albumInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedPhotoMessage =
@@ -169,16 +332,98 @@ export default function Home() {
     status === "revoked" ? "Revoked" : "Visible";
 
   const getNextMessageId = () =>
-    [...mainMessages, ...forwardedMessages].reduce(
+    [...mainMessages, ...forwardedMessages, ...senderOnlyMessages].reduce(
       (highestId, message) => Math.max(highestId, message.id),
       0,
     ) + 1;
 
-  const getEffectivePermissions = (message: Extract<ChatMessage, { type: "photo" }>) =>
-    mainMessages.find(
-      (entry): entry is Extract<ChatMessage, { type: "photo" }> =>
-        entry.type === "photo" && entry.sourcePhotoId === message.sourcePhotoId,
-    )?.permissions ?? message.permissions;
+  const getEffectivePermissions = (message: Extract<ChatMessage, { type: "photo" }>) => {
+    const raw =
+      mainMessages.find(
+        (entry): entry is Extract<ChatMessage, { type: "photo" }> =>
+          entry.type === "photo" && entry.sourcePhotoId === message.sourcePhotoId,
+      )?.permissions ?? message.permissions;
+    const expiresAt = raw.expiresAt ?? null;
+    const isExpired = expiresAt !== null && Date.now() >= expiresAt;
+    const canDownload = raw.canDownload ?? true;
+    const hasCoSubject = raw.hasCoSubject ?? false;
+    return {
+      ...raw,
+      expiresAt,
+      canDownload,
+      hasCoSubject,
+      status: isExpired ? ("revoked" as const) : raw.status,
+    };
+  };
+
+  const durationToMs = (d: TimeLimitDuration) =>
+    (d.days * 86400 + d.hours * 3600 + d.minutes * 60 + d.seconds) * 1000;
+
+  const isPhotoExpired = (permissions: PhotoPermissions) =>
+    permissions.expiresAt != null && Date.now() >= permissions.expiresAt;
+
+  const hasTimeLimit = (d: TimeLimitDuration) =>
+    d.days > 0 || d.hours > 0 || d.minutes > 0 || d.seconds > 0;
+
+  const formatTimeLimit = (d: TimeLimitDuration) => {
+    const parts: string[] = [];
+    if (d.days > 0) parts.push(`${d.days}d`);
+    if (d.hours > 0) parts.push(`${d.hours}h`);
+    if (d.minutes > 0) parts.push(`${d.minutes}m`);
+    if (d.seconds > 0) parts.push(`${d.seconds}s`);
+    return parts.length ? parts.join(" ") : "No limit";
+  };
+
+  /** Returns "Expired" or "Expires in Xd Xh Xm Xs" for a live countdown. */
+  const formatExpiryCountdown = (expiresAt: number) => {
+    const remainingMs = expiresAt - Date.now();
+    if (remainingMs <= 0) return "Expired";
+    const totalSeconds = Math.floor(remainingMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    return `Expires in ${parts.join(" ")}`;
+  };
+
+  const triggerPhotoDownload = (asset: PhotoAsset) => {
+    const filename = `${asset.label.replace(/[^a-zA-Z0-9.-]/g, "_")}.png`;
+    if (asset.kind === "upload" && asset.previewUrl) {
+      const a = document.createElement("a");
+      a.href = asset.previewUrl;
+      a.download = filename;
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      const canvas = document.createElement("canvas");
+      canvas.width = 100;
+      canvas.height = 100;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(asset.label, 50, 55);
+      }
+      const dataUrl = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = filename;
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
 
   const renderPhotoPreview = (asset: PhotoAsset) => {
     const preview =
@@ -239,7 +484,12 @@ export default function Home() {
       status: "active",
       canForward: false,
       viewOnce: false,
+      expiresAt: null,
+      canDownload: true,
+      hasCoSubject: false,
     });
+    setDraftTimeLimit({ days: 0, hours: 0, minutes: 5, seconds: 0 });
+    setDraftTimeLimitOpen(false);
     setPickerOpen(false);
     setComposerOpen(true);
   };
@@ -296,15 +546,26 @@ export default function Home() {
       return;
     }
 
+    const useTimeLimit = draftTimeLimitOpen && hasTimeLimit(draftTimeLimit);
+    const permissions: PhotoPermissions = {
+      ...draftPermissions,
+      expiresAt: useTimeLimit ? Date.now() + durationToMs(draftTimeLimit) : null,
+    };
+
+    const expiryText = useTimeLimit
+      ? `, expires in ${formatTimeLimit(draftTimeLimit)}`
+      : "";
+    const downloadText = permissions.canDownload ? ", download allowed" : ", download blocked";
+
     addPhotoMessage(
       draftPhoto,
-      draftPermissions,
+      permissions,
       draftCaption,
       `Sent ${draftPhoto.label} with ${
-        draftPermissions.status === "active" ? "visible access" : "revoked access"
-      }, ${draftPermissions.canForward ? "forwarding allowed" : "forwarding blocked"}${
+        permissions.status === "active" ? "visible access" : "revoked access"
+      }, ${permissions.canForward ? "forwarding allowed" : "forwarding blocked"}${
         draftPermissions.viewOnce ? ", and view once enabled" : ""
-      }.`,
+      }${downloadText}${expiryText}.`,
     );
   };
 
@@ -319,6 +580,9 @@ export default function Home() {
         status: "active",
         canForward: true,
         viewOnce: false,
+        expiresAt: null,
+        canDownload: true,
+        hasCoSubject: false,
       },
       "Shared photo",
       `Sent ${pickerSelectedPhoto.label} directly with standard photo settings.`,
@@ -351,13 +615,22 @@ export default function Home() {
     sender: Participant,
     thread: ConversationThread,
     assetLabel: string,
+    customText?: string,
+    replyToMessageId?: number,
+    replyToAsset?: PhotoAsset,
   ) => {
+    const text = (customText?.trim() ?? "") || `Replying to ${assetLabel}.`;
     const replyMessage: Extract<ChatMessage, { type: "text" }> = {
       id: getNextMessageId(),
       sender,
       type: "text",
-      text: `Replying to ${assetLabel}.`,
+      text,
       time: getTimeLabel(),
+      ...(replyToMessageId != null && {
+        replyToMessageId,
+        replyToAssetLabel: assetLabel,
+        replyToAsset,
+      }),
     };
 
     if (thread === "forwarded") {
@@ -366,6 +639,85 @@ export default function Home() {
     }
 
     setMainMessages((currentMessages) => [...currentMessages, replyMessage]);
+  };
+
+  const sendReplyIfActive = (owner: Participant): boolean => {
+    if (!replyingTo || replyingTo.owner !== owner) return false;
+    const text =
+      owner === "coOwner"
+        ? coOwnerReplyInput.trim()
+        : owner === "sender"
+          ? senderInput.trim()
+          : recipientInput.trim();
+    addReplyMessage(
+      owner,
+      replyingTo.thread,
+      replyingTo.assetLabel,
+      text || undefined,
+      replyingTo.messageId,
+      replyingTo.asset,
+    );
+    setReplyingTo(null);
+    if (owner === "sender") setSenderInput("");
+    else if (owner === "recipient") setRecipientInput("");
+    else setCoOwnerReplyInput("");
+    return true;
+  };
+
+  /** Sends a request-for-access message so only the sender sees it (not the recipient or co-subject). */
+  const addAccessRequestMessage = (
+    assetLabel: string,
+    requestingOwner: Participant,
+    optionalMessage?: string,
+  ) => {
+    const base = `Requested access to the photo: ${assetLabel}.`;
+    const text = optionalMessage?.trim()
+      ? `${base} — ${optionalMessage.trim()}`
+      : base;
+    const requestMessage: Extract<ChatMessage, { type: "text" }> = {
+      id: getNextMessageId(),
+      sender: requestingOwner,
+      type: "text",
+      text,
+      time: getTimeLabel(),
+    };
+    setSenderOnlyMessages((current) => [...current, requestMessage]);
+  };
+
+  const sendAccessRequestFromModal = () => {
+    if (!accessRequestOpen) return;
+    addAccessRequestMessage(
+      accessRequestOpen.assetLabel,
+      accessRequestOpen.owner,
+      accessRequestDraft,
+    );
+    setAccessRequestOpen(null);
+    setAccessRequestDraft("");
+    setOpenPhotoMenu(null);
+  };
+
+  /** Sends a co-subject revocation request so only the sender sees it (not the recipient or co-owner). */
+  const addRevocationRequestMessage = (assetLabel: string, optionalMessage?: string) => {
+    const base = `Requested revocation of the photo: ${assetLabel}.`;
+    const text = optionalMessage?.trim()
+      ? `${base} — ${optionalMessage.trim()}`
+      : base;
+    const requestMessage: Extract<ChatMessage, { type: "text" }> = {
+      id: getNextMessageId(),
+      sender: "coOwner",
+      type: "text",
+      text,
+      time: getTimeLabel(),
+    };
+    setSenderOnlyMessages((current) => [...current, requestMessage]);
+  };
+
+  const sendRevocationRequestFromModal = () => {
+    if (!revocationRequestOpen) return;
+    addRevocationRequestMessage(revocationRequestOpen.assetLabel, revocationRequestDraft);
+    setRevocationRequestOpen(null);
+    setRevocationRequestDraft("");
+    setOpenPhotoMenu(null);
   };
 
   const sendTextMessage = (sender: MainParticipant) => {
@@ -405,7 +757,7 @@ export default function Home() {
     const effectivePermissions = getEffectivePermissions(message);
     const canViewPhoto = phoneOwner === "sender" || effectivePermissions.status === "active";
     const recipientSideViewer =
-      phoneOwner === "recipient" || phoneOwner === "forwardedRecipient";
+      phoneOwner === "recipient" || phoneOwner === "forwardedRecipient" || phoneOwner === "coOwner";
     const hasRecipientConsumed =
       recipientSideViewer && consumedViewOnce.includes(message.id);
 
@@ -433,7 +785,47 @@ export default function Home() {
       effectivePermissions.status === "active" &&
       !hasRecipientConsumed;
 
-    const photoContent = effectivePermissions.viewOnce ? (
+    const isCoSubjectCard = phoneOwner === "coOwner" && effectivePermissions.hasCoSubject;
+
+    const openCoSubjectPhoto = () => {
+      if (effectivePermissions.status !== "active") return;
+      setOpenViewOnce({
+        owner: "coOwner",
+        thread,
+        messageId: message.id,
+      });
+    };
+
+    const photoContent = isCoSubjectCard ? (
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={openCoSubjectPhoto}
+          disabled={effectivePermissions.status !== "active"}
+          className={`flex w-full flex-col items-center justify-center rounded-2xl border border-white/15 px-4 py-6 text-left transition ${
+            effectivePermissions.status === "active"
+              ? "bg-amber-500/20 hover:bg-amber-500/30"
+              : "cursor-not-allowed bg-white/5 opacity-70"
+          }`}
+        >
+          <span className="rounded-full bg-amber-400/30 px-4 py-2 text-2xl" aria-hidden>
+            👤
+          </span>
+          <p className="mt-3 text-sm font-semibold text-white">
+            You are depicted in this photo
+          </p>
+          <p className="mt-1 text-xs text-emerald-100/90">
+            {effectivePermissions.status === "active"
+              ? "Tap to view the photo."
+              : "Access has been revoked."}
+          </p>
+        </button>
+        <p className="text-xs text-slate-400">
+          You have been notified that you appear in this photo. You can request the sender
+          to revoke it.
+        </p>
+      </div>
+    ) : effectivePermissions.viewOnce ? (
       <button
         type="button"
         onClick={openFullScreenViewOnce}
@@ -509,7 +901,13 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => {
-                          addReplyMessage(phoneOwner, thread, message.asset.label);
+                          setReplyingTo({
+                            owner: phoneOwner,
+                            messageId: message.id,
+                            thread,
+                            assetLabel: message.asset.label,
+                            asset: message.asset,
+                          });
                           setOpenPhotoMenu(null);
                         }}
                         className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
@@ -535,26 +933,76 @@ export default function Home() {
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          setOpenPhotoMenu({
-                            messageId: message.id,
-                            thread,
-                            owner: phoneOwner,
-                            mode: "revoke",
-                          })
-                        }
-                        className="w-full whitespace-nowrap rounded-xl px-3 py-2 text-left text-[13px] transition hover:bg-white/10"
+                        onClick={() => {
+                          triggerPhotoDownload(message.asset);
+                          setOpenPhotoMenu(null);
+                        }}
+                        disabled={!canViewPhoto || !effectivePermissions.canDownload}
+                        className={`w-full rounded-xl px-3 py-2 text-left transition ${
+                          canViewPhoto && effectivePermissions.canDownload
+                            ? "hover:bg-white/10"
+                            : "cursor-not-allowed text-white/45"
+                        }`}
                       >
-                        Revocation permissions
+                        Download
                       </button>
+                      {phoneOwner === "sender" ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenPhotoMenu({
+                              messageId: message.id,
+                              thread,
+                              owner: phoneOwner,
+                              mode: "revoke",
+                            })
+                          }
+                          className="w-full whitespace-nowrap rounded-xl px-3 py-2 text-left text-[13px] transition hover:bg-white/10"
+                        >
+                          Revocation permissions
+                        </button>
+                      ) : phoneOwner === "coOwner" ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRevocationRequestOpen({ assetLabel: message.asset.label });
+                            setRevocationRequestDraft("");
+                            setOpenPhotoMenu(null);
+                          }}
+                          className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                        >
+                          Request revocation
+                        </button>
+                      ) : phoneOwner === "recipient" ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAccessRequestOpen({
+                              messageId: message.id,
+                              thread,
+                              owner: phoneOwner,
+                              assetLabel: message.asset.label,
+                            });
+                            setAccessRequestDraft("");
+                            setOpenPhotoMenu(null);
+                          }}
+                          className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                        >
+                          Request access
+                        </button>
+                      ) : null}
                     </>
                   ) : (
                     <>
                       <button
                         type="button"
                         onClick={() => {
+                          const isExpired =
+                            effectivePermissions.expiresAt != null &&
+                            Date.now() >= effectivePermissions.expiresAt;
                           updateSelectedPhotoPermissions({
                             status: effectivePermissions.status === "active" ? "revoked" : "active",
+                            ...(isExpired ? { expiresAt: null } : {}),
                           });
                           setPanelOpen(true);
                         }}
@@ -582,13 +1030,35 @@ export default function Home() {
                         type="button"
                         onClick={() => {
                           updateSelectedPhotoPermissions({
-                            viewOnce: !effectivePermissions.viewOnce,
+                            canDownload: !effectivePermissions.canDownload,
                           });
                           setPanelOpen(true);
                         }}
                         className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                       >
-                        {effectivePermissions.viewOnce ? "Disable view once" : "Enable view once"}
+                        {effectivePermissions.canDownload ? "Block download" : "Allow download"}
+                      </button>
+                      {effectivePermissions.expiresAt != null ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateSelectedPhotoPermissions({ expiresAt: null });
+                            setPanelOpen(true);
+                          }}
+                          className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                        >
+                          Remove time limit
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpenPhotoMenu(null);
+                          setTimeLimitModalOpen(true);
+                        }}
+                        className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
+                      >
+                        Set time limit
                       </button>
                     </>
                   )}
@@ -608,6 +1078,14 @@ export default function Home() {
           <span className="rounded-full bg-white/15 px-3 py-1">
             {effectivePermissions.viewOnce ? "View once" : "Reviewable later"}
           </span>
+          <span className="rounded-full bg-white/15 px-3 py-1">
+            {effectivePermissions.canDownload ? "Download allowed" : "Download blocked"}
+          </span>
+          {effectivePermissions.expiresAt != null ? (
+            <span className="rounded-full bg-white/15 px-3 py-1">
+              {formatExpiryCountdown(effectivePermissions.expiresAt)}
+            </span>
+          ) : null}
         </div>
 
         <p className="mt-3 text-sm text-emerald-50">
@@ -637,12 +1115,25 @@ export default function Home() {
     const timestampTone = isOwnMessage ? "text-emerald-100/70" : "text-slate-400";
 
     if (message.type === "text") {
+      const hasReply = message.replyToMessageId != null && message.replyToAssetLabel;
       return (
         <div
           key={message.id}
           className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm shadow-sm ${alignClass} ${textTone}`}
         >
-          <p>{message.text}</p>
+          {hasReply ? (
+            <div className="flex gap-2 border-l-2 border-white/30 pl-2">
+              {message.replyToAsset ? (
+                <div className="h-8 w-8 shrink-0 overflow-hidden rounded border border-white/20">
+                  {renderPhotoPreview(message.replyToAsset)}
+                </div>
+              ) : null}
+              <p className="truncate text-xs text-white/80">
+                Replying to {message.replyToAssetLabel}
+              </p>
+            </div>
+          ) : null}
+          <p className={hasReply ? "mt-2" : ""}>{message.text}</p>
           <p className={`mt-2 text-right text-xs ${timestampTone}`}>{message.time}</p>
         </div>
       );
@@ -675,10 +1166,12 @@ export default function Home() {
         <div className="flex items-center gap-2 text-xs text-slate-300">
           <span className="rounded-full bg-[#2a3942] px-3 py-1">
             {phoneOwner === "sender"
-              ? "Sender phone"
+              ? "Sender"
               : phoneOwner === "recipient"
-                ? "Recipient phone"
-                : "Forwarded chat"}
+                ? "Recipient"
+                : phoneOwner === "forwardedRecipient"
+                  ? "Secondary recipient"
+                  : "Co-subject"}
           </span>
         </div>
       </header>
@@ -692,6 +1185,12 @@ export default function Home() {
               phoneOwner === "forwardedRecipient" ? "forwarded" : "main",
             ),
           )
+        ) : phoneOwner === "coOwner" ? (
+          <div className="flex h-full items-center justify-center">
+            <div className="max-w-xs rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-6 text-center text-sm text-slate-300">
+              No messages in this conversation yet.
+            </div>
+          </div>
         ) : (
           <div className="flex h-full items-center justify-center">
             <div className="max-w-xs rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-6 text-center text-sm text-slate-300">
@@ -702,52 +1201,239 @@ export default function Home() {
       </div>
 
       <footer className="border-t border-white/5 bg-[#202c33] px-4 py-3">
-        {phoneOwner === "forwardedRecipient" ? (
+        {phoneOwner === "forwardedRecipient" && accessRequestOpen?.owner === "forwardedRecipient" ? (
+          <div className="space-y-2 rounded-2xl border border-emerald-500/30 bg-[#172229] p-3">
+            <p className="text-xs font-semibold text-emerald-200">Request access to photo</p>
+            <p className="truncate text-[11px] text-slate-400">
+              {accessRequestOpen.assetLabel}
+            </p>
+            <p className="text-[11px] text-slate-500">
+              Add a message to the sender (optional):
+            </p>
+            <textarea
+              value={accessRequestDraft}
+              onChange={(e) => setAccessRequestDraft(e.target.value)}
+              placeholder="e.g. I need this for the report, can you restore access?"
+              rows={2}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b141a] px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccessRequestOpen(null);
+                  setAccessRequestDraft("");
+                }}
+                className="flex-1 rounded-xl border border-white/15 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={sendAccessRequestFromModal}
+                className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+              >
+                Send request
+              </button>
+            </div>
+          </div>
+        ) : phoneOwner === "forwardedRecipient" ? (
           <div className="rounded-3xl bg-[#2a3942] px-4 py-3 text-sm text-slate-300">
             Forwarded photos from the recipient will appear here.
           </div>
-        ) : (
-          <div className="flex items-center gap-3 rounded-full bg-[#2a3942] px-4 py-3 text-sm text-slate-400">
-            {phoneOwner === "sender" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setPickerOpen((current) => !current)}
-                  className="text-lg text-emerald-300 transition hover:text-emerald-200"
-                  aria-label="Open photo actions"
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPickerOpen((current) => !current)}
-                  className="text-lg text-emerald-300 transition hover:text-emerald-200"
-                  aria-label="Open camera and album"
-                >
-                  📷
-                </button>
-              </>
-            ) : (
-              <span className="text-lg">+</span>
-            )}
-            <input
-              value={inputValue ?? ""}
-              onChange={(event) => setInputValue?.(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  sendTextMessage(phoneOwner);
-                }
-              }}
-              placeholder={phoneOwner === "sender" ? "Type as sender..." : "Type as recipient..."}
-              className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-400"
+        ) : phoneOwner === "recipient" && accessRequestOpen?.owner === "recipient" ? (
+          <div className="space-y-2 rounded-2xl border border-emerald-500/30 bg-[#172229] p-3">
+            <p className="text-xs font-semibold text-emerald-200">Request access to photo</p>
+            <p className="truncate text-[11px] text-slate-400">
+              {accessRequestOpen.assetLabel}
+            </p>
+            <p className="text-[11px] text-slate-500">
+              Add a message to the sender (optional):
+            </p>
+            <textarea
+              value={accessRequestDraft}
+              onChange={(e) => setAccessRequestDraft(e.target.value)}
+              placeholder="e.g. I need this for the report, can you restore access?"
+              rows={2}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b141a] px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-500"
             />
-            <button
-              type="button"
-              onClick={() => sendTextMessage(phoneOwner)}
-              className="rounded-full bg-[#005c4b] px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-[#0b7a63]"
-            >
-              Send
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccessRequestOpen(null);
+                  setAccessRequestDraft("");
+                }}
+                className="flex-1 rounded-xl border border-white/15 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={sendAccessRequestFromModal}
+                className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+              >
+                Send request
+              </button>
+            </div>
+          </div>
+        ) : phoneOwner === "coOwner" && revocationRequestOpen ? (
+          <div className="space-y-2 rounded-2xl border border-amber-500/30 bg-[#172229] p-3">
+            <p className="text-xs font-semibold text-amber-200">Request revocation</p>
+            <p className="truncate text-[11px] text-slate-400">
+              {revocationRequestOpen.assetLabel}
+            </p>
+            <p className="text-[11px] text-slate-500">
+              Add a message to the sender (optional):
+            </p>
+            <textarea
+              value={revocationRequestDraft}
+              onChange={(e) => setRevocationRequestDraft(e.target.value)}
+              placeholder="e.g. I'd prefer this photo not to be shared."
+              rows={2}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b141a] px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-amber-500"
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setRevocationRequestOpen(null);
+                  setRevocationRequestDraft("");
+                }}
+                className="flex-1 rounded-xl border border-white/15 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={sendRevocationRequestFromModal}
+                className="flex-1 rounded-xl bg-amber-600 py-1.5 text-xs font-semibold text-white hover:bg-amber-500"
+              >
+                Send request
+              </button>
+            </div>
+          </div>
+        ) : phoneOwner === "coOwner" && !revocationRequestOpen && replyingTo?.owner === "coOwner" ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#2a3942] px-3 py-2">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                {replyingTo && renderPhotoPreview(replyingTo.asset)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-medium text-emerald-200">
+                  Replying to {replyingTo?.assetLabel}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReplyingTo(null)}
+                className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-white/10 hover:text-white"
+                aria-label="Cancel reply"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex items-center gap-3 rounded-full bg-[#2a3942] px-4 py-3 text-sm text-slate-400">
+              <input
+                value={coOwnerReplyInput}
+                onChange={(e) => setCoOwnerReplyInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (sendReplyIfActive("coOwner")) e.preventDefault();
+                  }
+                }}
+                placeholder="Type your reply..."
+                className="flex-1 bg-transparent text-white outline-none placeholder:text-slate-400"
+              />
+              <button
+                type="button"
+                onClick={() => sendReplyIfActive("coOwner")}
+                className="rounded-full bg-[#005c4b] px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-[#0b7a63]"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        ) : phoneOwner === "coOwner" && !revocationRequestOpen ? (
+          <div className="rounded-3xl bg-[#2a3942] px-4 py-3 text-sm text-slate-300">
+            Co-subject view of the conversation.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {replyingTo?.owner === phoneOwner ? (
+              <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#2a3942] px-3 py-2">
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                  {replyingTo && renderPhotoPreview(replyingTo.asset)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-medium text-emerald-200">
+                    Replying to {replyingTo?.assetLabel}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReplyingTo(null)}
+                  className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-white/10 hover:text-white"
+                  aria-label="Cancel reply"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : null}
+            <div className="flex items-center gap-3 rounded-full bg-[#2a3942] px-4 py-3 text-sm text-slate-400">
+              {phoneOwner === "sender" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setPickerOpen((current) => !current)}
+                    className="text-lg text-emerald-300 transition hover:text-emerald-200"
+                    aria-label="Open photo actions"
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPickerOpen((current) => !current)}
+                    className="text-lg text-emerald-300 transition hover:text-emerald-200"
+                    aria-label="Open camera and album"
+                  >
+                    📷
+                  </button>
+                </>
+              ) : (
+                <span className="text-lg">+</span>
+              )}
+              <input
+                value={inputValue ?? ""}
+                onChange={(event) => setInputValue?.(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    if (sendReplyIfActive(phoneOwner)) return;
+                    if (phoneOwner === "sender" || phoneOwner === "recipient")
+                      sendTextMessage(phoneOwner);
+                  }
+                }}
+                placeholder={
+                  replyingTo?.owner === phoneOwner
+                    ? "Type your reply..."
+                    : phoneOwner === "sender"
+                      ? "Type as sender..."
+                      : "Type as recipient..."
+                }
+                className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-400"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (sendReplyIfActive(phoneOwner)) return;
+                  if (phoneOwner === "sender" || phoneOwner === "recipient")
+                    sendTextMessage(phoneOwner);
+                }}
+                className="rounded-full bg-[#005c4b] px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-[#0b7a63]"
+              >
+                Send
+              </button>
+            </div>
           </div>
         )}
 
@@ -873,19 +1559,96 @@ export default function Home() {
         onChange={handleChosenFile}
       />
 
-      <div className="mx-auto grid max-w-[112rem] gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid gap-6 xl:grid-cols-3">
-          {renderPhone(
-            "sender",
-            "You",
-            "Sender controls available",
-            mainMessages,
-            senderInput,
-            setSenderInput,
-          )}
+      <div className="mx-auto max-w-[112rem] space-y-6">
+        <div className="grid gap-6 xl:grid-cols-4">
+          <div className="relative min-h-0">
+            {renderPhone(
+              "sender",
+              "Sender",
+              "Sender controls available",
+              [...mainMessages, ...senderOnlyMessages].sort((a, b) => a.id - b.id),
+              senderInput,
+              setSenderInput,
+            )}
+            {timeLimitModalOpen && selectedPhotoMessage ? (
+              <div className="absolute inset-0 z-50 flex items-center justify-center rounded-[2rem] bg-black/75 p-3 backdrop-blur-sm">
+                <div className="w-full max-w-[260px] rounded-2xl border border-white/10 bg-[#202c33] p-3 shadow-xl text-white">
+                  <h3 className="text-sm font-semibold">Set time limit</h3>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    Access will expire after this duration.
+                  </p>
+                  <div className="mt-2 flex justify-center gap-1">
+                    <ScrollWheelColumn
+                      min={0}
+                      max={99}
+                      value={panelTimeLimit.days}
+                      onChange={(days) =>
+                        setPanelTimeLimit((prev) => ({ ...prev, days }))
+                      }
+                      label="Days"
+                    />
+                    <ScrollWheelColumn
+                      min={0}
+                      max={23}
+                      value={panelTimeLimit.hours}
+                      onChange={(hours) =>
+                        setPanelTimeLimit((prev) => ({ ...prev, hours }))
+                      }
+                      label="Hours"
+                    />
+                    <ScrollWheelColumn
+                      min={0}
+                      max={59}
+                      value={panelTimeLimit.minutes}
+                      onChange={(minutes) =>
+                        setPanelTimeLimit((prev) => ({ ...prev, minutes }))
+                      }
+                      label="Min"
+                    />
+                    <ScrollWheelColumn
+                      min={0}
+                      max={59}
+                      value={panelTimeLimit.seconds}
+                      onChange={(seconds) =>
+                        setPanelTimeLimit((prev) => ({ ...prev, seconds }))
+                      }
+                      label="Sec"
+                    />
+                  </div>
+                  <p className="mt-1.5 text-center text-[11px] font-medium text-slate-400">
+                    {formatTimeLimit(panelTimeLimit)}
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTimeLimitModalOpen(false)}
+                      className="flex-1 rounded-xl border border-white/15 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/10"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!hasTimeLimit(panelTimeLimit)) return;
+                        updateSelectedPhotoPermissions({
+                          expiresAt: Date.now() + durationToMs(panelTimeLimit),
+                          status: "active",
+                        });
+                        setTimeLimitModalOpen(false);
+                      }}
+                      disabled={!hasTimeLimit(panelTimeLimit)}
+                      className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-[11px] font-semibold text-white hover:bg-emerald-500 disabled:bg-slate-500 disabled:text-slate-300"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
           {renderPhone(
             "recipient",
-            "Aisha",
+            "Recipient",
             selectedPhotoMessage?.permissions.status === "active"
               ? "Recipient view of the chat"
               : "Recipient sees revoked state",
@@ -895,13 +1658,25 @@ export default function Home() {
           )}
           {renderPhone(
             "forwardedRecipient",
-            "Omar",
+            "Secondary recipient",
             "Forwarded-message recipient",
             forwardedMessages,
           )}
+          {renderPhone(
+            "coOwner",
+            "Co-subject",
+            "Co-subject view of the chat",
+            mainMessages.filter((m) => {
+              if (m.type !== "photo") return true;
+              return m.permissions.hasCoSubject;
+            }),
+          )}
         </div>
 
-        <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-black/15">
+        <aside
+          ref={permissionsPanelRef}
+          className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-black/15"
+        >
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
             Interactive prototype screen
           </p>
@@ -909,9 +1684,9 @@ export default function Home() {
             Photo message with revocation controls
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            This version shows three devices at once: the sender, the original recipient,
-            and a third phone that only receives content when the recipient forwards an
-            allowed photo.
+            This version shows four devices: the sender, the original recipient, a third
+            phone for forwarded content, and the co-owner. Use the panel below to inspect
+            and manage the selected photo.
           </p>
 
           <div className="mt-6 rounded-3xl bg-slate-50 p-4">
@@ -939,6 +1714,22 @@ export default function Home() {
                 <dt className="font-medium text-slate-900">View once</dt>
                 <dd className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">
                   {selectedPhotoMessage?.permissions.viewOnce ? "enabled" : "off"}
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="font-medium text-slate-900">Download</dt>
+                <dd className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  {selectedPhotoMessage?.permissions.canDownload !== false
+                    ? "allowed"
+                    : "blocked"}
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="font-medium text-slate-900">Time limit</dt>
+                <dd className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  {selectedPhotoMessage?.permissions.expiresAt != null
+                    ? formatExpiryCountdown(selectedPhotoMessage.permissions.expiresAt).toLowerCase()
+                    : "none"}
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-3">
@@ -977,17 +1768,32 @@ export default function Home() {
                 <div className="space-y-3 rounded-2xl bg-slate-50 p-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">Photo visibility</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {isPhotoExpired(selectedPhotoMessage.permissions)
+                        ? "Photo access has expired. Restore permanently or set a new time limit below."
+                        : "Active: visible. Revoke: hide from recipient."}
+                    </p>
                     <div className="mt-2 grid grid-cols-2 gap-2">
                       <button
                         type="button"
-                        onClick={() => updateSelectedPhotoPermissions({ status: "active" })}
+                        onClick={() =>
+                          updateSelectedPhotoPermissions({
+                            status: "active",
+                            ...(isPhotoExpired(selectedPhotoMessage.permissions)
+                              ? { expiresAt: null }
+                              : {}),
+                          })
+                        }
                         className={`rounded-2xl px-3 py-2 text-sm font-medium transition ${
-                          selectedPhotoMessage.permissions.status === "active"
+                          selectedPhotoMessage.permissions.status === "active" &&
+                          !isPhotoExpired(selectedPhotoMessage.permissions)
                             ? "bg-emerald-500 text-[#03130f]"
                             : "bg-white text-slate-700 hover:bg-slate-100"
                         }`}
                       >
-                        Active
+                        {isPhotoExpired(selectedPhotoMessage.permissions)
+                          ? "Restore access (permanent)"
+                          : "Active"}
                       </button>
                       <button
                         type="button"
@@ -1035,27 +1841,129 @@ export default function Home() {
                   <div className="rounded-2xl bg-white p-3">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">View once</p>
+                        <p className="text-sm font-semibold text-slate-900">Download</p>
                         <p className="text-xs text-slate-500">
-                          Mirrors WhatsApp-style single-view media controls.
+                          Whether the recipient can download this photo.
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() =>
                           updateSelectedPhotoPermissions({
-                            viewOnce: !selectedPhotoMessage.permissions.viewOnce,
+                            canDownload: !selectedPhotoMessage.permissions.canDownload,
                           })
                         }
                         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-                          selectedPhotoMessage.permissions.viewOnce
+                          selectedPhotoMessage.permissions.canDownload
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-slate-200 text-slate-700"
                         }`}
                       >
-                        {selectedPhotoMessage.permissions.viewOnce ? "Enabled" : "Off"}
+                        {selectedPhotoMessage.permissions.canDownload ? "Allowed" : "Blocked"}
                       </button>
                     </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-white p-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Time limit</p>
+                      <p className="text-xs text-slate-500">
+                        {selectedPhotoMessage.permissions.expiresAt != null
+                          ? isPhotoExpired(selectedPhotoMessage.permissions)
+                            ? "Photo access has expired. Set a new time limit or restore access permanently above."
+                            : "Photo access expires at a set time. Remove to allow access until revoked."
+                          : "No expiry set; access remains until you revoke it."}
+                      </p>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      {selectedPhotoMessage.permissions.expiresAt != null ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSelectedPhotoPermissions({ expiresAt: null })
+                          }
+                          className="rounded-full bg-rose-100 px-4 py-2 text-xs font-semibold text-rose-800 transition hover:bg-rose-200"
+                        >
+                          Remove time limit
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPanelTimeLimitOpen((open) => !open)
+                        }
+                        className="rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-200"
+                      >
+                        {panelTimeLimitOpen
+                          ? "Cancel"
+                          : selectedPhotoMessage.permissions.expiresAt != null
+                            ? "Set new time limit"
+                            : "Add time limit"}
+                      </button>
+                    </div>
+                    {panelTimeLimitOpen ? (
+                      <>
+                        <p className="mt-3 text-xs text-slate-500">
+                          Set duration from now. Access will expire after this time.
+                        </p>
+                        <div className="mt-2 flex justify-center gap-2 sm:gap-4">
+                          <ScrollWheelColumn
+                            min={0}
+                            max={99}
+                            value={panelTimeLimit.days}
+                            onChange={(days) =>
+                              setPanelTimeLimit((prev) => ({ ...prev, days }))
+                            }
+                            label="Days"
+                          />
+                          <ScrollWheelColumn
+                            min={0}
+                            max={23}
+                            value={panelTimeLimit.hours}
+                            onChange={(hours) =>
+                              setPanelTimeLimit((prev) => ({ ...prev, hours }))
+                            }
+                            label="Hours"
+                          />
+                          <ScrollWheelColumn
+                            min={0}
+                            max={59}
+                            value={panelTimeLimit.minutes}
+                            onChange={(minutes) =>
+                              setPanelTimeLimit((prev) => ({ ...prev, minutes }))
+                            }
+                            label="Min"
+                          />
+                          <ScrollWheelColumn
+                            min={0}
+                            max={59}
+                            value={panelTimeLimit.seconds}
+                            onChange={(seconds) =>
+                              setPanelTimeLimit((prev) => ({ ...prev, seconds }))
+                            }
+                            label="Sec"
+                          />
+                        </div>
+                        <p className="mt-2 text-center text-xs font-medium text-slate-500">
+                          {formatTimeLimit(panelTimeLimit)}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!hasTimeLimit(panelTimeLimit)) return;
+                            updateSelectedPhotoPermissions({
+                              expiresAt: Date.now() + durationToMs(panelTimeLimit),
+                              status: "active",
+                            });
+                            setPanelTimeLimitOpen(false);
+                          }}
+                          disabled={!hasTimeLimit(panelTimeLimit)}
+                          className="mt-3 w-full rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition hover:bg-emerald-500 disabled:bg-slate-300 disabled:text-slate-500"
+                        >
+                          Apply time limit
+                        </button>
+                      </>
+                    ) : null}
                   </div>
 
                   <p className="text-xs leading-5 text-slate-500">
@@ -1106,14 +2014,14 @@ export default function Home() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
                 Before sending
               </p>
-              <h2 className="mt-3 text-2xl font-semibold">Photo tools and permissions</h2>
+              <h2 className="mt-3 text-2xl font-semibold">Photo permissions</h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 This mirrors the stage where WhatsApp lets users configure media behaviour
                 before sending. The buttons below control the actual photo message that
                 will be added to the chat.
               </p>
 
-              <div className="mt-6 space-y-3">
+              <div className="mt-6 max-h-[min(50vh,28rem)] overflow-y-auto space-y-3">
                 <button
                   type="button"
                   onClick={() =>
@@ -1128,7 +2036,7 @@ export default function Home() {
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  {draftPermissions.viewOnce ? "View once enabled" : "View once"}
+                  {draftPermissions.viewOnce ? "View once allowed" : "View once disabled"}
                 </button>
 
                 <button
@@ -1145,42 +2053,105 @@ export default function Home() {
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  {draftPermissions.canForward ? "Forwarding allowed" : "No forwarding"}
+                  {draftPermissions.canForward ? "Forwarding allowed" : "Forwarding disabled"}
                 </button>
 
-                <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraftPermissions((current) => ({
+                      ...current,
+                      canDownload: !current.canDownload,
+                    }))
+                  }
+                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                    draftPermissions.canDownload
+                      ? "bg-emerald-100 text-emerald-900"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {draftPermissions.canDownload ? "Downloading allowed" : "Downloading disabled"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraftPermissions((current) => ({
+                      ...current,
+                      hasCoSubject: !current.hasCoSubject,
+                    }))
+                  }
+                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                    draftPermissions.hasCoSubject
+                      ? "bg-emerald-100 text-emerald-900"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {draftPermissions.hasCoSubject
+                    ? "Co-subject in photo (depicted person will be notified)"
+                    : "Co-subject in photo"}
+                </button>
+
+                <div className="mt-6">
                   <button
                     type="button"
-                    onClick={() =>
-                      setDraftPermissions((current) => ({
-                        ...current,
-                        status: "active",
-                      }))
-                    }
-                    className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                      draftPermissions.status === "active"
-                        ? "bg-emerald-500 text-[#03130f]"
+                    onClick={() => setDraftTimeLimitOpen((open) => !open)}
+                    className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                      draftTimeLimitOpen
+                        ? "bg-emerald-100 text-emerald-900"
                         : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                     }`}
                   >
-                    Active
+                    {draftTimeLimitOpen ? "Time limit (set)" : "Time limit (no expiry)"}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDraftPermissions((current) => ({
-                        ...current,
-                        status: "revoked",
-                      }))
-                    }
-                    className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                      draftPermissions.status === "revoked"
-                        ? "bg-rose-500 text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    Send revoked demo
-                  </button>
+                  {draftTimeLimitOpen ? (
+                    <>
+                      <p className="mt-2 text-xs text-slate-500">
+                        Photo access expires after this duration. Set all to 0 for no expiry.
+                      </p>
+                      <div className="mt-3 flex justify-center gap-2 sm:gap-4">
+                        <ScrollWheelColumn
+                          min={0}
+                          max={99}
+                          value={draftTimeLimit.days}
+                          onChange={(days) =>
+                            setDraftTimeLimit((prev) => ({ ...prev, days }))
+                          }
+                          label="Days"
+                        />
+                        <ScrollWheelColumn
+                          min={0}
+                          max={23}
+                          value={draftTimeLimit.hours}
+                          onChange={(hours) =>
+                            setDraftTimeLimit((prev) => ({ ...prev, hours }))
+                          }
+                          label="Hours"
+                        />
+                        <ScrollWheelColumn
+                          min={0}
+                          max={59}
+                          value={draftTimeLimit.minutes}
+                          onChange={(minutes) =>
+                            setDraftTimeLimit((prev) => ({ ...prev, minutes }))
+                          }
+                          label="Min"
+                        />
+                        <ScrollWheelColumn
+                          min={0}
+                          max={59}
+                          value={draftTimeLimit.seconds}
+                          onChange={(seconds) =>
+                            setDraftTimeLimit((prev) => ({ ...prev, seconds }))
+                          }
+                          label="Sec"
+                        />
+                      </div>
+                      <p className="mt-2 text-center text-xs font-medium text-slate-500">
+                        {formatTimeLimit(draftTimeLimit)}
+                      </p>
+                    </>
+                  ) : null}
                 </div>
               </div>
 
@@ -1201,6 +2172,46 @@ export default function Home() {
         </div>
       ) : null}
 
+      {accessRequestOpen && accessRequestOpen.owner !== "recipient" && accessRequestOpen.owner !== "forwardedRecipient" ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#202c33] p-5 shadow-2xl text-white">
+            <h3 className="text-lg font-semibold">Request access to photo</h3>
+            <p className="mt-1 text-sm text-slate-300">
+              {accessRequestOpen.assetLabel}
+            </p>
+            <p className="mt-3 text-xs text-slate-400">
+              Add a message to the sender (optional):
+            </p>
+            <textarea
+              value={accessRequestDraft}
+              onChange={(e) => setAccessRequestDraft(e.target.value)}
+              placeholder="e.g. I need this for the report, can you restore access?"
+              rows={3}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-[#172229] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccessRequestOpen(null);
+                  setAccessRequestDraft("");
+                }}
+                className="flex-1 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={sendAccessRequestFromModal}
+                className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
+              >
+                Send request
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {openViewOnce && openViewOnceMessage ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
           <button
@@ -1208,7 +2219,7 @@ export default function Home() {
             className="absolute inset-0"
             aria-label="Close full-screen photo"
             onClick={() => {
-              if (openViewOnce.owner === "recipient" || openViewOnce.owner === "forwardedRecipient") {
+              if (openViewOnce.owner === "recipient" || openViewOnce.owner === "forwardedRecipient" || openViewOnce.owner === "coOwner") {
                 setConsumedViewOnce((current) =>
                   current.includes(openViewOnce.messageId)
                     ? current
@@ -1222,11 +2233,12 @@ export default function Home() {
             <div className="flex items-center justify-between px-2 py-4 text-white">
               <div>
                 <p className="text-sm font-semibold">
-                  {openViewOnce.owner === "sender" ? "Sender preview" : "Recipient view once"}
+                  {openViewOnce.owner === "sender" ? "Sender preview" : openViewOnce.owner === "coOwner" ? "Co-subject view once" : "Recipient view once"}
                 </p>
                 <p className="text-xs text-slate-300">
                   {openViewOnce.owner === "recipient" ||
-                  openViewOnce.owner === "forwardedRecipient"
+                  openViewOnce.owner === "forwardedRecipient" ||
+                  openViewOnce.owner === "coOwner"
                     ? "Close the photo to continue messaging. It will not reopen."
                     : "Close the photo to return to the chat."}
                 </p>
@@ -1236,7 +2248,8 @@ export default function Home() {
                 onClick={() => {
                   if (
                     openViewOnce.owner === "recipient" ||
-                    openViewOnce.owner === "forwardedRecipient"
+                    openViewOnce.owner === "forwardedRecipient" ||
+                    openViewOnce.owner === "coOwner"
                   ) {
                     setConsumedViewOnce((current) =>
                       current.includes(openViewOnce.messageId)
