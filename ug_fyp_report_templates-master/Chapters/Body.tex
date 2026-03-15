@@ -1,7 +1,6 @@
 \chapter{Requirements}
 \section{Brief}
-This chapter defines the requirements for the WhatsApp-like proof-of-concept developed in this dissertation. It translates the literature review into a scoped set of stakeholders, use cases, functional requirements, and non-functional requirements that are realistic for the present prototype. The emphasis is on sender-controlled photo permissions, post-send revocation, recipient understanding of changing access, and constrained forwarding to a secondary recipient. Broader multi-party mechanisms, such as co-subject intervention, remain important to the research problem but are not treated as core functional prototype requirements at this stage.
-
+This chapter defines the requirements for the WhatsApp-like proof-of-concept developed in this dissertation. Drawing on the literature review, it identifies the relevant stakeholders, use cases, functional requirements, and non-functional requirements for a prototype centred on sender-controlled photo permissions and revocation. The implemented scope includes pre-send and post-send permission configuration, recipient understanding of changing access states, constrained forwarding to a secondary recipient, and co-subject-related features within the current prototype. Together, these requirements translate the dissertation’s broader privacy and consent concerns into a structured and implementable system specification. Broader issues that remain beyond the present prototype scope are identified separately as deferred concerns.
 \section{Stakeholders}
 
 \begin{enumerate}
@@ -18,7 +17,7 @@ This chapter defines the requirements for the WhatsApp-like proof-of-concept dev
   The co-subject is a person depicted in a photo. This stakeholder is necessary because the prototype examines whether co-subjects can request changes to the photo's permissions.
 \end{enumerate}
 
-\section{Prototype Scope}
+\section{Prototype Scope (tekrar bakilacak)}
 The current functional prototype is intentionally narrower than the full conceptual problem described in the literature review. It implements sender-side configuration of photo permissions, sender-side revision of those permissions after sending, recipient-side feedback about active or revoked access, and a constrained forwarding flow to a secondary recipient. It demonstrates these mechanisms at the interface and interaction level rather than as a production-grade messaging infrastructure. It does not implement co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, full screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
 
 The following concerns are treated as out of scope for the present requirements set and are better positioned in discussion and future work chapters: co-subject agency, platform-assisted removal, identity or face verification, screenshot prevention, persistent audit logging, cross-device synchronisation, and guarantees of universal deletion after disclosure.
@@ -26,36 +25,88 @@ The following concerns are treated as out of scope for the present requirements 
 
 \section{Use Cases}
 
+\textbf{(UC-S0): Sender Configures Permissions Before Sending}
 \begin{enumerate}
-  \item \textbf{UC-S0: Sender Configures Permissions Before Sending:}
-  The sender selects or uploads a photo and decides how it should be shared before it enters the chat.
-
-  \item \textbf{UC-S1: Sender Revises Permissions After Sending:}
-  The sender revisits a previously shared photo and changes its visibility, forwarding permission, or view-once setting.
-
-  \item \textbf{UC-R1: Primary Recipient Encounters Active, Revoked, or View-Once Access:}
-  The primary recipient interprets the sender's current permission state through the chat interface and acts within those limits.
-
-  \item \textbf{UC-R2: Primary Recipient Forwards an Allowed Photo:}
-  The primary recipient forwards a photo only when redistribution is permitted by the sender's current settings.
-
-  \item \textbf{UC-SR1: Secondary Recipient Receives Constrained Forwarded Content:}
-  The secondary recipient receives a forwarded photo in a separate chat view and experiences the inherited constraints defined by the original sender.
+    \item The sender opens a chat and selects or uploads a photo.
+    \item The sender prepares the photo for sharing by configuring the following settings:
+    \begin{itemize}
+        \item Forwaring permission
+        \item View once permission
+        \item Download permission
+        \item Expiry Permission
+        \item Co-subject declaration
+    \end{itemize}
+    \item The sender sends the photo into the chat.
+    \item The photo appears in the conversation with the chosen permission state applied.
 \end{enumerate}
 
-\clearpage
+\textbf{(UC-S1): Sender Revises Permissions After Sending}
+\begin{enumerate}
+    \item The sender returns to a chat containing a previously shared photo.
+    \item The sender clicks the photo options button in the top-right corner of the photo message.
+    \item The sender selects 'Revocation permissions' from the in-chat action menu.
+    \item The system displays the available permission controls in the same in-chat menu.
+    \item The sender revises one or more permissions.
+    \begin{itemize}
+        \item The sender revokes or restores photo access.
+        \item The sender allows or blocks forwarding.
+        \item The sender allows or blocks downloading.
+        \item The sender sets, changes, or removes a time limit.
+    \end{itemize}
+    \item The system updates the photo state in the chat.
+    \item The sender and other relevant participants see the revised access state.
+\end{enumerate}
+
+\textbf{(UC-R1): Primary Recipient Encounters Active, Revoked, or View-Once Access}
+\begin{enumerate}
+    \item The primary recipient opens the chat containing the sender's photo.
+    \item The recipient views the photo's current state in the chat interface.
+    \item The system presents the photo according to its current permission state, so that the recipient either sees the photo, opens it as view-once content, or is informed that access is no longer available.
+    \item The recipient may open the photo options menu from the button in the top-right corner of the photo message.
+    \item The recipient acts within the limits of the available permissions, such as replying, forwarding, downloading, or requesting access.
+\end{enumerate}
+
+\textbf{(UC-R2): Primary Recipient Forwards an Allowed Photo}
+\begin{enumerate}
+    \item The primary recipient opens a chat containing a received photo.
+    \item The recipient attempts to forward the photo.
+    \item The system checks whether forwarding is currently permitted by the sender's settings.
+    \begin{itemize}
+        \item If forwarding is allowed, the forwarding option remains available.
+        \item If forwarding is not allowed, the forwarding path is blocked.
+    \end{itemize}
+    \item The photo is forwarded with the sender-defined constraints preserved in the prototype model.
+\end{enumerate}
+
+\textbf{(UC-SR1): Secondary Recipient Receives Constrained Forwarded Content}
+\begin{enumerate}
+  \item The secondary recipient receives the photo in a separate forwarded chat after the primary recipient forwards it.
+  \item The system displays the forwarded photo using the original sender's current permission state.
+  \item The secondary recipient views the forwarded content through the interface.
+  \item The secondary recipient can interact with the photo only within the inherited constraints.
+  \item If the sender later revokes access or the photo expires, the forwarded content also becomes unavailable in the secondary recipient's chat.
+\end{enumerate}
+
+\textbf{(UC-C1): Co-Subject Requests Revocation of a Shared Photo}
+\begin{enumerate}
+    \item The co-subject opens their view of the chat containing a photo in which they are depicted.
+    \item The system shows that the co-subject appears in the shared photo.
+    \item The co-subject opens the photo or views its current access state through the interface.
+    \item The co-subject opens the photo options menu from the button in the top-right corner of the photo message.
+    \item The co-subject selects 'Request revocation'.
+    \item The co-subject may add an optional message explaining the request.
+    \item The system sends the revocation request to the sender for review.
+\end{enumerate}
+
+
 
 \Needspace{12\baselineskip}
-\subsection{Functional Requirements (FR)}
-
-The table below lists functional requirements in two groups: those implemented in the current prototype (sections 1–4) and conceptual or Figma-level requirements for co-subject support (section 5), which are not implemented in the coded prototype but are reflected in the Figma design. Broader concerns that remain out of scope for this requirements set are summarised in the deferred concerns paragraph that follows.
+\section{Functional Requirements (FR)}
 
 \renewcommand{\arraystretch}{1.2}
 
 \begin{longtable}{|c|P{3.8cm}|P{3.8cm}|P{2.8cm}|P{2.2cm}|}
 
-\caption{Functional Requirements}
-\label{tab:functional-req-implemented} \\
 
 \hline
 \textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
@@ -80,126 +131,116 @@ RG1
 \\ \hline
 
 FR2 &
-\\ \hline
-
-FR3 &
-The prototype must explicitly address screenshot and capture risk (e.g.\ warn before sharing, indicate that screenshots cannot be fully prevented). &
+The prototype must explicitly address screenshot and download risk (e.g.\ warn before sharing, indicate that screenshots cannot be fully prevented). &
 Treat screenshot risk as central even where perfect prevention is impossible. &
 Treat screenshot risk not as marginal loophole but as central challenge; honestly communicate scope; warnings that prompt reconsideration. \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025} &
 RG2
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{2. Post-send revocation and permission management}} \\ \hline
-FR4 &
+FR3 &
 The prototype must allow the sender to modify or revoke access to a previously shared photo via contextual in-chat, photo-level controls (e.g.\ action menu with reply, forward, save/export, and a revocation-permissions submenu). &
-Provide post-send controls via a photo-level action menu so the sender can change visibility, forwarding permission, view-once behaviour, expiry, and saving/export for an existing photo message. &
+Provide post-send controls via a photo-level action menu so the sender can change visibility, forwarding permission, expiry, and saving/export for an existing photo message. &
 Controls that remain reachable after sending; permission revisable over time; withdrawal support. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
 RG1 and RG2
 \\ \hline
 
-FR5 &
+FR4 &
 The prototype must show all users clear states for active, revoked, view-once access and expiry duration. &
 Render recipient-facing feedback that distinguishes visible content, revoked content, and single-view media within the chat interface. &
 Users do not always understand what revocation does; clearer cues improve comprehension; legible consequences and visible outcomes. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG2
 \\ \hline
 
-FR6 &
+FR5 &
 The prototype must maintain a live consent state per shared photo recording current permission status, expiry, active or revoked access, and applicable restrictions. &
 Provide a usable basis for later revocation and review; without this, revocation or review is not feasible. &
 Permissions as reviewable and updateable over time; explicit consent choices and consent history; revocation as closing access interval. \cite{merlec_smart_2021,robol_consent_2023,kaye_dynamic_2015,wilbanks_design_2018}&
 RG1
 \\ \hline
 
-FR7 &
-The prototype should provide clear confirmation or summary feedback after key consent-related actions. &
-Surface the result of sending, forwarding, or changing permissions through explicit summaries or lightweight confirmation cues. &
-Visible, interpretable feedback after privacy actions; clearer explanations reduce ambiguity about what changed. \cite{wilbanks_design_2018,schaub_notice_2015,schnitzler_2020,albesher_2021} &
+FR6 &
+The prototype should provide clear feedback after key permission-related actions. &
+Make the outcome of sending, forwarding, or changing permissions understandable to the user. &
+Visible and interpretable feedback after privacy actions reduces ambiguity about what changed. \cite{wilbanks_design_2018,schaub_notice_2015,schnitzler_2020,albesher_2021} &
 RG1 and RG2
- \\ \hline
-
-FR8 &
-The prototype should allow the sender to attach an optional explanation when changing permissions. &
-Provide an optional, non-mandatory rationale field that supports revocation transparency without requiring disclosure of sensitive reasons. &
-Optional explanation supports socially intelligible boundary renegotiation; improve transparency without forcing disclosure of sensitive reasons.\cite{petronio_cpm_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
-RG3
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{3. Redistribution and forwarding control}} \\ \hline
-FR9 &
+FR7 &
 The prototype must constrain forwarding according to the sender's current permission state. &
 Allow forwarding only when the sender has enabled redistribution and block the forwarding path otherwise. &
 Forwarding changes information flow; redistribution should follow sender-defined transmission constraints; downstream sharing is a central privacy risk.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023,ingber_2025} &
 RG2
 \\ \hline
 
-FR10 &
+FR8 &
 The prototype must propagate sender-defined permissions to forwarded content within the proof-of-concept model. &
-Ensure that a forwarded photo shown to the secondary recipient inherits the original sender's visibility, forwarding, and view-once constraints as represented by the interface. &
+Ensure that a forwarded photo shown to the secondary recipient inherits the original sender's permissions as represented by the interface. &
 Preserve original transmission principles across forwarding; inherited constraints maintain context and reduce downstream privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
 RG2 and RG3
 \\ \hline
 
-FR11 &
-The prototype should make the forwarded-recipient state more explicit. &
-Use clearer forwarded-content labels or explanatory text so that the third-phone flow is immediately interpretable during evaluation. &
-Make redistribution state legible; forwarding changes audience and context, so secondary-recipient status should be explicitly marked. \cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,schaub_notice_2015,wilbanks_design_2018,albesher_2021,schnitzler_2020} &
+FR9 &
+The prototype should make the forwarded context and secondary-recipient view clearly interpretable. &
+Use separate chat presentation, forwarded labelling, or explanatory interface cues so that the secondary-recipient flow is understandable during evaluation. &
+Make redistribution state legible; forwarding changes audience and context, so secondary-recipient status should be clearly indicated. \cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,schaub_notice_2015,wilbanks_design_2018,albesher_2021,schnitzler_2020} &
 RG2
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{4. Multi-party and negotiated consent}} \\ \hline
-FR12 &
-The prototype must notify the recipient with a neutral system notice when access is revoked, expiry changes, or restrictions are updated. &
+\multicolumn{5}{|l|}{\textbf{4. Recipient Awareness and negotiated consent}} \\ \hline
+FR10 &
+The prototype must provide recipients with a neutral inline indication when access is revoked or when permissions change.&
 Keep the recipient informed whilst using socially careful wording, given that revocation can create interpersonal tension. &
 Revocation as expectation-management; notices can generate mistrust or ambiguity; design for face-saving and minimal interpersonal blame. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
 RG3
 \\ \hline
 
-FR13 &
-The prototype must allow the recipient to request extended access, re-opened permission, or permission to keep the photo longer, with the sender deciding whether to approve. &
+FR11 &
+The prototype must allow the recipient to request extended access, with the sender deciding whether to approve or reject that request. &
 Support consent as socially negotiated rather than only technically toggled. &
 Revocation as re-coordination of privacy boundaries; consent negotiated in unfolding interaction; permission revisited, clarified, renegotiated. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,im_yes_2021,kaye_dynamic_2015,schuler_scott_dynamic_consent_2022,lee_identifying_2023} &
 RG3
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{5. Conceptual / Figma-Level Requirements for Co-Subject Support (CFR)}} \\ \hline
+\multicolumn{5}{|l|}{\textbf{5. Co-subject and multi-party privacy control}} \\ \hline
 
-CFR14 &
-The prototype must support multi-party photos: let the sender mark that a photo contains other  people, let depicted co-subjects request restriction, revocation, or removal of access to a shared photo, including an optional explanation for the request, and let the sender indicate shared versus sender-only content. &
+FR12 &
+The prototype must support multi-party photos by allowing the sender to mark that a photo contains other people and allowing depicted co-subjects to request revocation of a shared photo, including an optional explanation for the request.&
 Reflect the literature's emphasis on multi-party privacy conflicts rather than assuming only the sender matters. &
 Multi-party privacy conflicts; depicted others with no opportunity to approve or shape disclosure; support for co-subject agency and shared stakes. \cite{cherubini_2021,liu_privacy_2023,bourgeus_vandercruysse_2024,xu_my_2017,xu_trust-based_2019,petronio_cpm_2020,nissenbaum_contextual_2011} &
 RG3 and RG4
 \\ \hline
 
-CFR15 &
+FR13 &
 The prototype should allow a depicted co-subject to receive a notification that they appear in a shared photo when the sender has marked the image as multi-party content. &
 Make co-subject involvement visible and support awareness that a privacy-relevant disclosure has occurred. &
 Co-subjects often lack opportunity to approve or shape disclosure; awareness is a prerequisite for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
 RG3
 \\ \hline
 
-CFR16 &
+FR14 &
 The prototype should allow the sender to review and respond to a co-subject’s request through a dedicated decision interface. &
 Demonstrate how multi-party privacy could be operationalised through negotiation rather than unilateral hidden system logic. &
 Precautionary/collaborative mechanisms; privacy negotiation among stakeholders; consent as revisable and relational. \cite{cherubini_2021, xu_my_2017, xu_trust-based_2019, petronio_cpm_2020, im_yes_2021} &
 RG3
 \\ \hline
 
-CFR17 &
-The prototype should provide neutral outcome notices to affected parties when a co-subject request leads to changed permissions. &
+FR15 &
+The prototype should provide neutral feedback when a co-subject request leads to changed permissions. &
 Communicate changes clearly while minimising blame and interpersonal friction. &
 Revocation notices are socially meaningful; design should support face-saving and expectation management. \cite{schnitzler_2020, petronio_cpm_2020, ingber_2025, wilbanks_design_2018} &
 RG3
 \\ \hline
 
-CFR18 &
-The prototype should show how co-subject-related restrictions affect forwarding and secondary-recipient access within the platform model. &
+FR16 &
+The prototype should show that co-subject-related permission changes can affect forwarding and secondary-recipient access within the platform model.&
 Demonstrate that co-subject privacy concerns continue after redistribution and are not limited to the original chat. &
 Forwarding changes context and audience; downstream dissemination intensifies multi-party privacy risk. \cite{zhang_go-sharing_2023, liu_privacy_2023, nissenbaum_contextual_2011, cherubini_2021} &
 RG3
 \\ \hline
 
-CFR19 &
+FR17 &
 The prototype should allow the interface to explain the limits of co-subject protection, including that offline capture, screenshots, or prior viewing cannot be fully undone. &
 Keep co-subject controls realistic and avoid overstating the effect of platform-level revocation. &
 Revocation is prospective and partial; screenshotting and retention remain structural limits. \cite{politou_2018, heath_2023, ingber_2025, schnitzler_2020} &
@@ -209,16 +250,7 @@ RG2 and RG3
 \end{longtable}
 
 \Needspace{12\baselineskip}
-
-\subsubsection{Deferred Concerns}
-
-The following issues remain important to the overall dissertation problem, but they are not included as core requirements for the present prototype: co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
-
-
-\Needspace{12\baselineskip}
-\subsection{Non-Functional Requirements (NFR)}
-
-The non-functional requirements below are confined to qualities defensible for the current prototype: usability, clarity, consistency, and realistic communication of the limits of revocation, not infrastructure-level guarantees.
+\section{Non-Functional Requirements (NFR)}
 
 \renewcommand{\arraystretch}{1.2}
 
@@ -254,6 +286,13 @@ RG1
 \\ \hline
 
 NFR3 &
+Consent and privacy controls must present choices in a clear, balanced, and non-manipulative way. &
+Ensure users can understand and compare options without hidden choices, unequal emphasis, or pressure toward a preferred action. &
+Meaningful consent is undermined by dark patterns, unequal salience, hidden decline paths, and unclear notices; privacy controls should remain interpretable and support freely made choices. \cite{nouwens_dark_2020,bermejo_fernandez_2021,soe_2020,gray_etal_2021,wilbanks_design_2018,schaub_notice_2015} &
+RG1 and RG3
+\\ \hline
+
+NFR4 &
 The interface must provide readable and distinguishable permission states, labels, and controls. &
 Make permission-related information easy to read, compare, and interpret so users can recognise states and act confidently. &
 Permission states and controls must be visually legible and clearly distinguishable so users can interpret privacy status changes, locate actions, and understand consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
@@ -261,7 +300,7 @@ RG1 and RG2
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Performance}} \\ \hline
-NFR4 &
+NFR5 &
 Permission-related actions and status changes should remain responsive enough for live demonstration in a local browser environment. &
 Preserve a smooth and credible interaction flow by ensuring that permission changes appear promptly during use and evaluation. &
 Low-friction interaction is important in fast-paced messaging; consent controls should remain usable at the moment of action and not introduce disruptive delay. \cite{wilbanks_design_2018,im_yes_2021,schaub_notice_2015,lindegren_evaluation_2021,lee_identifying_2023,albesher_2021} &
@@ -269,7 +308,7 @@ RG1
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Social Impact}} \\ \hline
-NFR5 &
+NFR6 &
 The interface must use neutral, non-blaming language to reduce unnecessary social tension when permissions change. &
 Reduce avoidable interpersonal friction by ensuring that permission changes are communicated in a socially careful and non-accusatory way. &
 Revocation is a socially meaningful boundary change, so interface wording should minimise blame, ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
@@ -277,14 +316,14 @@ RG3
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Consistency}} \\ \hline
-NFR6 &
+NFR7 &
 Permission menus, indicators, and states should remain consistent with familiar WhatsApp-like interaction patterns. &
 Improve learnability and reduce confusion by aligning new permission controls with interaction patterns users already recognise from WhatsApp-like messaging. &
 Consistency supports interpretable privacy control: revocation-related settings should follow familiar messaging patterns and avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG1 and RG4
 \\ \hline
 
-NFR7 &
+NFR8 &
 Permission management should assume continuity with WhatsApp’s existing end-to-end encryption model, without requiring changes to the underlying encryption architecture. &
 Preserve conceptual compatibility with users’ expectations of secure WhatsApp-like communication while introducing permission controls. &
 This assumption ensures that the proposed permission model is interpreted as operating alongside, rather than replacing or weakening, WhatsApp’s existing end-to-end encryption. It supports consistency by framing permission management as an additional layer of user control that remains compatible with familiar secure messaging expectations. &
@@ -292,13 +331,12 @@ RG1 and RG4
 \\ \hline
 
 \multicolumn{5}{|l|}{\textbf{Transparency}} \\ \hline
-NFR8 &
-The system must not over-promise. It should clearly indicate that revocation may not affect screenshots, saved copies, exports, or prior viewing. &
+NFR9 &
+The system must not over-promise. It should clearly indicate that revocation may not affect screenshots, saved copies, or prior viewing. &
 Calibrate user expectations by communicating the practical limits of revocation clearly and honestly. &
 Revocation in messaging is only partial and prospective, so the interface should communicate scope honestly and avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,ingber_2025,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
 RG2
 \\ \hline
-
 
 \end{longtable}
 
