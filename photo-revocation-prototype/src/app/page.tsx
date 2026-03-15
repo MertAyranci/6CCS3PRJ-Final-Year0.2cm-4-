@@ -42,6 +42,14 @@ type ChatMessage =
       replyToMessageId?: number;
       replyToAssetLabel?: string;
       replyToAsset?: PhotoAsset;
+      /** Set when this is a co-subject revocation request; used for Accept/Reject on sender side */
+      revocationRequestSourcePhotoId?: number;
+      revocationRequestAssetLabel?: string;
+      revocationRequestStatus?: "pending" | "accepted" | "rejected";
+      /** Set when this is a recipient access request; used for Accept/Reject on sender side */
+      accessRequestSourcePhotoId?: number;
+      accessRequestAssetLabel?: string;
+      accessRequestStatus?: "pending" | "accepted" | "rejected";
     }
   | {
       id: number;
@@ -222,10 +230,12 @@ export default function Home() {
     thread: ConversationThread;
     owner: Participant;
     assetLabel: string;
+    sourcePhotoId?: number;
   } | null>(null);
   const [accessRequestDraft, setAccessRequestDraft] = useState("");
   const [revocationRequestOpen, setRevocationRequestOpen] = useState<{
     assetLabel: string;
+    sourcePhotoId: number;
   } | null>(null);
   const [revocationRequestDraft, setRevocationRequestDraft] = useState("");
   const [replyingTo, setReplyingTo] = useState<{
@@ -294,6 +304,8 @@ export default function Home() {
   ]);
   const [forwardedMessages, setForwardedMessages] = useState<ChatMessage[]>([]);
   const [senderOnlyMessages, setSenderOnlyMessages] = useState<ChatMessage[]>([]);
+  const [coSubjectOnlyMessages, setCoSubjectOnlyMessages] = useState<ChatMessage[]>([]);
+  const [recipientOnlyMessages, setRecipientOnlyMessages] = useState<ChatMessage[]>([]);
   const [, setCountdownTick] = useState(0);
 
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
@@ -332,7 +344,7 @@ export default function Home() {
     status === "revoked" ? "Revoked" : "Visible";
 
   const getNextMessageId = () =>
-    [...mainMessages, ...forwardedMessages, ...senderOnlyMessages].reduce(
+    [...mainMessages, ...forwardedMessages, ...senderOnlyMessages, ...coSubjectOnlyMessages, ...recipientOnlyMessages].reduce(
       (highestId, message) => Math.max(highestId, message.id),
       0,
     ) + 1;
@@ -669,6 +681,7 @@ export default function Home() {
     assetLabel: string,
     requestingOwner: Participant,
     optionalMessage?: string,
+    sourcePhotoId?: number,
   ) => {
     const base = `Requested access to the photo: ${assetLabel}.`;
     const text = optionalMessage?.trim()
@@ -680,8 +693,57 @@ export default function Home() {
       type: "text",
       text,
       time: getTimeLabel(),
+      ...(requestingOwner === "recipient" && sourcePhotoId != null
+        ? {
+            accessRequestSourcePhotoId: sourcePhotoId,
+            accessRequestAssetLabel: assetLabel,
+            accessRequestStatus: "pending" as const,
+          }
+        : {}),
     };
     setSenderOnlyMessages((current) => [...current, requestMessage]);
+  };
+
+  const restorePhotoBySourceId = (sourcePhotoId: number) => {
+    setMainMessages((current) =>
+      current.map((m) =>
+        m.type === "photo" && m.sourcePhotoId === sourcePhotoId
+          ? { ...m, permissions: { ...m.permissions, status: "active" as const } }
+          : m,
+      ),
+    );
+  };
+
+  const respondToAccessRequest = (
+    messageId: number,
+    accept: boolean,
+    assetLabel: string,
+    sourcePhotoId: number | undefined,
+  ) => {
+    setSenderOnlyMessages((current) =>
+      current.map((m) =>
+        m.type === "text" &&
+        m.id === messageId &&
+        m.accessRequestStatus === "pending"
+          ? { ...m, accessRequestStatus: accept ? "accepted" : "rejected" }
+          : m,
+      ),
+    );
+    if (accept && sourcePhotoId != null) {
+      restorePhotoBySourceId(sourcePhotoId);
+    } else if (!accept) {
+      const rejectionText = `The sender has rejected your access request for the photo: ${assetLabel}.`;
+      setRecipientOnlyMessages((current) => [
+        ...current,
+        {
+          id: getNextMessageId(),
+          sender: "sender",
+          type: "text",
+          text: rejectionText,
+          time: getTimeLabel(),
+        },
+      ]);
+    }
   };
 
   const sendAccessRequestFromModal = () => {
@@ -690,6 +752,7 @@ export default function Home() {
       accessRequestOpen.assetLabel,
       accessRequestOpen.owner,
       accessRequestDraft,
+      accessRequestOpen.sourcePhotoId,
     );
     setAccessRequestOpen(null);
     setAccessRequestDraft("");
@@ -697,7 +760,11 @@ export default function Home() {
   };
 
   /** Sends a co-subject revocation request so only the sender sees it (not the recipient or co-owner). */
-  const addRevocationRequestMessage = (assetLabel: string, optionalMessage?: string) => {
+  const addRevocationRequestMessage = (
+    assetLabel: string,
+    optionalMessage?: string,
+    sourcePhotoId?: number,
+  ) => {
     const base = `Requested revocation of the photo: ${assetLabel}.`;
     const text = optionalMessage?.trim()
       ? `${base} — ${optionalMessage.trim()}`
@@ -708,13 +775,62 @@ export default function Home() {
       type: "text",
       text,
       time: getTimeLabel(),
+      revocationRequestSourcePhotoId: sourcePhotoId,
+      revocationRequestAssetLabel: assetLabel,
+      revocationRequestStatus: "pending",
     };
     setSenderOnlyMessages((current) => [...current, requestMessage]);
   };
 
+  const revokePhotoBySourceId = (sourcePhotoId: number) => {
+    setMainMessages((current) =>
+      current.map((m) =>
+        m.type === "photo" && m.sourcePhotoId === sourcePhotoId
+          ? { ...m, permissions: { ...m.permissions, status: "revoked" as const } }
+          : m,
+      ),
+    );
+  };
+
+  const respondToRevocationRequest = (
+    messageId: number,
+    accept: boolean,
+    assetLabel: string,
+    sourcePhotoId: number | undefined,
+  ) => {
+    setSenderOnlyMessages((current) =>
+      current.map((m) =>
+        m.type === "text" &&
+        m.id === messageId &&
+        m.revocationRequestStatus === "pending"
+          ? { ...m, revocationRequestStatus: accept ? "accepted" : "rejected" }
+          : m,
+      ),
+    );
+    if (accept && sourcePhotoId != null) {
+      revokePhotoBySourceId(sourcePhotoId);
+    } else if (!accept) {
+      const rejectionText = `The sender has rejected your revocation request for the photo: ${assetLabel}.`;
+      setCoSubjectOnlyMessages((current) => [
+        ...current,
+        {
+          id: getNextMessageId(),
+          sender: "sender",
+          type: "text",
+          text: rejectionText,
+          time: getTimeLabel(),
+        },
+      ]);
+    }
+  };
+
   const sendRevocationRequestFromModal = () => {
     if (!revocationRequestOpen) return;
-    addRevocationRequestMessage(revocationRequestOpen.assetLabel, revocationRequestDraft);
+    addRevocationRequestMessage(
+      revocationRequestOpen.assetLabel,
+      revocationRequestDraft,
+      revocationRequestOpen.sourcePhotoId,
+    );
     setRevocationRequestOpen(null);
     setRevocationRequestDraft("");
     setOpenPhotoMenu(null);
@@ -778,12 +894,17 @@ export default function Home() {
       openPhotoMenu.thread === thread &&
       openPhotoMenu.owner === phoneOwner;
     const forwardAvailable =
-      phoneOwner === "recipient" &&
-      thread === "main" &&
-      !isOwnMessage &&
       effectivePermissions.canForward &&
       effectivePermissions.status === "active" &&
-      !hasRecipientConsumed;
+      ((phoneOwner === "recipient" &&
+        thread === "main" &&
+        !isOwnMessage &&
+        !hasRecipientConsumed) ||
+        (phoneOwner === "sender" && thread === "main") ||
+        (phoneOwner === "forwardedRecipient" &&
+          thread === "forwarded" &&
+          !isOwnMessage &&
+          !hasRecipientConsumed));
 
     const isCoSubjectCard = phoneOwner === "coOwner" && effectivePermissions.hasCoSubject;
 
@@ -824,6 +945,9 @@ export default function Home() {
           You have been notified that you appear in this photo. You can request the sender
           to revoke it.
         </p>
+        <p className="text-[11px] text-slate-500" role="note">
+          Protection is in-app only; screenshots and prior viewing cannot be fully undone.
+        </p>
       </div>
     ) : effectivePermissions.viewOnce ? (
       <button
@@ -861,6 +985,9 @@ export default function Home() {
           <p className="mt-2 text-lg font-semibold">This photo is no longer visible.</p>
           <p className="mt-2 text-sm text-emerald-50/80">
             The sender has revoked access in the current chat.
+          </p>
+          <p className="mt-1.5 text-[11px] text-emerald-100/60">
+            Screenshots, saved copies, or prior viewing may already exist.
           </p>
         </div>
       </div>
@@ -965,7 +1092,10 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => {
-                            setRevocationRequestOpen({ assetLabel: message.asset.label });
+                            setRevocationRequestOpen({
+                              assetLabel: message.asset.label,
+                              sourcePhotoId: message.sourcePhotoId,
+                            });
                             setRevocationRequestDraft("");
                             setOpenPhotoMenu(null);
                           }}
@@ -973,7 +1103,7 @@ export default function Home() {
                         >
                           Request revocation
                         </button>
-                      ) : phoneOwner === "recipient" ? (
+                      ) : phoneOwner === "recipient" && effectivePermissions.status !== "active" ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -982,6 +1112,7 @@ export default function Home() {
                               thread,
                               owner: phoneOwner,
                               assetLabel: message.asset.label,
+                              sourcePhotoId: message.sourcePhotoId,
                             });
                             setAccessRequestDraft("");
                             setOpenPhotoMenu(null);
@@ -1093,6 +1224,14 @@ export default function Home() {
             ? message.caption
             : "Access has been revoked for the recipient device."}
         </p>
+        <p className="mt-1 text-[11px] text-emerald-100/60">
+          Screenshots, saved copies, or prior viewing may already exist.
+        </p>
+        {phoneOwner === "forwardedRecipient" && thread === "forwarded" ? (
+          <p className="mt-1 text-[11px] text-emerald-100/60">
+            Restrictions from the original chat apply.
+          </p>
+        ) : null}
 
         <div className="mt-4 flex items-center justify-between gap-3">
           <p className={`text-xs ${timestampTone}`}>{message.time}</p>
@@ -1116,6 +1255,23 @@ export default function Home() {
 
     if (message.type === "text") {
       const hasReply = message.replyToMessageId != null && message.replyToAssetLabel;
+      const isRevocationRequest =
+        message.sender === "coOwner" &&
+        message.revocationRequestSourcePhotoId != null &&
+        message.revocationRequestAssetLabel != null;
+      const showRevocationActions =
+        phoneOwner === "sender" &&
+        isRevocationRequest &&
+        message.revocationRequestStatus === "pending";
+      const isAccessRequest =
+        message.sender === "recipient" &&
+        message.accessRequestSourcePhotoId != null &&
+        message.accessRequestAssetLabel != null;
+      const showAccessActions =
+        phoneOwner === "sender" &&
+        isAccessRequest &&
+        message.accessRequestStatus === "pending";
+
       return (
         <div
           key={message.id}
@@ -1134,6 +1290,84 @@ export default function Home() {
             </div>
           ) : null}
           <p className={hasReply ? "mt-2" : ""}>{message.text}</p>
+          {showRevocationActions ? (
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  respondToRevocationRequest(
+                    message.id,
+                    true,
+                    message.revocationRequestAssetLabel!,
+                    message.revocationRequestSourcePhotoId,
+                  )
+                }
+                className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+              >
+                Accept
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  respondToRevocationRequest(
+                    message.id,
+                    false,
+                    message.revocationRequestAssetLabel!,
+                    message.revocationRequestSourcePhotoId,
+                  )
+                }
+                className="rounded-xl border border-white/30 px-3 py-1.5 text-xs font-semibold hover:bg-white/10"
+              >
+                Reject
+              </button>
+            </div>
+          ) : null}
+          {showAccessActions ? (
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  respondToAccessRequest(
+                    message.id,
+                    true,
+                    message.accessRequestAssetLabel!,
+                    message.accessRequestSourcePhotoId,
+                  )
+                }
+                className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+              >
+                Accept
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  respondToAccessRequest(
+                    message.id,
+                    false,
+                    message.accessRequestAssetLabel!,
+                    message.accessRequestSourcePhotoId,
+                  )
+                }
+                className="rounded-xl border border-white/30 px-3 py-1.5 text-xs font-semibold hover:bg-white/10"
+              >
+                Reject
+              </button>
+            </div>
+          ) : null}
+          {isRevocationRequest && phoneOwner === "sender" && message.revocationRequestStatus !== "pending" ? (
+            <p className="mt-2 text-xs opacity-90">
+              {message.revocationRequestStatus === "accepted"
+                ? "Accepted — photo revoked."
+                : "Rejected — co-subject notified."}
+            </p>
+          ) : null}
+          {isAccessRequest && phoneOwner === "sender" && message.accessRequestStatus !== "pending" ? (
+            <p className="mt-2 text-xs opacity-90">
+              {message.accessRequestStatus === "accepted"
+                ? "Accepted — access restored."
+                : "Rejected — recipient notified."}
+            </p>
+          ) : null}
           <p className={`mt-2 text-right text-xs ${timestampTone}`}>{message.time}</p>
         </div>
       );
@@ -1285,6 +1519,9 @@ export default function Home() {
             </p>
             <p className="text-[11px] text-slate-500">
               Add a message to the sender (optional):
+            </p>
+            <p className="text-[10px] text-slate-500/90" role="note">
+              Revocation affects in-app access only; offline copies may already exist.
             </p>
             <textarea
               value={revocationRequestDraft}
@@ -1652,7 +1889,7 @@ export default function Home() {
             selectedPhotoMessage?.permissions.status === "active"
               ? "Recipient view of the chat"
               : "Recipient sees revoked state",
-            mainMessages,
+            [...mainMessages, ...recipientOnlyMessages].sort((a, b) => a.id - b.id),
             recipientInput,
             setRecipientInput,
           )}
@@ -1666,10 +1903,10 @@ export default function Home() {
             "coOwner",
             "Co-subject",
             "Co-subject view of the chat",
-            mainMessages.filter((m) => {
+            [...mainMessages.filter((m) => {
               if (m.type !== "photo") return true;
               return m.permissions.hasCoSubject;
-            }),
+            }), ...coSubjectOnlyMessages].sort((a, b) => a.id - b.id),
           )}
         </div>
 
@@ -2019,6 +2256,10 @@ export default function Home() {
                 This mirrors the stage where WhatsApp lets users configure media behaviour
                 before sending. The buttons below control the actual photo message that
                 will be added to the chat.
+              </p>
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-800/90" role="note" aria-label="Screenshot and save limitation">
+                <span className="shrink-0 text-amber-600" aria-hidden>ⓘ</span>
+                Screenshots &amp; saves can&apos;t be undone.
               </p>
 
               <div className="mt-6 max-h-[min(50vh,28rem)] overflow-y-auto space-y-3">
