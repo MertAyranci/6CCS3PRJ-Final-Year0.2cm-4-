@@ -105,16 +105,16 @@ The following concerns are treated as out of scope for the present requirements 
 
 \renewcommand{\arraystretch}{1.2}
 
-\begin{longtable}{|c|P{3.8cm}|P{3.8cm}|P{2.8cm}|P{2.2cm}|}
+\begin{longtable}{|c|P{3.8cm}|P{9.0cm}|P{1.5cm}|}
 
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
 \hline
 \endhead
 
@@ -122,130 +122,133 @@ The following concerns are treated as out of scope for the present requirements 
 \caption*{\textbf{Table~\thetable:} Functional Requirements}
 \endlastfoot
 
-\multicolumn{5}{|l|}{\textbf{1. Pre-send consent configuration}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{1. Pre-send consent configuration}} \\ \hline
 FR1 &
 The prototype must allow the sender to select a photo and configure permissions before sending. &
-Provide a pre-send composer that lets the sender set photo permissions; forwarding, view-once behaviour, time limits, co-subject declaration, and saving/export permissions before sending. &
-Dynamic, revocable, and ephemeral consent; in-context permission at send. \cite{kaye_dynamic_2015,robol_consent_2023,schuler_scott_dynamic_consent_2022,lee_identifying_2023,heath_2023,wilbanks_design_2018,cherubini_2021,schaub_notice_2015,im_yes_2021,whatsapp_view_once,whatsapp_disappearing_messages,whatsapp_advanced_chat_privacy} &
+Supports contextual, pre-send consent by enabling the sender to define sharing conditions at the point of disclosure, including forwarding, view-once behaviour, expiry, co-subject declaration, and saving/export permissions. This is consistent with literature on dynamic and revisable consent, in-context privacy choices, and interface support for notice and control. \cite{kaye_dynamic_2015,robol_consent_2023,schuler_scott_dynamic_consent_2022,lee_identifying_2023,heath_2023,wilbanks_design_2018,cherubini_2021,schaub_notice_2015,im_yes_2021,whatsapp_view_once,whatsapp_disappearing_messages,whatsapp_advanced_chat_privacy} &
 RG1 
 \\ \hline
 
 FR2 &
 The prototype must explicitly address screenshot and download risk (e.g.\ warn before sharing, indicate that screenshots cannot be fully prevented). &
-Treat screenshot risk as central even where perfect prevention is impossible. &
-Treat screenshot risk not as marginal loophole but as central challenge; honestly communicate scope; warnings that prompt reconsideration. \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025} &
+Supports realistic privacy communication by treating screenshot and download risk as a central limitation of photo-sharing control rather than a marginal exception. Literature on privacy notice and platform-based media protection emphasises warning users before sharing and clearly communicating that some forms of capture cannot be fully prevented.  \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025} &
 RG2
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{2. Post-send revocation and permission management}} \\ \hline
+
+
+
+\multicolumn{4}{|l|}{\textbf{2. Post-send revocation and permission management}} \\ \hline
 FR3 &
 The prototype must allow the sender to modify or revoke access to a previously shared photo via contextual in-chat, photo-level controls (e.g.\ action menu with reply, forward, save/export, and a revocation-permissions submenu). &
-Provide post-send controls via a photo-level action menu so the sender can change visibility, forwarding permission, expiry, and saving/export for an existing photo message. &
-Controls that remain reachable after sending; permission revisable over time; withdrawal support. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
+Supports post-send, revisable consent by allowing the sender to manage permissions for an already shared photo through contextual in-chat controls. Literature on privacy control and consent revocation emphasises that permissions should remain reachable after disclosure and be open to later withdrawal or adjustment. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
 RG1 and RG2
 \\ \hline
+
+
 
 FR4 &
 The prototype must show all users clear states for active, revoked, view-once access and expiry duration. &
-Render recipient-facing feedback that distinguishes visible content, revoked content, and single-view media within the chat interface. &
-Users do not always understand what revocation does; clearer cues improve comprehension; legible consequences and visible outcomes. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
+Supports user understanding by making permission states and their consequences visible within the chat interface. Literature on revocation, privacy feedback, and usable consent emphasises that people do not always understand what access changes mean, so interfaces should present clear, legible outcomes for active, revoked, and time-limited content. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG2
 \\ \hline
+
+
 
 FR5 &
 The prototype must maintain a live consent state per shared photo recording current permission status, expiry, active or revoked access, and applicable restrictions. &
-Provide a usable basis for later revocation and review; without this, revocation or review is not feasible. &
-Permissions as reviewable and updateable over time; explicit consent choices and consent history; revocation as closing access interval. \cite{merlec_smart_2021,robol_consent_2023,kaye_dynamic_2015,wilbanks_design_2018}&
+Supports reviewable and revisable consent by maintaining an updatable record of each photo’s permission state over time. Literature emphasises that explicit consent choices must remain available for later review and change.\cite{merlec_smart_2021,robol_consent_2023,kaye_dynamic_2015,wilbanks_design_2018}&
 RG1
 \\ \hline
 
+
 FR6 &
 The prototype should provide clear feedback after key permission-related actions. &
-Make the outcome of sending, forwarding, or changing permissions understandable to the user. &
-Visible and interpretable feedback after privacy actions reduces ambiguity about what changed. \cite{wilbanks_design_2018,schaub_notice_2015,schnitzler_2020,albesher_2021} &
+Supports user understanding by making the outcomes of permission changes visible and interpretable. Literature on privacy feedback and usable consent emphasises that clear post-action feedback reduces ambiguity about what has changed. \cite{wilbanks_design_2018,schaub_notice_2015,schnitzler_2020,albesher_2021} &
 RG1 and RG2
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{3. Redistribution and forwarding control}} \\ \hline
+
+\multicolumn{4}{|l|}{\textbf{3. Redistribution and forwarding control}} \\ \hline
 FR7 &
 The prototype must constrain forwarding according to the sender's current permission state. &
-Allow forwarding only when the sender has enabled redistribution and block the forwarding path otherwise. &
-Forwarding changes information flow; redistribution should follow sender-defined transmission constraints; downstream sharing is a central privacy risk.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023,ingber_2025} &
+Supports sender-defined control over redistribution by allowing forwarding only when it is explicitly permitted. Literature on contextual privacy and downstream sharing emphasises that forwarding changes information flow and should remain subject to the original sender’s transmission constraints.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023,ingber_2025} &
 RG2
 \\ \hline
+
 
 FR8 &
 The prototype must propagate sender-defined permissions to forwarded content within the proof-of-concept model. &
-Ensure that a forwarded photo shown to the secondary recipient inherits the original sender's permissions as represented by the interface. &
-Preserve original transmission principles across forwarding; inherited constraints maintain context and reduce downstream privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
+Supports continuity of privacy control across redistribution by ensuring that forwarded content inherits the original sender’s permissions within the prototype model. Literature on contextual integrity and downstream sharing emphasises that transmission constraints should persist across forwarding to preserve context and reduce secondary privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
 RG2 and RG3
 \\ \hline
 
+
+
 FR9 &
 The prototype should make the forwarded context and secondary-recipient view clearly interpretable. &
-Use separate chat presentation, forwarded labelling, or explanatory interface cues so that the secondary-recipient flow is understandable during evaluation. &
-Make redistribution state legible; forwarding changes audience and context, so secondary-recipient status should be clearly indicated. \cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,schaub_notice_2015,wilbanks_design_2018,albesher_2021,schnitzler_2020} &
+Supports legibility of redistribution by making forwarded context and secondary-recipient status clear in the interface.Literature emphasises that forwarding changes audience and context, so interfaces should clearly indicate redistribution state and recipient position. \cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,schaub_notice_2015,wilbanks_design_2018,albesher_2021,schnitzler_2020} &
 RG2
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{4. Recipient Awareness and negotiated consent}} \\ \hline
+
+\multicolumn{4}{|l|}{\textbf{4. Recipient Awareness and negotiated consent}} \\ \hline
 FR10 &
 The prototype must provide recipients with a neutral inline indication when access is revoked or when permissions change.&
-Keep the recipient informed whilst using socially careful wording, given that revocation can create interpersonal tension. &
-Revocation as expectation-management; notices can generate mistrust or ambiguity; design for face-saving and minimal interpersonal blame. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
+Supports recipient awareness while minimising interpersonal friction by communicating access changes in neutral, face-saving language. Literature on privacy boundary negotiation and revocation emphasises that such notices should manage expectations without creating unnecessary blame, mistrust, or ambiguity. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
 RG3
 \\ \hline
+
+
 
 FR11 &
 The prototype must allow the recipient to request extended access, with the sender deciding whether to approve or reject that request. &
-Support consent as socially negotiated rather than only technically toggled. &
-Revocation as re-coordination of privacy boundaries; consent negotiated in unfolding interaction; permission revisited, clarified, renegotiated. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,im_yes_2021,kaye_dynamic_2015,schuler_scott_dynamic_consent_2022,lee_identifying_2023} &
+Supports consent as an ongoing social process by allowing recipients to request continued access and senders to renegotiate permissions. Literature emphasises that privacy boundaries are not fixed at the point of sharing, but may be revisited, clarified, and renegotiated through interaction. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,im_yes_2021,kaye_dynamic_2015,schuler_scott_dynamic_consent_2022,lee_identifying_2023} &
 RG3
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{5. Co-subject and multi-party privacy control}} \\ \hline
+
+
+\multicolumn{4}{|l|}{\textbf{5. Co-subject and multi-party privacy control}} \\ \hline
 
 FR12 &
 The prototype must support multi-party photos by allowing the sender to mark that a photo contains other people and allowing depicted co-subjects to request revocation of a shared photo, including an optional explanation for the request.&
-Reflect the literature's emphasis on multi-party privacy conflicts rather than assuming only the sender matters. &
-Multi-party privacy conflicts; depicted others with no opportunity to approve or shape disclosure; support for co-subject agency and shared stakes. \cite{cherubini_2021,liu_privacy_2023,bourgeus_vandercruysse_2024,xu_my_2017,xu_trust-based_2019,petronio_cpm_2020,nissenbaum_contextual_2011} &
+Supports multi-party privacy by recognising that shared photos may affect depicted co-subjects as well as senders. Literature emphasises that disclosure decisions in photo sharing involve shared privacy stakes, and that co-subjects should have some agency to contest or renegotiate disclosure. \cite{cherubini_2021,liu_privacy_2023,bourgeus_vandercruysse_2024,xu_my_2017,xu_trust-based_2019,petronio_cpm_2020,nissenbaum_contextual_2011} &
 RG3 and RG4
 \\ \hline
 
 FR13 &
 The prototype should allow a depicted co-subject to receive a notification that they appear in a shared photo when the sender has marked the image as multi-party content. &
-Make co-subject involvement visible and support awareness that a privacy-relevant disclosure has occurred. &
-Co-subjects often lack opportunity to approve or shape disclosure; awareness is a prerequisite for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
+Supports co-subject awareness by making it visible when a privacy-relevant disclosure involves them. Literature emphasises that depicted others often lack opportunities to shape disclosure, and that awareness is a necessary precondition for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
 RG3
 \\ \hline
 
 FR14 &
 The prototype should allow the sender to review and respond to a co-subject’s request through a dedicated decision interface. &
-Demonstrate how multi-party privacy could be operationalised through negotiation rather than unilateral hidden system logic. &
-Precautionary/collaborative mechanisms; privacy negotiation among stakeholders; consent as revisable and relational. \cite{cherubini_2021, xu_my_2017, xu_trust-based_2019, petronio_cpm_2020, im_yes_2021} &
+Supports multi-party privacy as a negotiated process by allowing the sender to explicitly review and respond to co-subject requests. Literature emphasises collaborative privacy mechanisms and treats consent as relational, revisable, and shaped through stakeholder negotiation. \cite{cherubini_2021, xu_my_2017, xu_trust-based_2019, petronio_cpm_2020, im_yes_2021} &
 RG3
 \\ \hline
 
 FR15 &
 The prototype should provide neutral feedback when a co-subject request leads to changed permissions. &
-Communicate changes clearly while minimising blame and interpersonal friction. &
-Revocation notices are socially meaningful; design should support face-saving and expectation management. \cite{schnitzler_2020, petronio_cpm_2020, ingber_2025, wilbanks_design_2018} &
+Supports clear communication of co-subject-related permission changes while minimising blame and interpersonal friction. Literature emphasises that revocation notices are socially meaningful and should be designed to support expectation management and face-saving. \cite{schnitzler_2020, petronio_cpm_2020, ingber_2025, wilbanks_design_2018} &
 RG3
 \\ \hline
 
 FR16 &
 The prototype should show that co-subject-related permission changes can affect forwarding and secondary-recipient access within the platform model.&
-Demonstrate that co-subject privacy concerns continue after redistribution and are not limited to the original chat. &
-Forwarding changes context and audience; downstream dissemination intensifies multi-party privacy risk. \cite{zhang_go-sharing_2023, liu_privacy_2023, nissenbaum_contextual_2011, cherubini_2021} &
+Supports multi-party privacy beyond the original chat by showing that co-subject-related permission changes continue to affect redistribution and secondary-recipient access. Literature emphasises that forwarding changes audience and context, and that downstream dissemination can intensify multi-party privacy risk. \cite{zhang_go-sharing_2023, liu_privacy_2023, nissenbaum_contextual_2011, cherubini_2021} &
 RG3
 \\ \hline
 
+
+
 FR17 &
 The prototype should allow the interface to explain the limits of co-subject protection, including that offline capture, screenshots, or prior viewing cannot be fully undone. &
-Keep co-subject controls realistic and avoid overstating the effect of platform-level revocation. &
-Revocation is prospective and partial; screenshotting and retention remain structural limits. \cite{politou_2018, heath_2023, ingber_2025, schnitzler_2020} &
+Supports realistic co-subject protection by clearly communicating the limits of platform-level control. Literature emphasises that revocation is partial and prospective, and that screenshots, offline capture, and prior viewing cannot be fully reversed.\cite{politou_2018, heath_2023, ingber_2025, schnitzler_2020} &
 RG2 and RG3
 \\ \hline
+
 
 \end{longtable}
 
