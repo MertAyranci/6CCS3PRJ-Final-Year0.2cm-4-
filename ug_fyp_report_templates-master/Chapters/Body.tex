@@ -1,6 +1,6 @@
 \chapter{Requirements}
 \section{Brief}
-This chapter defines the requirements for the WhatsApp-like proof-of-concept developed in this dissertation. Drawing on the literature review, it identifies the relevant stakeholders, use cases, functional requirements, and non-functional requirements for a prototype centred on sender-controlled photo permissions and revocation. The implemented scope includes pre-send and post-send permission configuration, recipient understanding of changing access states, constrained forwarding to a secondary recipient, and co-subject-related features within the current prototype. Together, these requirements translate the dissertation’s broader privacy and consent concerns into a structured and implementable system specification. Broader issues that remain beyond the present prototype scope are identified separately as deferred concerns.
+This chapter defines the requirements for the WhatsApp-like prototype developed in this dissertation. Drawing on the literature review, it identifies the relevant stakeholders, use cases, functional requirements, and non-functional requirements for a prototype centred on photo permissions and revocation. The implemented scope includes pre-send and post-send permission configuration, recipient understanding of changing access states, constrained forwarding to a secondary recipient, and co-subject-related features within the current prototype. Together, these requirements translate the dissertation’s broader privacy and consent concerns into a structured and implementable system specification. (buna da bak->>) Broader issues that remain beyond the present prototype scope are identified separately as deferred concerns.
 \section{Stakeholders}
 
 \begin{enumerate}
@@ -16,12 +16,6 @@ This chapter defines the requirements for the WhatsApp-like proof-of-concept dev
   \item \textbf{Co-Subject:}
   The co-subject is a person depicted in a photo. This stakeholder is necessary because the prototype examines whether co-subjects can request changes to the photo's permissions.
 \end{enumerate}
-
-\section{Prototype Scope (tekrar bakilacak)}
-The current functional prototype is intentionally narrower than the full conceptual problem described in the literature review. It implements sender-side configuration of photo permissions, sender-side revision of those permissions after sending, recipient-side feedback about active or revoked access, and a constrained forwarding flow to a secondary recipient. It demonstrates these mechanisms at the interface and interaction level rather than as a production-grade messaging infrastructure. It does not implement co-subject request workflows, co-subject conflict resolution, identity or face verification, persistent audit logging, full screenshot resistance, hard guarantees against saving or offline retention, and true cross-device enforcement beyond the local proof-of-concept model.
-
-The following concerns are treated as out of scope for the present requirements set and are better positioned in discussion and future work chapters: co-subject agency, platform-assisted removal, identity or face verification, screenshot prevention, persistent audit logging, cross-device synchronisation, and guarantees of universal deletion after disclosure.
-
 
 \section{Use Cases}
 
@@ -105,7 +99,7 @@ The following concerns are treated as out of scope for the present requirements 
 
 \renewcommand{\arraystretch}{1.2}
 
-\begin{longtable}{|c|P{3.8cm}|P{9.0cm}|P{1.5cm}|}
+\begin{longtable}{|c|P{3.8cm}|P{8.0cm}|P{1.5cm}|}
 
 
 \hline
@@ -140,9 +134,10 @@ RG2
 
 \multicolumn{4}{|l|}{\textbf{2. Post-send revocation and permission management}} \\ \hline
 FR3 &
-The prototype must allow the sender to modify or revoke access to a previously shared photo via contextual in-chat, photo-level controls (e.g.\ action menu with reply, forward, save/export, and a revocation-permissions submenu). &
+The prototype must allow the sender to modify or revoke access to a previously shared photo via contextual in-chat, photo-level controls. &
 Supports post-send, revisable consent by allowing the sender to manage permissions for an already shared photo through contextual in-chat controls. Literature on privacy control and consent revocation emphasises that permissions should remain reachable after disclosure and be open to later withdrawal or adjustment. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
-RG1 and RG2
+RG1 
+RG2
 \\ \hline
 
 
@@ -165,7 +160,8 @@ RG1
 FR6 &
 The prototype should provide clear feedback after key permission-related actions. &
 Supports user understanding by making the outcomes of permission changes visible and interpretable. Literature on privacy feedback and usable consent emphasises that clear post-action feedback reduces ambiguity about what has changed. \cite{wilbanks_design_2018,schaub_notice_2015,schnitzler_2020,albesher_2021} &
-RG1 and RG2
+RG1 
+RG2
 \\ \hline
 
 
@@ -180,7 +176,8 @@ RG2
 FR8 &
 The prototype must propagate sender-defined permissions to forwarded content within the proof-of-concept model. &
 Supports continuity of privacy control across redistribution by ensuring that forwarded content inherits the original sender’s permissions within the prototype model. Literature on contextual integrity and downstream sharing emphasises that transmission constraints should persist across forwarding to preserve context and reduce secondary privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
-RG2 and RG3
+RG2 
+RG3
 \\ \hline
 
 
@@ -214,7 +211,8 @@ RG3
 FR12 &
 The prototype must support multi-party photos by allowing the sender to mark that a photo contains other people and allowing depicted co-subjects to request revocation of a shared photo, including an optional explanation for the request.&
 Supports multi-party privacy by recognising that shared photos may affect depicted co-subjects as well as senders. Literature emphasises that disclosure decisions in photo sharing involve shared privacy stakes, and that co-subjects should have some agency to contest or renegotiate disclosure. \cite{cherubini_2021,liu_privacy_2023,bourgeus_vandercruysse_2024,xu_my_2017,xu_trust-based_2019,petronio_cpm_2020,nissenbaum_contextual_2011} &
-RG3 and RG4
+RG3 
+RG4
 \\ \hline
 
 FR13 &
@@ -246,7 +244,8 @@ RG3
 FR17 &
 The prototype should allow the interface to explain the limits of co-subject protection, including that offline capture, screenshots, or prior viewing cannot be fully undone. &
 Supports realistic co-subject protection by clearly communicating the limits of platform-level control. Literature emphasises that revocation is partial and prospective, and that screenshots, offline capture, and prior viewing cannot be fully reversed.\cite{politou_2018, heath_2023, ingber_2025, schnitzler_2020} &
-RG2 and RG3
+RG2 
+RG3
 \\ \hline
 
 
@@ -343,5 +342,3 @@ RG2
 
 \end{longtable}
 
-\section{Feasible Extensions Consistent with Current Scope}
-If further implementation time is available, the most suitable additions are small interface-level improvements that strengthen the current revocation story without expanding the project into a different problem domain. The strongest candidates are an optional sender explanation for permission changes, clearer confirmation feedback after revocation events, and more explicit labelling of forwarded content on the third phone. These additions would support evaluation and dissertation coherence without reintroducing the larger co-subject or infrastructure-heavy issues that are intentionally outside the current prototype scope.
