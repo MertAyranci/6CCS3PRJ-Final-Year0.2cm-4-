@@ -368,6 +368,30 @@ export default function Home() {
     };
   };
 
+  /** True if any recipient-side copy of this source photo (main, forwarded, or co-subject) was opened as view-once. */
+  const isViewOnceConsumedForSourcePhoto = (sourcePhotoId: number) =>
+    [...mainMessages, ...forwardedMessages].some(
+      (m) =>
+        m.type === "photo" &&
+        m.sourcePhotoId === sourcePhotoId &&
+        consumedViewOnce.includes(m.id),
+    );
+
+  /** Single blue tick for view-once opened state (sender and recipient). */
+  const ViewOnceSingleTick = () => (
+    <span className="inline-flex shrink-0 text-[#53bdeb]" aria-hidden>
+      <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1 5.5L4 8.5L11 1.5"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+
   const durationToMs = (d: TimeLimitDuration) =>
     (d.days * 86400 + d.hours * 3600 + d.minutes * 60 + d.seconds) * 1000;
 
@@ -877,6 +901,14 @@ export default function Home() {
     const hasRecipientConsumed =
       recipientSideViewer && consumedViewOnce.includes(message.id);
 
+    /** Sender sees WhatsApp-style “opened” state when any recipient-side copy was consumed. */
+    const recipientOpenedViewOnce =
+      phoneOwner === "sender" &&
+      message.sender === "sender" &&
+      thread === "main" &&
+      effectivePermissions.viewOnce &&
+      isViewOnceConsumedForSourcePhoto(message.sourcePhotoId);
+
     const openFullScreenViewOnce = () => {
       if (!canViewPhoto || hasRecipientConsumed) {
         return;
@@ -950,28 +982,44 @@ export default function Home() {
         </p>
       </div>
     ) : effectivePermissions.viewOnce ? (
-      <button
-        type="button"
-        onClick={openFullScreenViewOnce}
-        disabled={hasRecipientConsumed || !canViewPhoto}
-        className={`flex w-full items-center justify-between rounded-2xl border border-white/15 px-4 py-3 text-left transition ${
-          hasRecipientConsumed || !canViewPhoto
-            ? "cursor-not-allowed bg-white/5 opacity-70"
-            : "bg-white/10 hover:bg-white/15"
-        }`}
-      >
-        <div>
-          <p className="text-sm font-semibold text-white">View once photo</p>
-          <p className="text-xs text-emerald-100/80">
-            {hasRecipientConsumed
-              ? "Already opened. Tap is disabled."
-              : "Opens full-screen. Closing returns to chat."}
-          </p>
+      recipientOpenedViewOnce ? (
+        <button
+          type="button"
+          onClick={openFullScreenViewOnce}
+          className="w-full overflow-hidden rounded-xl border border-white/25 bg-black/18 px-4 py-4 text-left shadow-inner shadow-black/10 transition hover:border-white/35 hover:bg-black/24"
+          aria-label="View once photo was opened; tap to preview your copy"
+        >
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-white/95">Photo was viewed by recipient.</p>
+            <p className="text-xs text-white/70">Tap to preview your copy.</p>
+          </div>
+        </button>
+      ) : hasRecipientConsumed && recipientSideViewer ? (
+        <div
+          className="flex w-full flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-[#222d34] px-4 py-4 text-center"
+          role="group"
+          aria-label="View once photo already opened"
+        >
+          <p className="text-sm font-medium text-slate-300">Opened once</p>
+          <p className="text-xs text-slate-500">This photo can no longer be viewed.</p>
         </div>
-        <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-semibold text-white">
-          {hasRecipientConsumed ? "Viewed" : "Open"}
-        </span>
-      </button>
+      ) : (
+        <button
+          type="button"
+          onClick={openFullScreenViewOnce}
+          disabled={!canViewPhoto || hasRecipientConsumed}
+          className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition ${
+            !canViewPhoto || hasRecipientConsumed
+              ? "cursor-not-allowed border-white/10 bg-white/5 opacity-60"
+              : "border-emerald-500/30 bg-white/10 hover:border-emerald-400/45 hover:bg-white/[0.12]"
+          }`}
+        >
+          <span className="text-sm font-medium text-white">View once</span>
+          <span className="rounded-lg bg-emerald-500/35 px-3 py-1 text-xs font-semibold text-emerald-100">
+            Open
+          </span>
+        </button>
+      )
     ) : canViewPhoto ? (
       <div className="aspect-[4/5]">
         {renderPhotoPreview(message.asset)}
@@ -995,7 +1043,7 @@ export default function Home() {
 
     return (
       <>
-        <div className="relative">
+        <div className="relative pr-14">
           {photoContent}
           <div className="absolute right-3 top-3">
             <div className="relative">
@@ -1206,8 +1254,25 @@ export default function Home() {
           <span className="rounded-full bg-white/15 px-3 py-1">
             {effectivePermissions.canForward ? "Forwarding allowed" : "No forwarding"}
           </span>
-          <span className="rounded-full bg-white/15 px-3 py-1">
-            {effectivePermissions.viewOnce ? "View once" : "Reviewable later"}
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 ${
+              (recipientOpenedViewOnce || hasRecipientConsumed) && effectivePermissions.viewOnce
+                ? "border border-[#53bdeb]/35 bg-[#53bdeb]/10 text-[11px] font-medium text-sky-200/90"
+                : "bg-white/15"
+            }`}
+          >
+            {effectivePermissions.viewOnce ? (
+              recipientOpenedViewOnce || hasRecipientConsumed ? (
+                <>
+                  <span>View once</span>
+                  <ViewOnceSingleTick />
+                </>
+              ) : (
+                "View once"
+              )
+            ) : (
+              "Reviewable later"
+            )}
           </span>
           <span className="rounded-full bg-white/15 px-3 py-1">
             {effectivePermissions.canDownload ? "Download allowed" : "Download blocked"}
@@ -1233,9 +1298,8 @@ export default function Home() {
           </p>
         ) : null}
 
-        <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="mt-4 flex items-center gap-1.5">
           <p className={`text-xs ${timestampTone}`}>{message.time}</p>
-          <span className="text-[11px] text-emerald-100/70">Photo options in chat</span>
         </div>
       </>
     );
@@ -1949,8 +2013,25 @@ export default function Home() {
               </div>
               <div className="flex items-start justify-between gap-3">
                 <dt className="font-medium text-slate-900">View once</dt>
-                <dd className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">
-                  {selectedPhotoMessage?.permissions.viewOnce ? "enabled" : "off"}
+                <dd
+                  className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
+                    selectedPhotoMessage?.permissions.viewOnce &&
+                    isViewOnceConsumedForSourcePhoto(selectedPhotoMessage.sourcePhotoId)
+                      ? "border border-[#53bdeb]/45 bg-[#e0f2fe] text-[#0369a1]"
+                      : "bg-white text-slate-700"
+                  }`}
+                >
+                  {selectedPhotoMessage?.permissions.viewOnce ? (
+                    isViewOnceConsumedForSourcePhoto(selectedPhotoMessage.sourcePhotoId) ? (
+                      <span className="inline-flex items-center gap-1.5" title="Recipient opened view once">
+                        <ViewOnceSingleTick />
+                      </span>
+                    ) : (
+                      "On"
+                    )
+                  ) : (
+                    "off"
+                  )}
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-3">
@@ -2394,11 +2475,6 @@ export default function Home() {
                     </>
                   ) : null}
                 </div>
-              </div>
-
-              <div className="mt-6 rounded-3xl bg-slate-50 p-4">
-                <p className="text-sm font-semibold text-slate-900">Selected photo</p>
-                <p className="mt-2 text-sm text-slate-600">{draftPhoto.label}</p>
               </div>
 
               <button

@@ -10,7 +10,7 @@ This project is a web-based proof-of-concept developed for my final-year dissert
 - sender-side photo sharing controls
 - revocation-related permission changes after sending
 - forwarding from the original recipient to a third phone
-- view-once behaviour for photo messages
+- view-once behaviour for photo messages (sender: after the recipient opens, an in-bubble “1” + light skeleton on translucent green-friendly styling—read state is on the “View once ✓” chip and blue ticks by the time, not duplicated in the media area; recipient: compact “Opened once” row after viewing)
 - separate menu actions for replying, forwarding, and opening revocation permissions
 
 ## Software Requirements
