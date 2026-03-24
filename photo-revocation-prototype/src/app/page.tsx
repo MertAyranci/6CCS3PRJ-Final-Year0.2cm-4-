@@ -1474,15 +1474,109 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,#0b141a_0%,#0f171d_100%)] px-4 py-6">
-        {conversation.length > 0 ? (
-          conversation.map((message) =>
-            renderMessage(
-              message,
-              phoneOwner,
-              phoneOwner === "forwardedRecipient" ? "forwarded" : "main",
-            ),
-          )
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,#0b141a_0%,#0f171d_100%)] px-4 py-6">
+        {phoneOwner === "sender" && composerOpen && draftPhoto ? (
+          <div className="space-y-4 pb-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-white">Photo permissions</p>
+              <button
+                type="button"
+                onClick={() => setComposerOpen(false)}
+                className="rounded-full border border-white/20 px-2.5 py-1 text-[11px] text-slate-300 hover:bg-white/10"
+              >
+                Close
+              </button>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-[#202c33]">
+              <div className="max-h-[140px] overflow-hidden">
+                {renderPhotoPreview(draftPhoto)}
+              </div>
+              <input
+                value={draftCaption}
+                onChange={(e) => setDraftCaption(e.target.value)}
+                placeholder="Add a caption..."
+                className="w-full border-t border-white/10 bg-[#172229] px-3 py-2 text-xs text-white outline-none placeholder:text-slate-400"
+              />
+            </div>
+            <p className="flex items-center gap-1.5 text-[11px] text-amber-200/90" role="note">
+              <span className="shrink-0 text-amber-400" aria-hidden>ⓘ</span>
+              Screenshots &amp; saves can&apos;t be undone.
+            </p>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setDraftPermissions((p) => ({ ...p, viewOnce: !p.viewOnce }))}
+                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
+                  draftPermissions.viewOnce ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {draftPermissions.viewOnce ? "View once allowed" : "View once disabled"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftPermissions((p) => ({ ...p, canForward: !p.canForward }))}
+                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
+                  draftPermissions.canForward ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {draftPermissions.canForward ? "Forwarding allowed" : "Forwarding disabled"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftPermissions((p) => ({ ...p, canDownload: !p.canDownload }))}
+                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
+                  draftPermissions.canDownload ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {draftPermissions.canDownload ? "Downloading allowed" : "Downloading disabled"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftPermissions((p) => ({ ...p, hasCoSubject: !p.hasCoSubject }))}
+                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
+                  draftPermissions.hasCoSubject ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {draftPermissions.hasCoSubject ? "Co-subject in photo (notified)" : "Co-subject in photo"}
+              </button>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDraftTimeLimitOpen((o) => !o)}
+                  className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
+                    draftTimeLimitOpen ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {draftTimeLimitOpen ? "Time limit (set)" : "Time limit (no expiry)"}
+                </button>
+                {draftTimeLimitOpen ? (
+                  <div className="mt-2 flex justify-center gap-1">
+                    <ScrollWheelColumn min={0} max={99} value={draftTimeLimit.days} onChange={(d) => setDraftTimeLimit((p) => ({ ...p, days: d }))} label="D" />
+                    <ScrollWheelColumn min={0} max={23} value={draftTimeLimit.hours} onChange={(h) => setDraftTimeLimit((p) => ({ ...p, hours: h }))} label="H" />
+                    <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.minutes} onChange={(m) => setDraftTimeLimit((p) => ({ ...p, minutes: m }))} label="M" />
+                    <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.seconds} onChange={(s) => setDraftTimeLimit((p) => ({ ...p, seconds: s }))} label="S" />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={sendConfiguredPhoto}
+              className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+            >
+              Send photo message
+            </button>
+          </div>
+        ) : conversation.length > 0 ? (
+          <div className="space-y-4">
+            {conversation.map((message) =>
+              renderMessage(
+                message,
+                phoneOwner,
+                phoneOwner === "forwardedRecipient" ? "forwarded" : "main",
+              ),
+            )}
+          </div>
         ) : phoneOwner === "coOwner" ? (
           <div className="flex h-full items-center justify-center">
             <div className="max-w-xs rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-6 text-center text-sm text-slate-300">
@@ -2294,200 +2388,6 @@ export default function Home() {
           </div>
         </aside>
       </div>
-
-      {composerOpen && draftPhoto ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="grid w-full max-w-5xl gap-6 rounded-[2rem] bg-[#111b21] p-5 text-white shadow-2xl shadow-black/40 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#202c33]">
-              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                <div>
-                  <p className="text-sm font-semibold">Photo composer</p>
-                  <p className="text-xs text-slate-300">
-                    Choose permissions before sending the photo as a message.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setComposerOpen(false)}
-                  className="rounded-full border border-white/15 px-3 py-1 text-xs text-slate-200"
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className="p-4">
-                <div className="aspect-[4/5]">
-                  {renderPhotoPreview(draftPhoto)}
-                </div>
-                <input
-                  value={draftCaption}
-                  onChange={(event) => setDraftCaption(event.target.value)}
-                  placeholder="Add a caption..."
-                  className="mt-4 w-full rounded-2xl border border-white/10 bg-[#172229] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400"
-                />
-              </div>
-            </div>
-
-            <div className="rounded-[1.5rem] bg-white p-5 text-slate-900">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                Before sending
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold">Photo permissions</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                This mirrors the stage where WhatsApp lets users configure media behaviour
-                before sending. The buttons below control the actual photo message that
-                will be added to the chat.
-              </p>
-              <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-800/90" role="note" aria-label="Screenshot and save limitation">
-                <span className="shrink-0 text-amber-600" aria-hidden>ⓘ</span>
-                Screenshots &amp; saves can&apos;t be undone.
-              </p>
-
-              <div className="mt-6 max-h-[min(50vh,28rem)] overflow-y-auto space-y-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDraftPermissions((current) => ({
-                      ...current,
-                      viewOnce: !current.viewOnce,
-                    }))
-                  }
-                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                    draftPermissions.viewOnce
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {draftPermissions.viewOnce ? "View once allowed" : "View once disabled"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDraftPermissions((current) => ({
-                      ...current,
-                      canForward: !current.canForward,
-                    }))
-                  }
-                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                    draftPermissions.canForward
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {draftPermissions.canForward ? "Forwarding allowed" : "Forwarding disabled"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDraftPermissions((current) => ({
-                      ...current,
-                      canDownload: !current.canDownload,
-                    }))
-                  }
-                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                    draftPermissions.canDownload
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {draftPermissions.canDownload ? "Downloading allowed" : "Downloading disabled"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDraftPermissions((current) => ({
-                      ...current,
-                      hasCoSubject: !current.hasCoSubject,
-                    }))
-                  }
-                  className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                    draftPermissions.hasCoSubject
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {draftPermissions.hasCoSubject
-                    ? "Co-subject in photo (depicted person will be notified)"
-                    : "Co-subject in photo"}
-                </button>
-
-                <div className="mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setDraftTimeLimitOpen((open) => !open)}
-                    className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                      draftTimeLimitOpen
-                        ? "bg-emerald-100 text-emerald-900"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    {draftTimeLimitOpen ? "Time limit (set)" : "Time limit (no expiry)"}
-                  </button>
-                  {draftTimeLimitOpen ? (
-                    <>
-                      <p className="mt-2 text-xs text-slate-500">
-                        Photo access expires after this duration. Set all to 0 for no expiry.
-                      </p>
-                      <div className="mt-3 flex justify-center gap-2 sm:gap-4">
-                        <ScrollWheelColumn
-                          min={0}
-                          max={99}
-                          value={draftTimeLimit.days}
-                          onChange={(days) =>
-                            setDraftTimeLimit((prev) => ({ ...prev, days }))
-                          }
-                          label="Days"
-                        />
-                        <ScrollWheelColumn
-                          min={0}
-                          max={23}
-                          value={draftTimeLimit.hours}
-                          onChange={(hours) =>
-                            setDraftTimeLimit((prev) => ({ ...prev, hours }))
-                          }
-                          label="Hours"
-                        />
-                        <ScrollWheelColumn
-                          min={0}
-                          max={59}
-                          value={draftTimeLimit.minutes}
-                          onChange={(minutes) =>
-                            setDraftTimeLimit((prev) => ({ ...prev, minutes }))
-                          }
-                          label="Min"
-                        />
-                        <ScrollWheelColumn
-                          min={0}
-                          max={59}
-                          value={draftTimeLimit.seconds}
-                          onChange={(seconds) =>
-                            setDraftTimeLimit((prev) => ({ ...prev, seconds }))
-                          }
-                          label="Sec"
-                        />
-                      </div>
-                      <p className="mt-2 text-center text-xs font-medium text-slate-500">
-                        {formatTimeLimit(draftTimeLimit)}
-                      </p>
-                    </>
-                  ) : null}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={sendConfiguredPhoto}
-                className="mt-6 w-full rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
-              >
-                Send photo message
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {accessRequestOpen && accessRequestOpen.owner !== "recipient" && accessRequestOpen.owner !== "forwardedRecipient" ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
