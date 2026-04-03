@@ -368,6 +368,22 @@ export default function Home() {
     };
   };
 
+  /** Stored sender policy for a photo; used for chip labels when access is active, and to choose revoked-state wording (e.g. view-once vs reviewable). */
+  const getSourcePolicyPermissions = (message: Extract<ChatMessage, { type: "photo" }>) => {
+    const raw =
+      mainMessages.find(
+        (entry): entry is Extract<ChatMessage, { type: "photo" }> =>
+          entry.type === "photo" && entry.sourcePhotoId === message.sourcePhotoId,
+      )?.permissions ?? message.permissions;
+    return {
+      canForward: raw.canForward ?? true,
+      canDownload: raw.canDownload ?? true,
+      viewOnce: raw.viewOnce ?? false,
+      expiresAt: raw.expiresAt ?? null,
+      hasCoSubject: raw.hasCoSubject ?? false,
+    };
+  };
+
   /** True if any recipient-side copy of this source photo (main, forwarded, or co-subject) was opened as view-once. */
   const isViewOnceConsumedForSourcePhoto = (sourcePhotoId: number) =>
     [...mainMessages, ...forwardedMessages].some(
@@ -895,7 +911,9 @@ export default function Home() {
     thread: ConversationThread,
   ) => {
     const effectivePermissions = getEffectivePermissions(message);
-    const canViewPhoto = phoneOwner === "sender" || effectivePermissions.status === "active";
+    const policyForChips = getSourcePolicyPermissions(message);
+    const accessActive = effectivePermissions.status === "active";
+    const canViewPhoto = phoneOwner === "sender" || accessActive;
     const recipientSideViewer =
       phoneOwner === "recipient" || phoneOwner === "forwardedRecipient" || phoneOwner === "coOwner";
     const hasRecipientConsumed =
@@ -906,11 +924,11 @@ export default function Home() {
       phoneOwner === "sender" &&
       message.sender === "sender" &&
       thread === "main" &&
-      effectivePermissions.viewOnce &&
+      policyForChips.viewOnce &&
       isViewOnceConsumedForSourcePhoto(message.sourcePhotoId);
 
     const openFullScreenViewOnce = () => {
-      if (!canViewPhoto || hasRecipientConsumed) {
+      if (!accessActive || !canViewPhoto || hasRecipientConsumed) {
         return;
       }
 
@@ -926,8 +944,8 @@ export default function Home() {
       openPhotoMenu.thread === thread &&
       openPhotoMenu.owner === phoneOwner;
     const forwardAvailable =
+      accessActive &&
       effectivePermissions.canForward &&
-      effectivePermissions.status === "active" &&
       ((phoneOwner === "recipient" &&
         thread === "main" &&
         !isOwnMessage &&
@@ -938,10 +956,10 @@ export default function Home() {
           !isOwnMessage &&
           !hasRecipientConsumed));
 
-    const isCoSubjectCard = phoneOwner === "coOwner" && effectivePermissions.hasCoSubject;
+    const isCoSubjectCard = phoneOwner === "coOwner" && policyForChips.hasCoSubject;
 
     const openCoSubjectPhoto = () => {
-      if (effectivePermissions.status !== "active") return;
+      if (!accessActive) return;
       setOpenViewOnce({
         owner: "coOwner",
         thread,
@@ -954,9 +972,9 @@ export default function Home() {
         <button
           type="button"
           onClick={openCoSubjectPhoto}
-          disabled={effectivePermissions.status !== "active"}
+          disabled={!accessActive}
           className={`flex w-full flex-col items-center justify-center rounded-2xl border border-white/15 px-4 py-6 text-left transition ${
-            effectivePermissions.status === "active"
+            accessActive
               ? "bg-amber-500/20 hover:bg-amber-500/30"
               : "cursor-not-allowed bg-white/5 opacity-70"
           }`}
@@ -968,7 +986,7 @@ export default function Home() {
             You are depicted in this photo
           </p>
           <p className="mt-1 text-xs text-emerald-100/90">
-            {effectivePermissions.status === "active"
+            {accessActive
               ? "Tap to view the photo."
               : "Access has been revoked."}
           </p>
@@ -981,7 +999,7 @@ export default function Home() {
           Protection is in-app only; screenshots and prior viewing cannot be fully undone.
         </p>
       </div>
-    ) : effectivePermissions.viewOnce ? (
+    ) : policyForChips.viewOnce ? (
       recipientOpenedViewOnce ? (
         <button
           type="button"
@@ -1002,6 +1020,21 @@ export default function Home() {
         >
           <p className="text-sm font-medium text-slate-300">Opened once</p>
           <p className="text-xs text-slate-500">This photo can no longer be viewed.</p>
+        </div>
+      ) : !canViewPhoto && recipientSideViewer ? (
+        <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border border-dashed border-white/20 bg-[#08352d] p-6 text-center">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-100/70">
+              Access changed
+            </p>
+            <p className="mt-2 text-lg font-semibold">This photo is no longer visible.</p>
+            <p className="mt-2 text-sm text-emerald-50/80">
+              The sender has revoked access in the current chat.
+            </p>
+            <p className="mt-1.5 text-[11px] text-emerald-100/60">
+              Screenshots, saved copies, or prior viewing may already exist.
+            </p>
+          </div>
         </div>
       ) : (
         <button
@@ -1112,9 +1145,15 @@ export default function Home() {
                           triggerPhotoDownload(message.asset);
                           setOpenPhotoMenu(null);
                         }}
-                        disabled={!canViewPhoto || !effectivePermissions.canDownload}
+                        disabled={
+                          !accessActive ||
+                          !effectivePermissions.canDownload ||
+                          (phoneOwner !== "sender" && !canViewPhoto)
+                        }
                         className={`w-full rounded-xl px-3 py-2 text-left transition ${
-                          canViewPhoto && effectivePermissions.canDownload
+                          accessActive &&
+                          effectivePermissions.canDownload &&
+                          (phoneOwner === "sender" || canViewPhoto)
                             ? "hover:bg-white/10"
                             : "cursor-not-allowed text-white/45"
                         }`}
@@ -1151,7 +1190,7 @@ export default function Home() {
                         >
                           Request revocation
                         </button>
-                      ) : phoneOwner === "recipient" && effectivePermissions.status !== "active" ? (
+                      ) : phoneOwner === "recipient" && !accessActive ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -1180,14 +1219,14 @@ export default function Home() {
                             effectivePermissions.expiresAt != null &&
                             Date.now() >= effectivePermissions.expiresAt;
                           updateSelectedPhotoPermissions({
-                            status: effectivePermissions.status === "active" ? "revoked" : "active",
+                            status: accessActive ? "revoked" : "active",
                             ...(isExpired ? { expiresAt: null } : {}),
                           });
                           setPanelOpen(true);
                         }}
                         className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                       >
-                        {effectivePermissions.status === "active"
+                        {accessActive
                           ? "Revoke photo access"
                           : "Restore photo access"}
                       </button>
@@ -1252,16 +1291,28 @@ export default function Home() {
             {getStatusLabel(effectivePermissions.status)}
           </span>
           <span className="rounded-full bg-white/15 px-3 py-1">
-            {effectivePermissions.canForward ? "Forwarding allowed" : "No forwarding"}
+            {!accessActive
+              ? "No forwarding"
+              : policyForChips.canForward
+                ? "Forwarding allowed"
+                : "No forwarding"}
           </span>
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 ${
-              (recipientOpenedViewOnce || hasRecipientConsumed) && effectivePermissions.viewOnce
+              accessActive &&
+              (recipientOpenedViewOnce || hasRecipientConsumed) &&
+              policyForChips.viewOnce
                 ? "border border-[#53bdeb]/35 bg-[#53bdeb]/10 text-[11px] font-medium text-sky-200/90"
                 : "bg-white/15"
             }`}
           >
-            {effectivePermissions.viewOnce ? (
+            {!accessActive ? (
+              policyForChips.viewOnce ? (
+                "View once unavailable"
+              ) : (
+                "Not reviewable"
+              )
+            ) : policyForChips.viewOnce ? (
               recipientOpenedViewOnce || hasRecipientConsumed ? (
                 <>
                   <span>View once</span>
@@ -1275,28 +1326,27 @@ export default function Home() {
             )}
           </span>
           <span className="rounded-full bg-white/15 px-3 py-1">
-            {effectivePermissions.canDownload ? "Download allowed" : "Download blocked"}
+            {!accessActive
+              ? "Download blocked"
+              : policyForChips.canDownload
+                ? "Download allowed"
+                : "Download blocked"}
           </span>
-          {effectivePermissions.expiresAt != null ? (
+          {policyForChips.expiresAt != null ? (
             <span className="rounded-full bg-white/15 px-3 py-1">
-              {formatExpiryCountdown(effectivePermissions.expiresAt)}
+              {formatExpiryCountdown(policyForChips.expiresAt)}
             </span>
           ) : null}
         </div>
 
         <p className="mt-3 text-sm text-emerald-50">
-          {effectivePermissions.status === "active"
+          {accessActive
             ? message.caption
             : "Access has been revoked for the recipient device."}
         </p>
         <p className="mt-1 text-[11px] text-emerald-100/60">
           Screenshots, saved copies, or prior viewing may already exist.
         </p>
-        {phoneOwner === "forwardedRecipient" && thread === "forwarded" ? (
-          <p className="mt-1 text-[11px] text-emerald-100/60">
-            Restrictions from the original chat apply.
-          </p>
-        ) : null}
 
         <div className="mt-4 flex items-center gap-1.5">
           <p className={`text-xs ${timestampTone}`}>{message.time}</p>
