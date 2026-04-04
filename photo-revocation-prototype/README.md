@@ -1,77 +1,36 @@
-# Photo Revocation Prototype
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Overview
+## Getting Started
 
-This project is a web-based proof-of-concept developed for my final-year dissertation on consent revocation in WhatsApp photo sharing. The prototype focuses on how photo permissions may be configured, changed after sending, and observed across original and forwarded recipient views. 
-
-## What The Prototype Demonstrates
-
-- a WhatsApp-style chat interface
-- sender-side photo sharing controls
-- revocation-related permission changes after sending
-- forwarding from the original recipient to a third phone
-- view-once behaviour for photo messages (sender: after the recipient opens, an in-bubble “1” + light skeleton on translucent green-friendly styling—read state is on the “View once ✓” chip and blue ticks by the time, not duplicated in the media area; recipient: compact “Opened once” row after viewing)
-- separate menu actions for replying, forwarding, and opening revocation permissions
-
-## Software Requirements
-
-- Node.js installed on the computer
-- npm installed on the computer
-
-Node.js 22 is recommended for the smoothest local use.
-
-## Installation
-
-Open a terminal inside the `photo-revocation-prototype` folder and run:
-
-```bash
-npm install
-```
-
-## Running The Prototype
-
-Start the development server:
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Then open the local address shown in the terminal. In a normal case this will be:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```text
-http://localhost:3000
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-However, if port `3000` is already in use, Next.js may automatically choose another local port such as `3001`.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Useful Commands
+## Learn More
 
-Run a production build check:
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-npm run build
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Run linting:
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-```bash
-npm run lint
-```
+## Deploy on Vercel
 
-## Notes For Review
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- This is a prototype, not a production messaging system.
-- The prototype is designed to demonstrate dissertation concepts rather than full WhatsApp feature parity.
-- No backend service is required for the current local demonstration.
-
-## If Shared As A Zip File
-
-If this project is shared as a `.zip`, the recipient should:
-
-1. extract the archive
-2. open the `photo-revocation-prototype` folder
-3. run `npm install`
-4. run `npm run dev`
-5. open the local URL printed in the terminal
-
-The zip file should not include `node_modules` or `.next`.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

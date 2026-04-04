@@ -33,7 +33,7 @@ For that reason, the design does not attempt to invent an entirely separate priv
 
 
 
-\section{Conceptual System Model: Smart Photos}
+\section{Conceptual System Model: Smart Photos (bu cok mu repetition)}
 
 This section introduces the conceptual model that structures the prototype. The \textbf{Smart Photos} model treats each shared photo as an object associated with a persistent permission state, rather than as content whose control is fully transferred at the moment of delivery. Under this model, a photo is shared together with explicit permissions and constraints, such as whether it can be forwarded, saved, viewed once, or accessed for a limited period. These permissions are not fixed permanently at the point of sending. Instead, they remain attached to the photo as an ongoing state that can later be reviewed and revised through the interface.
 
@@ -77,7 +77,7 @@ To achieve FR8, forwarded content does not create a separate copy with an indepe
 
 To achieve FR9, the prototype presents the forwarded flow as a distinct recipient context rather than leaving redistribution implicit. Forwarded content appears in a separate secondary-recipient chat, making the audience change visible during evaluation and helping distinguish the original recipient's conversation from the downstream one. Within that forwarded view, the interface also indicates that restrictions from the original chat still apply, reinforcing that redistribution remains governed by the sender-defined permission state. By separating the forwarded conversation while preserving inherited restrictions, the prototype makes downstream sharing legible as an extension of the original disclosure rather than as an unrelated or uncontrolled disclosure event.
 
-\subsection{(bu silinecek)Co-Subject and Multi-Party Privacy Control}
+\subsection{(why did i wrote 'this will be erased.')Co-Subject and Multi-Party Privacy Control}
 To achieve FR12 and FR13, the prototype extends the permission model beyond the sender/recipient pair by allowing the sender to mark, at send time, that a photo contains a co-subject. In the current implementation, this is done through the pre-send composer, where the sender can enable a co-subject flag as part of the photo's initial permission state. Photos marked in this way then become visible within a dedicated co-subject view, where the depicted person is shown a clear indication that they appear in the photo. Rather than treating the image as sender-only content, the prototype therefore represents certain photos as multi-party disclosures whose privacy implications extend beyond the original sender and recipient.
 
 To achieve FR13 more specifically, the co-subject is not only shown the marked photo but is also given an explicit interface cue stating that they are depicted in it. In the current prototype, this appears as a dedicated co-subject card with a short notification message indicating that the person appears in the shared photo and may request revocation. This makes co-subject involvement visible in the interface and provides a basis for later action rather than leaving multi-party implications implicit or hidden.

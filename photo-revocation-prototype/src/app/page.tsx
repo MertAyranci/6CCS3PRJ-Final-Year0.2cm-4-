@@ -168,28 +168,28 @@ const presetAlbum: PhotoAsset[] = [
   {
     id: "preset-beach",
     kind: "preset",
-    label: "Beach night",
+    label: "Beach",
     previewClass:
       "bg-[radial-gradient(circle_at_top,#fcd34d_0%,#f59e0b_24%,#0f766e_64%,#164e63_100%)]",
   },
   {
     id: "preset-city",
     kind: "preset",
-    label: "City lights",
+    label: "City",
     previewClass:
       "bg-[radial-gradient(circle_at_top,#f472b6_0%,#8b5cf6_35%,#1d4ed8_72%,#0f172a_100%)]",
   },
   {
     id: "preset-cafe",
     kind: "preset",
-    label: "Cafe table",
+    label: "Cafe",
     previewClass:
       "bg-[radial-gradient(circle_at_top,#f5d0a9_0%,#fb923c_30%,#7c3aed_70%,#312e81_100%)]",
   },
   {
     id: "preset-garden",
     kind: "preset",
-    label: "Garden walk",
+    label: "Garden",
     previewClass:
       "bg-[radial-gradient(circle_at_top,#86efac_0%,#22c55e_28%,#0f766e_68%,#134e4a_100%)]",
   },
@@ -264,7 +264,7 @@ export default function Home() {
   const [senderInput, setSenderInput] = useState("");
   const [recipientInput, setRecipientInput] = useState("");
   const [lastSendSummary, setLastSendSummary] = useState(
-    "Sent Beach night with visible access and forwarding blocked.",
+    "Sent Beach with visible access and forwarding blocked.",
   );
   const [lastForwardSummary, setLastForwardSummary] = useState(
     "No forwarded photo has been shared yet.",
@@ -534,7 +534,7 @@ export default function Home() {
     setDraftCaption("Shared with revocable permissions.");
     setDraftPermissions({
       status: "active",
-      canForward: false,
+      canForward: true,
       viewOnce: false,
       expiresAt: null,
       canDownload: true,
@@ -1526,96 +1526,75 @@ export default function Home() {
 
       <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,#0b141a_0%,#0f171d_100%)] px-4 py-6">
         {phoneOwner === "sender" && composerOpen && draftPhoto ? (
-          <div className="space-y-4 pb-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-white">Photo permissions</p>
+          <div className="flex h-full flex-col bg-black -mx-4 -my-6 text-white">
+            <div className="flex items-center justify-between px-3 py-2">
               <button
                 type="button"
                 onClick={() => setComposerOpen(false)}
-                className="rounded-full border border-white/20 px-2.5 py-1 text-[11px] text-slate-300 hover:bg-white/10"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:bg-white/10"
+                aria-label="Close"
               >
-                Close
+                ✕
               </button>
+              <p className="text-[11px] text-white/40">
+                <span className="text-amber-400/70">ⓘ</span> Screenshots &amp; saves can&apos;t be undone
+              </p>
             </div>
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-[#202c33]">
-              <div className="max-h-[140px] overflow-hidden">
-                {renderPhotoPreview(draftPhoto)}
-              </div>
-              <input
-                value={draftCaption}
-                onChange={(e) => setDraftCaption(e.target.value)}
-                placeholder="Add a caption..."
-                className="w-full border-t border-white/10 bg-[#172229] px-3 py-2 text-xs text-white outline-none placeholder:text-slate-400"
-              />
+
+            <div className="flex flex-1 items-center justify-center px-6">
+              <div className="w-full overflow-hidden rounded-lg">{renderPhotoPreview(draftPhoto)}</div>
             </div>
-            <p className="flex items-center gap-1.5 text-[11px] text-amber-200/90" role="note">
-              <span className="shrink-0 text-amber-400" aria-hidden>ⓘ</span>
-              Screenshots &amp; saves can&apos;t be undone.
-            </p>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => setDraftPermissions((p) => ({ ...p, viewOnce: !p.viewOnce }))}
-                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
-                  draftPermissions.viewOnce ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {draftPermissions.viewOnce ? "View once allowed" : "View once disabled"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDraftPermissions((p) => ({ ...p, canForward: !p.canForward }))}
-                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
-                  draftPermissions.canForward ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {draftPermissions.canForward ? "Forwarding allowed" : "Forwarding disabled"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDraftPermissions((p) => ({ ...p, canDownload: !p.canDownload }))}
-                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
-                  draftPermissions.canDownload ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {draftPermissions.canDownload ? "Downloading allowed" : "Downloading disabled"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDraftPermissions((p) => ({ ...p, hasCoSubject: !p.hasCoSubject }))}
-                className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
-                  draftPermissions.hasCoSubject ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {draftPermissions.hasCoSubject ? "Co-subject in photo (notified)" : "Co-subject in photo"}
-              </button>
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setDraftTimeLimitOpen((o) => !o)}
-                  className={`w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition ${
-                    draftTimeLimitOpen ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {draftTimeLimitOpen ? "Time limit (set)" : "Time limit (no expiry)"}
+
+            <div className="space-y-2 px-3 pb-1 pt-3">
+              <div className="flex flex-wrap gap-1.5">
+                <button type="button" onClick={() => setDraftPermissions((p) => ({ ...p, viewOnce: !p.viewOnce }))} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${draftPermissions.viewOnce ? "bg-[#00a884] text-white" : "bg-white/10 text-white/60 hover:bg-white/15"}`}>
+                  {draftPermissions.viewOnce ? "① View once" : "View once"}
                 </button>
-                {draftTimeLimitOpen ? (
-                  <div className="mt-2 flex justify-center gap-1">
-                    <ScrollWheelColumn min={0} max={99} value={draftTimeLimit.days} onChange={(d) => setDraftTimeLimit((p) => ({ ...p, days: d }))} label="D" />
-                    <ScrollWheelColumn min={0} max={23} value={draftTimeLimit.hours} onChange={(h) => setDraftTimeLimit((p) => ({ ...p, hours: h }))} label="H" />
-                    <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.minutes} onChange={(m) => setDraftTimeLimit((p) => ({ ...p, minutes: m }))} label="M" />
-                    <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.seconds} onChange={(s) => setDraftTimeLimit((p) => ({ ...p, seconds: s }))} label="S" />
-                  </div>
-                ) : null}
+                <button type="button" onClick={() => setDraftPermissions((p) => ({ ...p, canForward: !p.canForward }))} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${draftPermissions.canForward ? "bg-[#00a884] text-white" : "bg-white/10 text-white/60 hover:bg-white/15"}`}>
+                  {draftPermissions.canForward ? "↗ Forward" : "↗ No forward"}
+                </button>
+                <button type="button" onClick={() => setDraftPermissions((p) => ({ ...p, canDownload: !p.canDownload }))} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${draftPermissions.canDownload ? "bg-[#00a884] text-white" : "bg-white/10 text-white/60 hover:bg-white/15"}`}>
+                  {draftPermissions.canDownload ? "⬇ Download" : "⬇ No download"}
+                </button>
+                <button type="button" onClick={() => setDraftPermissions((p) => ({ ...p, hasCoSubject: !p.hasCoSubject }))} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${draftPermissions.hasCoSubject ? "bg-[#00a884] text-white" : "bg-white/10 text-white/60 hover:bg-white/15"}`}>
+                  {draftPermissions.hasCoSubject ? "👤 Co-subject" : "👤 Co-subject"}
+                </button>
+                <button type="button" onClick={() => setDraftTimeLimitOpen((o) => !o)} className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${draftTimeLimitOpen ? "bg-[#00a884] text-white" : "bg-white/10 text-white/60 hover:bg-white/15"}`}>
+                  {draftTimeLimitOpen ? "⏱ Time limit" : "⏱ No expiry"}
+                </button>
+              </div>
+              {draftTimeLimitOpen ? (
+                <div className="flex justify-center gap-1 pt-1">
+                  <ScrollWheelColumn min={0} max={99} value={draftTimeLimit.days} onChange={(d) => setDraftTimeLimit((p) => ({ ...p, days: d }))} label="D" />
+                  <ScrollWheelColumn min={0} max={23} value={draftTimeLimit.hours} onChange={(h) => setDraftTimeLimit((p) => ({ ...p, hours: h }))} label="H" />
+                  <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.minutes} onChange={(m) => setDraftTimeLimit((p) => ({ ...p, minutes: m }))} label="M" />
+                  <ScrollWheelColumn min={0} max={59} value={draftTimeLimit.seconds} onChange={(s) => setDraftTimeLimit((p) => ({ ...p, seconds: s }))} label="S" />
+                </div>
+              ) : null}
+            </div>
+
+            <div className="px-3 pb-2">
+              <div className="flex items-center rounded-full border border-white/20 bg-[#1a1a1a] px-4 py-2.5">
+                <input
+                  value={draftCaption}
+                  onChange={(e) => setDraftCaption(e.target.value)}
+                  placeholder="Add a caption..."
+                  className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
+                />
               </div>
             </div>
-            <button
-              type="button"
-              onClick={sendConfiguredPhoto}
-              className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
-            >
-              Send photo message
-            </button>
+
+            <div className="flex items-center justify-between px-3 pb-3">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/50">Recipient</span>
+              <button
+                type="button"
+                onClick={sendConfiguredPhoto}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#00a884] transition hover:bg-[#00c49a]"
+                aria-label="Send photo"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </div>
           </div>
         ) : conversation.length > 0 ? (
           <div className="space-y-4">
@@ -1883,99 +1862,79 @@ export default function Home() {
         )}
 
         {phoneOwner === "sender" && pickerOpen ? (
-          <div className="mt-4 rounded-3xl border border-white/10 bg-[#172229] p-4 text-white">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold">Camera and album</p>
-                <p className="text-xs text-slate-300">
-                  Choose a photo, then configure permissions before sending.
-                </p>
-              </div>
+          <div className="mt-3 overflow-hidden rounded-2xl border border-white/10 bg-black text-white">
+            <div className="flex items-center justify-between bg-[#1b1b1b] px-3 py-2">
               <button
                 type="button"
                 onClick={() => setPickerOpen(false)}
-                className="rounded-full border border-white/15 px-3 py-1 text-xs text-slate-200"
+                className="text-[13px] text-white/80 hover:text-white"
               >
-                Close
+                Cancel
               </button>
+              <div className="flex overflow-hidden rounded-full bg-white/10 text-[12px]">
+                <span className="bg-white/20 px-3 py-0.5 font-medium text-white">Photos</span>
+                <span className="px-3 py-0.5 text-white/50">Albums</span>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-sm hover:bg-white/20"
+                  aria-label="Open camera"
+                >
+                  📷
+                </button>
+                <button
+                  type="button"
+                  onClick={() => albumInputRef.current?.click()}
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-sm hover:bg-white/20"
+                  aria-label="Choose from files"
+                >
+                  📁
+                </button>
+              </div>
             </div>
 
-            <div className="mt-4 flex gap-3">
-              <button
-                type="button"
-                onClick={() => cameraInputRef.current?.click()}
-                className="flex-1 rounded-2xl bg-[#005c4b] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0b7a63]"
-              >
-                Open camera
-              </button>
-              <button
-                type="button"
-                onClick={() => albumInputRef.current?.click()}
-                className="flex-1 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Choose from files
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-                Preset album
-              </p>
-              <div className="mt-3 grid grid-cols-4 gap-3">
+            <div className="max-h-[340px] overflow-y-auto">
+              <div className="grid grid-cols-3 gap-[2px]">
                 {presetAlbum.map((asset) => (
                   <button
                     key={asset.id}
                     type="button"
                     onClick={() => setPickerSelectedPhoto(asset)}
-                    className="text-left"
+                    className="relative aspect-square overflow-hidden"
                   >
-                    <div
-                      className={`aspect-square overflow-hidden rounded-2xl border ${
-                        pickerSelectedPhoto?.id === asset.id
-                          ? "border-emerald-400"
-                          : "border-white/10"
-                      }`}
-                    >
-                      {renderPhotoPreview(asset)}
-                    </div>
-                    <p className="mt-2 text-xs text-slate-300">{asset.label}</p>
+                    {renderPhotoPreview(asset)}
+                    {pickerSelectedPhoto?.id === asset.id ? (
+                      <div className="absolute inset-0 border-[3px] border-[#00a884]" />
+                    ) : null}
                   </button>
                 ))}
               </div>
             </div>
 
             {pickerSelectedPhoto ? (
-              <div className="mt-4 rounded-3xl border border-white/10 bg-[#111b21] p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-                  Selected photo
-                </p>
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="h-16 w-16 overflow-hidden rounded-2xl border border-white/10">
+              <div className="border-t border-white/10 bg-[#1b1b1b] px-3 py-2.5">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-white/10">
                     {renderPhotoPreview(pickerSelectedPhoto)}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {pickerSelectedPhoto.label}
-                    </p>
-                    <p className="text-xs text-slate-300">
-                      Send directly or open revocable permissions first.
-                    </p>
-                  </div>
+                  <p className="min-w-0 flex-1 truncate text-sm text-white/90">{pickerSelectedPhoto.label}</p>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-2.5 flex gap-2">
                   <button
                     type="button"
                     onClick={sendPhotoDirectly}
-                    className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                    className="flex-1 rounded-full border border-white/15 bg-white/5 py-2 text-[13px] font-semibold text-white transition hover:bg-white/10"
                   >
                     Send
                   </button>
                   <button
                     type="button"
                     onClick={() => openComposerForPhoto(pickerSelectedPhoto)}
-                    className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+                    className="flex-1 rounded-full bg-[#00a884] py-2 text-[13px] font-semibold text-white transition hover:bg-[#00c49a]"
                   >
-                    Send with revocable permissions
+                    Send with permissions
                   </button>
                 </div>
               </div>
@@ -2112,7 +2071,7 @@ export default function Home() {
             "Co-subject",
             "Co-subject view of the chat",
             [...mainMessages.filter((m) => {
-              if (m.type !== "photo") return true;
+              if (m.type !== "photo") return false;
               return m.permissions.hasCoSubject;
             }), ...coSubjectOnlyMessages].sort((a, b) => a.id - b.id),
           )}
