@@ -251,20 +251,21 @@ RG3
 
 \end{longtable}
 
+
 \Needspace{12\baselineskip}
 \section{Non-Functional Requirements (NFR)}
 
 \renewcommand{\arraystretch}{1.2}
 
-\begin{longtable}{|c|P{3.8cm}|P{3.8cm}|P{2.8cm}|P{2.2cm}|}
+\begin{longtable}{|c|P{3.8cm}|P{8.0cm}|P{1.5cm}|}
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Purpose} & \textbf{Literature Support} & \textbf{Research Gap Addressed} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
 \hline
 \endhead
 
@@ -272,71 +273,67 @@ RG3
 \caption*{\textbf{Table~\thetable:} Non-Functional Requirements}
 \endlastfoot
 
-\multicolumn{5}{|l|}{\textbf{Usability}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{1. Usability and clarity}} \\ \hline
 NFR1 &
-The interface must be easy to understand for first-time users. &
-Ensure that users can understand the permission model and core controls immediately without prior training or repeated use. &
-First-use interpretability; consent controls should be usable, legible, and consistently presented rather than hidden or ambiguous. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,albesher_2021,schnitzler_2020,bourgeus_vandercruysse_2024,nouwens_dark_2020} &
-RG1 and RG2
+The prototype interface must be easy to understand for first-time users. &
+Helps users understand the permission model and core controls without prior training or repeated use. Literature on usable privacy and consent interfaces emphasises that controls should be legible, consistently presented, and not hidden or ambiguous. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,albesher_2021,schnitzler_2020,bourgeus_vandercruysse_2024,nouwens_dark_2020} &
+RG1 
+RG2
 \\ \hline
 
 NFR2 &
-The system shall support quick completion of routine sharing tasks whilst introducing only proportionate friction for privacy-sensitive actions; enough to support reflection, but not so much that users avoid the feature. &
-Balance everyday efficiency with reflective intervention so privacy-sensitive actions receive attention without making the system feel burdensome or disruptive. &
-Consent interactions should be unburdensome but reflective: routine actions should stay low-friction, while privacy-sensitive sharing can justify proportionate prompts or warnings that support attention without causing fatigue or avoidance. \cite{im_yes_2021,schaub_notice_2015,wilbanks_design_2018,lindegren_evaluation_2021,cherubini_2021,lee_identifying_2023,baruh_big_2017} &
+The prototype should support quick routine sharing while adding only proportionate friction for privacy-sensitive actions. &
+Ensures that routine sharing stays quick while privacy-sensitive actions receive enough attention. Literature on usable consent and privacy interaction design emphasises that consent flows should remain low-friction in ordinary use, while more sensitive actions may justify prompts or warnings that encourage reflection without causing fatigue or avoidance. \cite{im_yes_2021,schaub_notice_2015,wilbanks_design_2018,lindegren_evaluation_2021,cherubini_2021,lee_identifying_2023,baruh_big_2017} &
 RG1
 \\ \hline
 
 NFR3 &
-Consent and privacy controls must present choices in a clear, balanced, and non-manipulative way. &
-Ensure users can understand and compare options without hidden choices, unequal emphasis, or pressure toward a preferred action. &
-Meaningful consent is undermined by dark patterns, unequal salience, hidden decline paths, and unclear notices; privacy controls should remain interpretable and support freely made choices. \cite{nouwens_dark_2020,bermejo_fernandez_2021,soe_2020,gray_etal_2021,wilbanks_design_2018,schaub_notice_2015} &
-RG1 and RG3
+Consent and privacy controls must present choices in a balanced, and non-manipulative way. &
+Ensures that users can understand and compare options and make freely made choices. Literature on meaningful consent and dark patterns emphasises that privacy choices should not rely on hidden options, unequal emphasis, unclear notices, or obstructed decline paths. \cite{nouwens_dark_2020,bermejo_fernandez_2021,soe_2020,gray_etal_2021,wilbanks_design_2018,schaub_notice_2015} &
+RG1 
+RG3
 \\ \hline
 
 NFR4 &
 The interface must provide readable and distinguishable permission states, labels, and controls. &
-Make permission-related information easy to read, compare, and interpret so users can recognise states and act confidently. &
-Permission states and controls must be visually legible and clearly distinguishable so users can interpret privacy status changes, locate actions, and understand consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
-RG1 and RG2
+Ensures that users can read, compare, and interpret permission-related information confidently. Literature on usable privacy and consent interfaces emphasises that permission states and controls should be visually legible and clearly distinguishable so users can understand status changes, locate actions, and interpret consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
+RG1 
+RG2
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{Performance}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{2. Performance}} \\ \hline
 NFR5 &
 Permission-related actions and status changes should remain responsive enough for live demonstration in a local browser environment. &
-Preserve a smooth and credible interaction flow by ensuring that permission changes appear promptly during use and evaluation. &
-Low-friction interaction is important in fast-paced messaging; consent controls should remain usable at the moment of action and not introduce disruptive delay. \cite{wilbanks_design_2018,im_yes_2021,schaub_notice_2015,lindegren_evaluation_2021,lee_identifying_2023,albesher_2021} &
+Ensures that permission changes appear quickly enough to support smooth interaction during use and evaluation of the prototype. Literature on usable consent and privacy interaction design emphasises that controls should remain responsive at the moment of action and not introduce disruptive delay. \cite{wilbanks_design_2018,im_yes_2021,schaub_notice_2015,lindegren_evaluation_2021,lee_identifying_2023,albesher_2021} &
 RG1
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{Social Impact}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{3. Social impact}} \\ \hline
 NFR6 &
 The interface must use neutral, non-blaming language to reduce unnecessary social tension when permissions change. &
-Reduce avoidable interpersonal friction by ensuring that permission changes are communicated in a socially careful and non-accusatory way. &
-Revocation is a socially meaningful boundary change, so interface wording should minimise blame, ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
+Ensures that permission changes are communicated in a socially careful and non-accusatory way. Literature on privacy boundary management and revocation emphasises that such changes are socially meaningful, so interface wording should minimise blame, ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
 RG3
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{Consistency}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{4. Consistency}} \\ \hline
 NFR7 &
 Permission menus, indicators, and states should remain consistent with familiar WhatsApp-like interaction patterns. &
-Improve learnability and reduce confusion by aligning new permission controls with interaction patterns users already recognise from WhatsApp-like messaging. &
-Consistency supports interpretable privacy control: revocation-related settings should follow familiar messaging patterns and avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
-RG1 and RG4
+Ensures that new permission controls are easier to learn and less confusing by following interaction patterns users already recognise. Literature on usable privacy controls emphasises that consistency supports interpretability, and that settings should avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
+RG1 
+RG4
 \\ \hline
 
 NFR8 &
 Permission management should assume continuity with WhatsApp’s existing end-to-end encryption model, without requiring changes to the underlying encryption architecture. &
-Preserve conceptual compatibility with users’ expectations of secure WhatsApp-like communication while introducing permission controls. &
-This assumption ensures that the proposed permission model is interpreted as operating alongside, rather than replacing or weakening, WhatsApp’s existing end-to-end encryption. It supports consistency by framing permission management as an additional layer of user control that remains compatible with familiar secure messaging expectations. &
-RG1 and RG4
+Ensures that permission controls remain compatible with familiar secure messaging expectations. This assumption frames permission management as operating alongside, rather than replacing or weakening, WhatsApp’s existing end-to-end encryption, and supports consistency by treating it as an additional layer of user control. &
+RG1 
+RG4
 \\ \hline
 
-\multicolumn{5}{|l|}{\textbf{Transparency}} \\ \hline
+\multicolumn{4}{|l|}{\textbf{5. Transparency}} \\ \hline
 NFR9 &
 The system must not over-promise. It should clearly indicate that revocation may not affect screenshots, saved copies, or prior viewing. &
-Calibrate user expectations by communicating the practical limits of revocation clearly and honestly. &
-Revocation in messaging is only partial and prospective, so the interface should communicate scope honestly and avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,ingber_2025,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
+Ensures that users understand the practical limits of revocation clearly and honestly. Literature on revocation and media control emphasises that revocation is only partial and prospective, so interfaces should avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,ingber_2025,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
 RG2
 \\ \hline
 
