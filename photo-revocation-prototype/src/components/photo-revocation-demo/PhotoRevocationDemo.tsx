@@ -21,9 +21,8 @@ import {
   DEFAULT_DRAFT_PERMISSIONS,
   DEFAULT_DRAFT_TIME_LIMIT,
   DEFAULT_PANEL_TIME_LIMIT,
-  INITIAL_LAST_FORWARD_SUMMARY,
-  INITIAL_LAST_SEND_SUMMARY,
   INITIAL_MAIN_MESSAGES,
+  INITIAL_SEND_HISTORY,
 } from "@/lib/photo-revocation-demo/initialState";
 import {
   formatExpiryCountdown,
@@ -31,13 +30,12 @@ import {
   getNextMessageId,
   getStatusLabel,
   getTimeLabel,
-  isPhotoExpired,
   isViewOnceConsumedForSourcePhoto,
   photoMessageDisplayLabel,
 } from "@/lib/photo-revocation-demo/helpers";
 import { ComposerView } from "./ComposerView";
 import { MessageList } from "./MessageList";
-import { PermissionsPanel } from "./PermissionsPanel";
+import { PrototypeStateSummary } from "./PrototypeStateSummary";
 import { PhoneFrame } from "./PhoneFrame";
 import { PhotoPreview } from "./PhotoPreview";
 import { PickerSheet } from "./PickerSheet";
@@ -47,7 +45,6 @@ import { TimeLimitModal } from "./TimeLimitModal";
 import { ViewOnceInChatModal } from "./ViewOnceInChatModal";
 
 export function PhotoRevocationDemo() {
-  const [panelOpen, setPanelOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(2);
   const [openPhotoMenu, setOpenPhotoMenu] = useState<import("@/lib/photo-revocation-demo/types").OpenPhotoMenuState | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -67,12 +64,10 @@ export function PhotoRevocationDemo() {
   const [draftTimeLimit, setDraftTimeLimit] = useState<TimeLimitDuration>(DEFAULT_DRAFT_TIME_LIMIT);
   const [draftTimeLimitOpen, setDraftTimeLimitOpen] = useState(false);
   const [panelTimeLimit, setPanelTimeLimit] = useState<TimeLimitDuration>(DEFAULT_PANEL_TIME_LIMIT);
-  const [panelTimeLimitOpen, setPanelTimeLimitOpen] = useState(false);
   const [timeLimitModalOpen, setTimeLimitModalOpen] = useState(false);
   const [senderInput, setSenderInput] = useState("");
   const [recipientInput, setRecipientInput] = useState("");
-  const [lastSendSummary, setLastSendSummary] = useState(INITIAL_LAST_SEND_SUMMARY);
-  const [lastForwardSummary, setLastForwardSummary] = useState(INITIAL_LAST_FORWARD_SUMMARY);
+  const [sendHistory, setSendHistory] = useState(INITIAL_SEND_HISTORY);
   const [mainMessages, setMainMessages] = useState<ChatMessage[]>(INITIAL_MAIN_MESSAGES);
   const [forwardedMessages, setForwardedMessages] = useState<ChatMessage[]>([]);
   const [senderOnlyMessages, setSenderOnlyMessages] = useState<ChatMessage[]>([]);
@@ -81,7 +76,6 @@ export function PhotoRevocationDemo() {
   const [, setCountdownTick] = useState(0);
 
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
-  const permissionsPanelRef = useRef<HTMLElement | null>(null);
   const albumInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -215,11 +209,17 @@ export function PhotoRevocationDemo() {
 
     setMainMessages((currentMessages) => [...currentMessages, newPhotoMessage]);
     setSelectedPhotoId(newPhotoMessage.sourcePhotoId);
-    setPanelOpen(false);
     setPickerSelectedPhotos([]);
     setDraftPhotos([]);
     setComposerOpen(false);
-    setLastSendSummary(summary);
+    setSendHistory((prev) => [
+      ...prev,
+      {
+        sourcePhotoId: newPhotoMessage.sourcePhotoId,
+        time: newPhotoMessage.time,
+        summary,
+      },
+    ]);
   };
 
   const sendConfiguredPhoto = () => {
@@ -302,9 +302,6 @@ export function PhotoRevocationDemo() {
     };
 
     setForwardedMessages((currentMessages) => [...currentMessages, forwardedMessage]);
-    setLastForwardSummary(
-      `Recipient forwarded ${photoMessageDisplayLabel(message)} to the third phone.`,
-    );
   };
 
   const addReplyMessage = (
@@ -591,7 +588,6 @@ export function PhotoRevocationDemo() {
     setOpenViewOnce,
     forwardPhotoMessage,
     updateSelectedPhotoPermissions,
-    setPanelOpen,
     setTimeLimitModalOpen,
     setReplyingTo,
     setRevocationRequestOpen,
@@ -1004,22 +1000,13 @@ export function PhotoRevocationDemo() {
           </PhoneFrame>
         </div>
 
-        <PermissionsPanel
-          permissionsPanelRef={permissionsPanelRef}
+        <PrototypeStateSummary
           selectedPhotoMessage={selectedPhotoMessage}
-          panelOpen={panelOpen}
-          setPanelOpen={setPanelOpen}
-          updateSelectedPhotoPermissions={updateSelectedPhotoPermissions}
-          isPhotoExpired={isPhotoExpired}
-          formatExpiryCountdown={formatExpiryCountdown}
-          getStatusLabel={getStatusLabel}
-          lastSendSummary={lastSendSummary}
-          lastForwardSummary={lastForwardSummary}
+          sendHistory={sendHistory}
+          mainMessages={mainMessages}
+          forwardedMessages={forwardedMessages}
+          consumedViewOnce={consumedViewOnce}
           isViewOnceConsumedForSelectedPhoto={viewOnceConsumedSelected}
-          panelTimeLimit={panelTimeLimit}
-          setPanelTimeLimit={setPanelTimeLimit}
-          panelTimeLimitOpen={panelTimeLimitOpen}
-          setPanelTimeLimitOpen={setPanelTimeLimitOpen}
         />
       </div>
 

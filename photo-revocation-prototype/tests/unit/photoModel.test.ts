@@ -6,7 +6,7 @@ import {
   formatTimeLimit,
   forwardingAllowed,
   hasTimeLimit,
-} from "./photoModel";
+} from "@/lib/photoModel";
 
 describe("photoModel", () => {
   it("computeEffectiveStatus treats past expiry as revoked for stored active", () => {

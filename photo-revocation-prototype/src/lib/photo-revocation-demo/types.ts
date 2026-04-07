@@ -52,6 +52,13 @@ export type ChatMessage =
 
 export type PhotoMessage = Extract<ChatMessage, { type: "photo" }>;
 
+/** One row in the prototype send log (main thread, sender photo messages). */
+export type SendHistoryEntry = {
+  sourcePhotoId: number;
+  time: string;
+  summary: string;
+};
+
 export type OpenPhotoMenuState = {
   messageId: number;
   thread: ConversationThread;

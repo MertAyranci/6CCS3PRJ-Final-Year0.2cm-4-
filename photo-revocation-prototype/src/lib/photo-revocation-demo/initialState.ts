@@ -1,4 +1,4 @@
-import type { ChatMessage, PhotoPermissions } from "./types";
+import type { ChatMessage, PhotoPermissions, SendHistoryEntry } from "./types";
 import type { TimeLimitDuration } from "@/lib/photoModel";
 import { initialPhotoAsset } from "./constants";
 
@@ -30,8 +30,14 @@ export const DEFAULT_PANEL_TIME_LIMIT: TimeLimitDuration = {
 export const INITIAL_LAST_SEND_SUMMARY =
   "Sent Beach with visible access and forwarding blocked.";
 
-export const INITIAL_LAST_FORWARD_SUMMARY =
-  "No forwarded photo has been shared yet.";
+/** Matches the first sender photo in `INITIAL_MAIN_MESSAGES` (id / time must stay aligned). */
+export const INITIAL_SEND_HISTORY: SendHistoryEntry[] = [
+  {
+    sourcePhotoId: 2,
+    time: "09:14",
+    summary: INITIAL_LAST_SEND_SUMMARY,
+  },
+];
 
 export const INITIAL_MAIN_MESSAGES: ChatMessage[] = [
   {

@@ -1,16 +1,63 @@
 \chapter{Implementation}
 \section{Brief}
 
-\section{Technology Choices and Prototype Scope}
-Next.js/react
-TypeScript
-Tailwind CSS
-(maybe supabase)
-Why these technologies were chosen.
+\section{Technology Choices and Prototype Scope}\label{sec:tech-choices}
 
-\section{Developement Process}
+\subsection*{Next.js and React}
+
+React~19 was chosen for its component-based architecture, which supports modular development, reuse across the interface, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as the sender, recipient, forwarded recipient, and co-subject perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes, such as revocation, forwarding restrictions, and time-limit expiry, to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation rather than a networked multi-user system, this behaviour could be implemented without introducing an external state-management library.
+
+Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is essentially a single-page application, Next.js streamlined development and supported rapid iteration across the two implementation rounds described in Section~\ref{sec:dev-process}.
+
+\subsection*{TypeScript}
+
+TypeScript was used to define and enforce the core data structures of the prototype at compile time \cite{typescript_docs}. This was particularly important because the Smart Photos prototype relies on a structured permission model spanning message content, stakeholder roles, and photo-specific control. Several key types were used throughout the implementation:
+
+\begin{itemize}
+  \item \texttt{PhotoPermissions} --- encodes revocation status, forwarding, view-once, download, time-limit, and co-subject flags;
+  \item \texttt{ChatMessage} --- a discriminated union distinguishing text messages from photo messages, each carrying different metadata;
+  \item \texttt{Participant} --- a literal union (\texttt{"sender"}, \texttt{"recipient"}, \texttt{"forwardedRecipient"}, \texttt{"coOwner"}) that restricts handler functions to valid stakeholder roles.
+\end{itemize}
+
+\noindent
+Using explicit types helped keep these structures consistent across components and reduced the likelihood of development errors as the prototype evolved. This was especially valuable because the permission model is the central contribution of the prototype and any inconsistency in how permissions, messages, or stakeholder roles were represented would have weakened the credibility of the resulting user evaluation. Although TypeScript does not replace runtime permission logic, it improved maintainability and made the implementation safer to extend during iterative refinement.
+
+\subsection*{Tailwind CSS}
+
+Tailwind CSS~4 was chosen as the styling framework because its utility-first approach enabled rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns such as chat bubbles, action menus, bottom sheets, and phone-frame layouts in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
+
+The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was particularly valuable in a prototype that underwent multiple rounds of refinement following participant feedback.
+
+\subsection*{Front-End Simulation and Prototype Scope}
+
+The prototype operates entirely as a front-end simulation with in-memory state. All conversation data, permission records, and photo metadata are initialised in the browser and managed through React state; no server, database, or external API is involved. This architectural decision was deliberate and aligned with the research aim of the project. The dissertation evaluates the \emph{interaction design and user experience of consent revocation} rather than the engineering feasibility of a production messaging system. A front-end simulation made it possible to demonstrate sender, recipient, forwarded recipient, and co-subject perspectives within a single browser window, while ensuring that permission changes took effect immediately and could be observed clearly during evaluation.
+
+Accordingly, the prototype should be understood as an interactive proof-of-concept for evaluating the Smart Photos permission model, rather than as a production-ready messaging application. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement within a WhatsApp-like interface, but it does not implement end-to-end encryption, authentication, persistent storage, real-time message delivery, multi-device synchronisation, face-recognition-based co-subject detection, or server-side enforcement of access controls. These omissions were intentional and reflect the scope of the research, which focuses on usability and perceived trustworthiness rather than back-end infrastructure.
+
+\subsection*{Technology Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{P{3.2cm} P{1.8cm} P{8cm}}
+\hline
+\textbf{Technology} & \textbf{Version} & \textbf{Role in Prototype} \\
+\hline
+React & 19.2 & Component-based UI library; manages the multi-view layout and reactive permission state via hooks. \\
+Next.js & 16.1 & Application framework; provides the App Router, development server, and optimised production builds. \\
+TypeScript & 5.x & Static type system; enforces the permission data model at compile time. \\
+Tailwind CSS & 4.x & Utility-first CSS framework; enables rapid, consistent styling that approximates WhatsApp's visual patterns. \\
+Vitest + RTL & 3.x & Test framework and React Testing Library; unit and component tests with code-coverage reporting. \\
+\hline
+\end{tabular}
+\caption{Technology stack and component roles}
+\label{tab:tech-summary}
+\end{table}
+
+
+\section{Development Process}\label{sec:dev-process}
 how did i built it over time?
 design idea --->> final coded prototype.
+two rounds of implementation (first round: basic prototype, second round: adding features from the advices of the interview participants)
 \section{Components and State Management}
 Will include the architecture/components.
 I will have the code snippets etc.
@@ -21,4 +68,11 @@ explain when someone uses the prototype, what behaviour they will see.
 \section{Prototype Boundaries and Limitations (does this belong to chapters: discussion, results/evaluation, conclusion/future work or this one?)}
 will talk about no face recognition, no end to end encryption or other kinds of security features added.
 
+\section{Challenges and Solutions}
+
 \section{Software Testing}
+
+
+co-subject ile alakali konususrken:
+If you keep co-subject, start with a lightweight version. For example: notify named people that the photo was shared, then let them request review or takedown. Do not start with a full complex rights system.
+

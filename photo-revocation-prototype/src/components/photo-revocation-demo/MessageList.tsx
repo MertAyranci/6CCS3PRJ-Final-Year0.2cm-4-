@@ -1,6 +1,5 @@
 "use client";
 
-import type { Dispatch, SetStateAction } from "react";
 import type {
   AccessRequestOpenState,
   ChatMessage,
@@ -28,7 +27,6 @@ export type MessageListProps = {
   setOpenViewOnce: (v: { owner: Participant; thread: ConversationThread; messageId: number } | null) => void;
   forwardPhotoMessage: (message: PhotoMessage) => void;
   updateSelectedPhotoPermissions: (updates: Partial<PhotoPermissions>) => void;
-  setPanelOpen: Dispatch<SetStateAction<boolean>>;
   setTimeLimitModalOpen: (v: boolean) => void;
   setReplyingTo: (v: ReplyingToState | null) => void;
   setRevocationRequestOpen: (v: RevocationRequestOpenState | null) => void;
@@ -62,7 +60,6 @@ export function MessageList({
   setOpenViewOnce,
   forwardPhotoMessage,
   updateSelectedPhotoPermissions,
-  setPanelOpen,
   setTimeLimitModalOpen,
   setReplyingTo,
   setRevocationRequestOpen,
@@ -116,7 +113,6 @@ export function MessageList({
               setOpenViewOnce={setOpenViewOnce}
               forwardPhotoMessage={forwardPhotoMessage}
               updateSelectedPhotoPermissions={updateSelectedPhotoPermissions}
-              setPanelOpen={setPanelOpen}
               setTimeLimitModalOpen={setTimeLimitModalOpen}
               setReplyingTo={setReplyingTo}
               setRevocationRequestOpen={setRevocationRequestOpen}

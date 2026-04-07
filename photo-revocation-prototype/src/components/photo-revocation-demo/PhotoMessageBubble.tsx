@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import type {
   ChatMessage,
   ConversationThread,
@@ -40,7 +40,6 @@ export type PhotoMessageBubbleProps = {
   setOpenViewOnce: (v: { owner: Participant; thread: ConversationThread; messageId: number } | null) => void;
   forwardPhotoMessage: (message: PhotoMessage) => void;
   updateSelectedPhotoPermissions: (updates: Partial<PhotoPermissions>) => void;
-  setPanelOpen: Dispatch<SetStateAction<boolean>>;
   setTimeLimitModalOpen: (v: boolean) => void;
   setReplyingTo: (v: ReplyingToState | null) => void;
   setRevocationRequestOpen: (v: RevocationRequestOpenState | null) => void;
@@ -63,7 +62,6 @@ export function PhotoMessageBubble({
   setOpenViewOnce,
   forwardPhotoMessage,
   updateSelectedPhotoPermissions,
-  setPanelOpen,
   setTimeLimitModalOpen,
   setReplyingTo,
   setRevocationRequestOpen,
@@ -433,7 +431,7 @@ export function PhotoMessageBubble({
                           status: accessActive ? "revoked" : "active",
                           ...(isExpired ? { expiresAt: null } : {}),
                         });
-                        setPanelOpen(true);
+                        setOpenPhotoMenu(null);
                       }}
                       className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                     >
@@ -447,7 +445,7 @@ export function PhotoMessageBubble({
                         updateSelectedPhotoPermissions({
                           canForward: !effectivePermissions.canForward,
                         });
-                        setPanelOpen(true);
+                        setOpenPhotoMenu(null);
                       }}
                       className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                     >
@@ -461,7 +459,7 @@ export function PhotoMessageBubble({
                         updateSelectedPhotoPermissions({
                           canDownload: !effectivePermissions.canDownload,
                         });
-                        setPanelOpen(true);
+                        setOpenPhotoMenu(null);
                       }}
                       className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                     >
@@ -472,7 +470,7 @@ export function PhotoMessageBubble({
                         type="button"
                         onClick={() => {
                           updateSelectedPhotoPermissions({ expiresAt: null });
-                          setPanelOpen(true);
+                          setOpenPhotoMenu(null);
                         }}
                         className="w-full rounded-xl px-3 py-2 text-left transition hover:bg-white/10"
                       >
