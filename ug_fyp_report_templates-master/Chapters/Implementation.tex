@@ -29,14 +29,13 @@ Tailwind CSS~4 was chosen as the styling framework because its utility-first app
 The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was particularly valuable in a prototype that underwent multiple rounds of refinement following participant feedback.
 
 \subsection*{Front-End Simulation and Prototype Scope}
+The prototype operates entirely as a front-end simulation with in-memory state. Conversation data, permission records, and photo metadata are managed through React state in the browser, with no server, database, or external API. This design was chosen to support the project’s aim of evaluating the interaction design and user experience of consent revocation, rather than the engineering feasibility of a production messaging system. It also allowed multiple perspectives to be demonstrated in a single browser window and made permission changes immediately observable during evaluation.
 
-The prototype operates entirely as a front-end simulation with in-memory state. All conversation data, permission records, and photo metadata are initialised in the browser and managed through React state; no server, database, or external API is involved. This architectural decision was deliberate and aligned with the research aim of the project. The dissertation evaluates the \emph{interaction design and user experience of consent revocation} rather than the engineering feasibility of a production messaging system. A front-end simulation made it possible to demonstrate sender, recipient, forwarded recipient, and co-subject perspectives within a single browser window, while ensuring that permission changes took effect immediately and could be observed clearly during evaluation.
-
-Accordingly, the prototype should be understood as an interactive proof-of-concept for evaluating the Smart Photos permission model, rather than as a production-ready messaging application. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement within a WhatsApp-like interface, but it does not implement end-to-end encryption, authentication, persistent storage, real-time message delivery, multi-device synchronisation, face-recognition-based co-subject detection, or server-side enforcement of access controls. These omissions were intentional and reflect the scope of the research, which focuses on usability and perceived trustworthiness rather than back-end infrastructure.
+As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, authentication, persistent storage, real-time delivery, multi-device synchronisation, automated co-subject detection, or server-side access control.
 
 \subsection*{Technology Summary}
 
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{P{3.2cm} P{1.8cm} P{8cm}}
 \hline
@@ -54,10 +53,61 @@ Vitest + RTL & 3.x & Test framework and React Testing Library; unit and componen
 \end{table}
 
 
+
+
+
+
+
+
+
 \section{Development Process}\label{sec:dev-process}
-how did i built it over time?
-design idea --->> final coded prototype.
-two rounds of implementation (first round: basic prototype, second round: adding features from the advices of the interview participants)
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/development-process-diagram.pdf}
+    \caption{Development Process Diagram}
+    \label{fig:dev-process}
+\end{figure}
+
+\subsection*{Phase 1: Initial Prototype}
+
+The first implementation round focused on realising the core interaction flows defined in the functional specification: pre-send permission configuration (FR1--FR2), post-send permission management including revocation and restoration (FR3, FR5, FR6), recipient-side state presentation (FR4, FR10), constrained forwarding to a secondary recipient (FR7--FR9), access-request and response flows (FR11), and co-subject notification and revocation-request mechanisms (FR12--FR17). Each flow was built as a self-contained interaction path within a single-page React application, with all four stakeholder views---sender, recipient, forwarded recipient, and co-subject---rendered side by side so that the consequences of any permission change could be observed across participants in real time.
+
+At this stage the entire prototype resided in a single \texttt{page.tsx} file. This monolithic structure was a pragmatic choice for rapid prototyping: it avoided premature abstraction and kept all state and handlers visible in one place while the interaction model was still being tested and revised. That build was then used for the screenshot-driven interviews reported in Chapter~6.
+
+\subsection*{Evaluation and Rationale for a Second Round}
+
+A second implementation round was justified on methodological rather than evaluative grounds. As Gould and Lewis argue, usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements engineering; once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic task conditions.
+
+For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers uncover problems, discover opportunities for improvement, and learn how users actually engage with an interface \cite{moran_usability_testing_101}. A second round was therefore scoped deliberately to layout, styling, copy, and component structure, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. Chapter~6 documents what was learned from participants and how it was analysed.
+
+\subsection*{Phase 2: Post-Evaluation Refinements}
+
+Phase~2 implemented the interface adjustments motivated by that feedback and, in parallel, restructured the codebase from a single file into a multi-component architecture so that further changes and testing could proceed without entangling unrelated parts of the UI.
+
+\subsubsection*{Architectural Restructuring}
+During the second implementation round, the prototype was refactored from a single large \texttt{page.tsx} file into a modular structure. The top-level page retained responsibility for coordinating the overall multi-view simulation, while dedicated components under \path{components/photo-revocation-demo} handled specific interface elements such as composition, message rendering, previews, request panels, and modal interactions. Shared definitions and reusable logic were moved under \texttt{src/lib}, including the demo-specific modules in \path{photo-revocation-demo} (\texttt{types.ts}, \texttt{helpers.ts}, and \texttt{initialState.ts}) and the shared \texttt{photoModel.ts} file.
+
+This restructuring improved maintainability and made later refinements more manageable. Interface changes could be applied to individual components without repeatedly modifying one monolithic file, while the underlying permission model remained separated from presentation concerns.
+
+\subsubsection*{Interface Refinements}
+
+Phase~2 focused on improving clarity, presentation efficiency, and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Modal overlays were also scoped to individual handset frames so that each simulated participant view remained visually distinct. Further minor copy and layout adjustments were applied in the same spirit; they are not enumerated here. All these refinements are reflected in the final prototype described in the following sections. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Components and State Management}
 Will include the architecture/components.
 I will have the code snippets etc.
@@ -71,7 +121,8 @@ will talk about no face recognition, no end to end encryption or other kinds of 
 \section{Challenges and Solutions}
 
 \section{Software Testing}
-
+Changes were tested manually in the browser across the four stakeholder views after each modification.
+Version control was maintained with Git throughout both phases.
 
 co-subject ile alakali konususrken:
 If you keep co-subject, start with a lightweight version. For example: notify named people that the photo was shared, then let them request review or takedown. Do not start with a full complex rights system.
