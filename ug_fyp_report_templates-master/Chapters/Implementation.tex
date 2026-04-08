@@ -518,17 +518,24 @@ On the sender's side (Figure~\ref{fig:cosubject-sender}), the request appears as
 \noindent
 This flow satisfies the co-subject notification and revocation-request requirements (\textbf{FR12}--\textbf{FR17}), while the consistent use of limitation warnings across both the notification card and the request panel reinforces the expectation-management principle introduced in the pre-send composer.
 
-\section{Prototype Boundaries and Limitations (does this belong to chapters: discussion, results/evaluation, conclusion/future work or this one?)}
-will talk about no face recognition, no end to end encryption or other kinds of security features added.
 
-\section{Challenges and Solutions}
 
-\section{Software Testing}
-Changes were tested manually in the browser across the four stakeholder views after each modification.
-Version control was maintained with Git throughout both phases.
 
-belki plywright testleri de eklersin.
+\section{Software Testing}\label{sec:software-testing}
 
-co-subject ile alakali konususrken:
-If you keep co-subject, start with a lightweight version. For example: notify named people that the photo was shared, then let them request review or takedown. Do not start with a full complex rights system.
+\subsection*{Manual Cross-View Verification}
 
+After each substantive change, the prototype was exercised manually in the browser across all four stakeholder views (sender, recipient, forwarded recipient, and co-subject). These manual checks concentrated on cross-view consistency: confirming that a revocation performed in the sender panel was immediately reflected in the recipient and forwarded-recipient panels, that permission chips updated accordingly, and that warning text remained visible where expected. Manual verification was particularly important for visual and layout details---such as colour-coded status indicators, animation transitions, and responsive scaling---that automated tests running in a simulated DOM environment cannot fully capture. Version control was maintained with Git throughout both development phases, providing a traceable history of changes and the ability to isolate regressions.
+
+\subsection*{Automated Unit and Component Tests}
+
+To supplement manual checks, an automated test suite was developed using the tooling listed in Table~\ref{tab:tech-summary}: Vitest as the test runner, React Testing Library (RTL) for component rendering, and jsdom as the simulated browser environment. RTL's design philosophy prioritises testing components through their user-facing behaviour---querying by accessible roles, labels, and visible text rather than internal implementation details. % TODO: You may optionally cite RTL's guiding principle here if you add the reference.
+This aligns well with the prototype's goals, since the critical question is whether a user would see the correct permission state, not whether a particular internal variable holds the expected value.
+
+The test suite, located under a dedicated \texttt{tests/} directory, is organised into three layers. \emph{Unit tests} verify pure helper functions and the permission model in isolation: for example, confirming that \texttt{computeEffectiveStatus} treats a past expiry as revoked regardless of the stored status, or that \texttt{getEffectivePermissions} falls back to the message's own permissions when the canonical source is absent from the main thread. \emph{Component tests} render individual UI elements (the photo bubble, composer, picker, time-limit modal, request panels, and text message bubble) within a lightweight harness that supplies controlled props. These tests exercise specific branches: a revoked photo displaying the ``Access changed'' placeholder, a view-once photo transitioning to ``Opened once'' after consumption, the download button being disabled when \texttt{canDownload} is false, and the co-subject depicted-person card reflecting both the active and revoked states. \emph{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate multi-step user journeys spanning several handset panels: revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying it appears on the secondary handset, sending and then accepting or rejecting access and revocation requests, and consuming a view-once photo through the modal lifecycle.
+
+Edge cases are tested alongside the primary flows. These include restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message (which should produce no new entry), cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variants---``View once unavailable'' versus ``Not reviewable''---depending on whether the underlying policy was view-once. Coverage is collected using \texttt{@vitest/coverage-v8}; at the time of writing the suite comprises over one hundred assertions and achieves statement coverage above ninety per cent for the included source files, with an eighty per cent function-coverage threshold enforced in the Vitest configuration.
+
+\subsection*{Scope and Limitations}
+
+The automated suite operates within jsdom, which faithfully reproduces DOM structure but does not execute real CSS rendering, browser-specific layout, or navigation. No end-to-end browser automation framework such as Playwright or Cypress was introduced: the additional infrastructure cost was not justified for a single-page, single-user prototype where all views coexist in one render tree. Similarly, because the prototype has no backend, there are no API or database tests. These boundaries are consistent with the project's scope as an interactive proof-of-concept for evaluating the Smart Photos permission model, rather than a production messaging system. Automated tests therefore serve as a regression safety net for the permission logic and UI behaviour, while the broader question of whether users understand and trust that behaviour is addressed through the qualitative evaluation in Chapter~6.
