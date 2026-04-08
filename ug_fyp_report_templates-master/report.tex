@@ -13,7 +13,22 @@
 \usepackage{longtable}
 \usepackage{needspace}
 \usepackage{graphicx}
-\usepackage{graphicx}
+\setkeys{Gin}{interpolate=false}% Avoid PDF /Interpolate on bitmaps (often looks softer in viewers).
+\usepackage{listings}
+\lstset{
+  language=[ISO]C++,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  breaklines=true,
+  frame=single,
+  numbers=none,
+  xleftmargin=2em,
+  framexleftmargin=1.5em,
+  aboveskip=1em,
+  belowskip=1em,
+  columns=flexible
+}
 \usepackage{subcaption}
 \usepackage{float}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
