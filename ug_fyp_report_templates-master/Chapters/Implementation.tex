@@ -24,7 +24,7 @@ Using explicit types helped keep these structures consistent across components a
 
 \subsection*{Tailwind CSS}
 
-Tailwind CSS~4 was chosen as the styling framework because its utility-first approach enabled rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns such as chat bubbles, action menus, bottom sheets, and phone-frame layouts in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
+Tailwind CSS~4 was chosen as the styling framework because its utility-first approach enabled rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
 
 The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was particularly valuable in a prototype that underwent multiple rounds of refinement following participant feedback.
 
@@ -72,13 +72,13 @@ Vitest + RTL & 3.x & Test framework and React Testing Library; unit and componen
 
 \subsection*{Phase 1: Initial Prototype}
 
-The first implementation round focused on realising the core interaction flows defined in the functional specification: pre-send permission configuration (FR1--FR2), post-send permission management including revocation and restoration (FR3, FR5, FR6), recipient-side state presentation (FR4, FR10), constrained forwarding to a secondary recipient (FR7--FR9), access-request and response flows (FR11), and co-subject notification and revocation-request mechanisms (FR12--FR17). Each flow was built as a self-contained interaction path within a single-page React application, with all four stakeholder views---sender, recipient, forwarded recipient, and co-subject---rendered side by side so that the consequences of any permission change could be observed across participants in real time.
+The first implementation round focused on realising the core interaction flows defined in the functional specification: pre-send permission configuration (FR1--FR2), post-send permission management including revocation and restoration (FR3, FR5, FR6), recipient-side state presentation (FR4, FR10), constrained forwarding to a secondary recipient (FR7--FR9), access-request and response flows (FR11), and co-subject notification and revocation-request mechanisms (FR12--FR17). Each flow was built as a self-contained interaction path within a single-page React application, with all four stakeholder views rendered side by side so that the consequences of any permission change could be observed across participants in real time.
 
-At this stage the entire prototype resided in a single \texttt{page.tsx} file. This monolithic structure was a pragmatic choice for rapid prototyping: it avoided premature abstraction and kept all state and handlers visible in one place while the interaction model was still being tested and revised. That build was then used for the screenshot-driven interviews reported in Chapter~6.
+At this stage the entire prototype resided in a single \texttt{page.tsx} file. This monolithic structure was a pragmatic choice for rapid prototyping. This avoided premature abstraction and kept all state and handlers visible in one place while the interaction model was still being tested and revised. That build was then used for the screenshot-driven interviews reported in Chapter~6.
 
 \subsection*{Evaluation and Rationale for a Second Round}
 
-A second implementation round was justified on methodological rather than evaluative grounds. As Gould and Lewis argue, usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements engineering; once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic task conditions.
+A second implementation round was justified on methodological rather than evaluative grounds. As Gould and Lewis argue, usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements and once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic conditions.
 
 For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers uncover problems, discover opportunities for improvement, and learn how users actually engage with an interface \cite{moran_usability_testing_101}. A second round was therefore scoped deliberately to layout, styling, copy, and component structure, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. Chapter~6 documents what was learned from participants and how it was analysed.
 
@@ -96,7 +96,7 @@ During the second implementation round, the prototype was refactored from a sing
 
 \subsubsection*{Interface Refinements}
 
-Phase~2 focused on improving clarity, presentation efficiency, and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Modal overlays were also scoped to individual handset frames so that each simulated participant view remained visually distinct. Further minor copy and layout adjustments were applied in the same spirit; they are not enumerated here. All these refinements are reflected in the final prototype described in the following sections. 
+Phase~2 focused on improving clarity and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Modal overlays were also scoped to individual handset frames so that each simulated participant view remained visually distinct. Further minor copy and layout adjustments were applied in the same spirit; they are not enumerated here. All these refinements are reflected in the final prototype described in the following sections. 
 
 
 
@@ -113,7 +113,7 @@ Phase~2 focused on improving clarity, presentation efficiency, and prototype fid
 
 \section{Components and State Management}\label{sec:components-state}
 
-\subsection*{Component Hierarchy}
+\subsection*{Component Hierarchy (burda sanirim bir yanlis var ai ile check et diagrami)}
 
 The final prototype comprises a thin entry page (\texttt{page.tsx}), a central orchestrator component (\texttt{PhotoRevocationDemo}), and seventeen leaf components organised into four functional groups. Figure~\ref{fig:component-hierarchy} shows this hierarchy.
 
