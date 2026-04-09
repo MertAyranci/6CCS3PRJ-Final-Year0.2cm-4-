@@ -1,13 +1,13 @@
 \chapter{Requirements}
 \section{Brief}
-This chapter defines the requirements for the WhatsApp-like prototype developed in this dissertation. Drawing on the literature review, it identifies the relevant stakeholders, use cases, functional requirements, and non-functional requirements for a prototype centred on photo permissions and revocation. The implemented scope includes pre-send and post-send permission configuration, recipient understanding of changing access states, constrained forwarding to a secondary recipient, and co-subject-related features within the current prototype. Together, these requirements translate the dissertation’s broader privacy and consent concerns into a structured and implementable system specification. (buna da bak->>) Broader issues that remain beyond the present prototype scope are identified separately as deferred concerns.
+This chapter defines the requirements for the WhatsApp-like prototype developed in this dissertation. Drawing on the literature review, it identifies the relevant stakeholders, use cases, functional requirements, and non-functional requirements for a prototype centred on photo permissions and revocation. 
 \section{Stakeholders}
 
 \begin{enumerate}
   \item \textbf{Photo Sender:}
   The sender shares the photo and configures its permissions. This stakeholder requires clear pre-send and post-send controls, visibility over the current state of a shared photo, and interaction patterns that allow revocation or permission change without unnecessary confusion.
 
-  \item \textbf{Primary Recipient:}
+  \item \textbf{Recipient:}
   The primary recipient receives the sender's photo in the original chat. This stakeholder requires clear feedback about whether a photo remains visible, or whether any kind of revocation action has been taken.
 
   \item \textbf{Secondary Recipient:}
@@ -27,7 +27,7 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
         \item Forwaring permission
         \item View once permission
         \item Download permission
-        \item Expiry Permission
+        \item Expiry 
         \item Co-subject declaration
     \end{itemize}
     \item The sender sends the photo into the chat.
@@ -37,7 +37,7 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
 \textbf{(UC-S1): Sender Revises Permissions After Sending}
 \begin{enumerate}
     \item The sender returns to a chat containing a previously shared photo.
-    \item The sender clicks the photo options button in the top-right corner of the photo message.
+    \item The sender clicks the photo options button in the top corner of the photo message.
     \item The sender selects 'Revocation permissions' from the in-chat action menu.
     \item The system displays the available permission controls in the same in-chat menu.
     \item The sender revises one or more permissions.
@@ -56,8 +56,7 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
     \item The primary recipient opens the chat containing the sender's photo.
     \item The recipient views the photo's current state in the chat interface.
     \item The system presents the photo according to its current permission state, so that the recipient either sees the photo, opens it as view-once content, or is informed that access is no longer available.
-    \item The recipient may open the photo options menu from the button in the top-right corner of the photo message.
-    \item The recipient acts within the limits of the available permissions, such as replying, forwarding, downloading, or requesting access.
+    \item The recipient may open the photo options menu and acts within the limits of the available permissions, such as replying, forwarding, downloading, or requesting access.
 \end{enumerate}
 
 \textbf{(UC-R2): Primary Recipient Forwards an Allowed Photo}
@@ -84,12 +83,11 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
 \textbf{(UC-C1): Co-Subject Requests Revocation of a Shared Photo}
 \begin{enumerate}
     \item The co-subject opens their view of the chat containing a photo in which they are depicted.
-    \item The system shows that the co-subject appears in the shared photo.
+    \item The system informs that the co-subject appears in the shared photo.
     \item The co-subject opens the photo or views its current access state through the interface.
-    \item The co-subject opens the photo options menu from the button in the top-right corner of the photo message.
-    \item The co-subject selects 'Request revocation'.
-    \item The co-subject may add an optional message explaining the request.
-    \item The system sends the revocation request to the sender for review.
+    \item The co-subject opens the photo options menu from the button in the top corner of the photo message.
+    \item The co-subject selects 'Request revocation' and may add an optional explanation.
+    \item The system sends the revocation request to the sender for review and response.
 \end{enumerate}
 
 
@@ -103,12 +101,12 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
 
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Gap} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Gap} \\
 \hline
 \endhead
 
@@ -124,7 +122,7 @@ RG1
 \\ \hline
 
 FR2 &
-The prototype must explicitly address screenshot and download risk (e.g.\ warn before sharing, indicate that screenshots cannot be fully prevented). &
+The prototype must explicitly address screenshot and download risk (e.g.\ indicate that screenshots cannot be fully prevented). &
 Supports realistic privacy communication by treating screenshot and download risk as a central limitation of photo-sharing control rather than a marginal exception. Literature on privacy notice and platform-based media protection emphasises warning users before sharing and clearly communicating that some forms of capture cannot be fully prevented.  \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025} &
 RG2
 \\ \hline
@@ -135,7 +133,7 @@ RG2
 \multicolumn{4}{|l|}{\textbf{2. Post-send revocation and permission management}} \\ \hline
 FR3 &
 The prototype must allow the sender to modify or revoke access to a previously shared photo via contextual in-chat, photo-level controls. &
-Supports post-send, revisable consent by allowing the sender to manage permissions for an already shared photo through contextual in-chat controls. Literature on privacy control and consent revocation emphasises that permissions should remain reachable after disclosure and be open to later withdrawal or adjustment. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
+Supports ongoing consent by enabling post-send revision and revocation of permissions through contextual in-chat, photo-level controls. Literature on privacy control and consent revocation emphasises that permissions should remain reachable after disclosure and be open to later withdrawal or adjustment. \cite{schaub_notice_2015,agrafiotis_consent_revocation_2012,merlec_smart_2021,albesher_2021,politou_2018,schnitzler_2020} &
 RG1 
 RG2
 \\ \hline
@@ -143,8 +141,8 @@ RG2
 
 
 FR4 &
-The prototype must show all users clear states for active, revoked, view-once access and expiry duration. &
-Supports user understanding by making permission states and their consequences visible within the chat interface. Literature on revocation, privacy feedback, and usable consent emphasises that people do not always understand what access changes mean, so interfaces should present clear, legible outcomes for active, revoked, and time-limited content. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
+The prototype must show a compact permission summary under each shared photo so every user sees the current access state. &
+Supports user understanding by making permission states and their consequences visible within the chat interface. Literature on revocation, privacy feedback, and usable consent emphasises that people do not always understand what access changes mean, so interfaces should present clear, legible outcomes for the permissions. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG2
 \\ \hline
 
@@ -174,7 +172,7 @@ RG2
 
 
 FR8 &
-The prototype must propagate sender-defined permissions to forwarded content within the proof-of-concept model. &
+The prototype must propagate sender-defined permissions to forwarded content within the prototype. &
 Supports continuity of privacy control across redistribution by ensuring that forwarded content inherits the original sender’s permissions within the prototype model. Literature on contextual integrity and downstream sharing emphasises that transmission constraints should persist across forwarding to preserve context and reduce secondary privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
 RG2 
 RG3
@@ -192,7 +190,7 @@ RG2
 \multicolumn{4}{|l|}{\textbf{4. Recipient Awareness and negotiated consent}} \\ \hline
 FR10 &
 The prototype must provide recipients with a neutral inline indication when access is revoked or when permissions change.&
-Supports recipient awareness while minimising interpersonal friction by communicating access changes in neutral, face-saving language. Literature on privacy boundary negotiation and revocation emphasises that such notices should manage expectations without creating unnecessary blame, mistrust, or ambiguity. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
+Supports recipient awareness while minimising interpersonal friction by communicating access changes in neutral language. Literature on privacy boundary negotiation and revocation emphasises that such notices should manage expectations without creating unnecessary blame, mistrust, or ambiguity. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
 RG3
 \\ \hline
 
@@ -205,11 +203,12 @@ RG3
 \\ \hline
 
 
+\newpage
 
 \multicolumn{4}{|l|}{\textbf{5. Co-subject and multi-party privacy control}} \\ \hline
 
 FR12 &
-The prototype must support multi-party photos by allowing the sender to mark that a photo contains other people and allowing depicted co-subjects to request revocation of a shared photo, including an optional explanation for the request.&
+The prototype must support multi-party photos by allowing the sender to mark that a photo contains other people and allowing depicted co-subjects to request revocation of a shared photo, with an optional explanation.&
 Supports multi-party privacy by recognising that shared photos may affect depicted co-subjects as well as senders. Literature emphasises that disclosure decisions in photo sharing involve shared privacy stakes, and that co-subjects should have some agency to contest or renegotiate disclosure. \cite{cherubini_2021,liu_privacy_2023,bourgeus_vandercruysse_2024,xu_my_2017,xu_trust-based_2019,petronio_cpm_2020,nissenbaum_contextual_2011} &
 RG3 
 RG4
@@ -217,7 +216,7 @@ RG4
 
 FR13 &
 The prototype should allow a depicted co-subject to receive a notification that they appear in a shared photo when the sender has marked the image as multi-party content. &
-Supports co-subject awareness by making it visible when a privacy-relevant disclosure involves them. Literature emphasises that depicted others often lack opportunities to shape disclosure, and that awareness is a necessary precondition for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
+Supports co-subject awareness by making it visible when a privacy-relevant disclosure involves them. Literature emphasises that depicted people often lack opportunities to shape disclosure, and that awareness is a necessary precondition for agency. \cite{cherubini_2021, liu_privacy_2023, xu_my_2017, bourgeus_vandercruysse_2024} &
 RG3
 \\ \hline
 
@@ -240,6 +239,7 @@ RG3
 \\ \hline
 
 
+\multicolumn{4}{|l|}{\textbf{6. Honest Communication of Limits}} \\ \hline
 
 FR17 &
 The prototype should allow the interface to explain the limits of co-subject protection, including that offline capture, screenshots, or prior viewing cannot be fully undone. &
@@ -260,12 +260,12 @@ RG3
 \begin{longtable}{|c|P{3.8cm}|P{8.0cm}|P{1.5cm}|}
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Gap} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Research Gap} \\
+\textbf{ID} & \textbf{Requirement} & \textbf{Justification} & \textbf{Gap} \\
 \hline
 \endhead
 
@@ -276,14 +276,14 @@ RG3
 \multicolumn{4}{|l|}{\textbf{1. Usability and clarity}} \\ \hline
 NFR1 &
 The prototype interface must be easy to understand for first-time users. &
-Helps users understand the permission model and core controls without prior training or repeated use. Literature on usable privacy and consent interfaces emphasises that controls should be legible, consistently presented, and not hidden or ambiguous. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,albesher_2021,schnitzler_2020,bourgeus_vandercruysse_2024,nouwens_dark_2020} &
+Helps users understand the permission model and core controls without prior training or repeated use. Literature on usable privacy and consent interfaces emphasises that controls should be legible, and consistent. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,albesher_2021,schnitzler_2020,bourgeus_vandercruysse_2024,nouwens_dark_2020} &
 RG1 
 RG2
 \\ \hline
 
 NFR2 &
 The prototype should support quick routine sharing while adding only proportionate friction for privacy-sensitive actions. &
-Ensures that routine sharing stays quick while privacy-sensitive actions receive enough attention. Literature on usable consent and privacy interaction design emphasises that consent flows should remain low-friction in ordinary use, while more sensitive actions may justify prompts or warnings that encourage reflection without causing fatigue or avoidance. \cite{im_yes_2021,schaub_notice_2015,wilbanks_design_2018,lindegren_evaluation_2021,cherubini_2021,lee_identifying_2023,baruh_big_2017} &
+Ensures that routine sharing stays quick while privacy-sensitive actions receive enough attention. Literature on usable consent and privacy interaction design emphasises that consent flows should remain low-friction in ordinary use, while more sensitive actions may have warnings that encourage reflection without causing fatigue or avoidance. \cite{im_yes_2021,schaub_notice_2015,wilbanks_design_2018,lindegren_evaluation_2021,cherubini_2021,lee_identifying_2023,baruh_big_2017} &
 RG1
 \\ \hline
 
@@ -295,11 +295,14 @@ RG3
 \\ \hline
 
 NFR4 &
-The interface must provide readable and distinguishable permission states, labels, and controls. &
-Ensures that users can read, compare, and interpret permission-related information confidently. Literature on usable privacy and consent interfaces emphasises that permission states and controls should be visually legible and clearly distinguishable so users can understand status changes, locate actions, and interpret consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
+The interface must provide readable and distinguishable permission states and controls. &
+Ensures that users can understand and interpret permission-related information confidently. Literature on usable privacy and consent interfaces emphasises that permission states and controls should be visually legible and clearly distinguishable so users can understand status changes, take actions, and interpret consequences without ambiguity. \cite{schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,albesher_2021} &
 RG1 
 RG2
 \\ \hline
+
+
+\newpage
 
 \multicolumn{4}{|l|}{\textbf{2. Performance}} \\ \hline
 NFR5 &
@@ -311,7 +314,7 @@ RG1
 \multicolumn{4}{|l|}{\textbf{3. Social impact}} \\ \hline
 NFR6 &
 The interface must use neutral, non-blaming language to reduce unnecessary social tension when permissions change. &
-Ensures that permission changes are communicated in a socially careful and non-accusatory way. Literature on privacy boundary management and revocation emphasises that such changes are socially meaningful, so interface wording should minimise blame, ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
+Ensures that permission changes are communicated in a socially careful and non-accusatory way. Literature on privacy boundary management and revocation emphasises that such changes are socially meaningful, so interface wording should ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
 RG3
 \\ \hline
 
