@@ -57,35 +57,16 @@
 % You can write each chapter directly here or in a separate .tex file and use the include command.
 
 \chapter{Introduction}
-The widespread use of digital messaging platforms has transformed how people share
-personal images, maintain relationships, and negotiate boundaries in everyday
-communication. Despite developments in security safeguards, users continue to face
-substantial difficulties in controlling shared content once it reaches another person's device.
-Current messaging platforms provide protection against external threats but offer limited
-tools for managing interpersonal risks such as regret, changing relationships, or misuse of
-personal photos (Trepte, 2020). These vulnerabilities are especially concerning given that
-consent in digital contexts is frequently dynamic rather than static, and users may seek to
-modify or withdraw access to shared material over time.
-Major messaging applications such as WhatsApp, with over 3 billion monthly active
-users (Statista, 2025), employ end-to-end encryption to secure message content. Yet this
-model does not extend to post-delivery control between users, leaving senders without
-meaningful mechanisms to revoke or modify consent once a photo has been delivered.
-While recent studies in privacy, digital safety, and interpersonal communication
-emphasise the significance of modifiable consent, practical design solutions for major
-messaging apps remain underdeveloped. Further work is needed to explore interaction
-models that support revocable consent without disrupting existing communication patterns.
-Although WhatsApp is used as the primary case study, the user needs and interaction principles explored in this project are intended to generalise to other messaging platforms that support private photo sharing and forwarding.
+The widespread use of digital messaging platforms has transformed how people share personal images, maintain relationships, and negotiate boundaries in everyday communication. Despite developments in security safeguards, users continue to face substantial difficulties in controlling shared content once it reaches another person's device. Current messaging platforms provide protection against external threats but offer limited tools for managing interpersonal risks such as regret, changing relationships, or misuse of personal photos \cite{trepte_2020}. These vulnerabilities are especially concerning given that consent in digital contexts is frequently dynamic rather than static, and users may seek to modify or withdraw access to shared material over time. While recent studies in privacy, digital safety, and interpersonal communication emphasise the significance of modifiable consent, practical design solutions for major messaging apps remain underdeveloped \cite{albesher_2021, im_yes_2021}. 
 
-\section{Motivations}
-Personal photos have become a common method of expression and interaction in digital communication, with users sharing them on a regular basis across WhatsApp. However, once an image is sent, users often lose the ability to influence how it will be used, stored, or redistributed. This lack of post-sharing control creates a disconnect between the technical protections offered by WhatsApp and the changing, context-dependent nature of interpersonal consent. While end-to-end encryption protects messages from external access, it does not address how users manage privacy between one another, nor does it accommodate situations where consent evolves over time. 
-
-There exists researches to some extent across digital privacy, human–computer interaction, and online safety, highlighting increasing concerns about image misuse and the loss of control users experience after sharing personal content. However, the practical design of mechanisms to prevent these issues, particularly in the context of dynamic consent, remains underexplored. Most existing work on consent revocation focuses on legal or conceptual frameworks rather than on usable, interface-level solutions within everyday messaging platforms such as WhatsApp. This project is motivated by the need to address this gap by examining how WhatsApp can better support ongoing, revocable consent when users share photos.
+\section{Motivations} 
+This project focuses on WhatsApp as its primary case study because it is the most widely used messaging platform for private photo sharing, with over 3 billion monthly active users \cite{statista_whatsapp_2025}. WhatsApp employs end-to-end encryption to protect message content from external access, but this model does not extend to post-delivery control between users. Once an image is sent, the sender loses the ability to influence how it will be used, stored, or redistributed. Most existing work on consent revocation in this space focuses on legal or conceptual frameworks rather than on usable, interface-level solutions within everyday messaging platforms. This project is motivated by the need to address this gap by examining how WhatsApp can better support ongoing, revocable consent when users share photos. Although WhatsApp is the primary case study, the user needs and interaction principles explored are intended to generalise to other messaging platforms that support private photo sharing and forwarding.
 
 \section{Scope}
-This project examines pre-send and post-sharing consent revocation for photos in WhatsApp one-to-one private chats. The primary focus is on how users can modify or withdraw consent before and after sharing photos, and how interface design can support this across different social dynamics. The scope is limited to image-based content; calls, video calls, videos, voice notes and text messages are excluded. The research is confined to user experience and interface design, investigating user-facing interaction patterns rather than underlying system architecture or encryption mechanisms. ***Large-scale user testing, behavioural studies, and technical feasibility assessments fall outside the project scope.
+This project examines pre-send and post-sharing consent revocation for photos in WhatsApp one-to-one private chats. The primary focus is on how users can modify or withdraw consent before and after sharing photos, and how interface design can support this across different social dynamics. The scope is limited to image-based content and other media types are excluded. The research is confined to user experience and interface design, investigating user-facing interaction patterns rather than underlying system architecture or encryption mechanisms. Large-scale user testing, behavioural studies, and technical feasibility assessments fall outside the project scope.
 
 \section{Research Questions}
-This project is guided by a set of research questions that aim to investigate how consent revocation can be effectively supported within WhatsApp’s messaging environment. These questions address the limitations of current functionality, the expectations and concerns of users, and the design requirements for implementing revocable consent in a way that is usable, and trustworthy. Together, they shape the direction of the background research, design specification, prototype development, and evaluation.
+This project is guided by a set of research questions that aim to investigate how consent revocation can be effectively supported within WhatsApp’s messaging environment. These questions address the limitations of current functionality, the expectations and concerns of users, and the design requirements for implementing revocable consent, shapeing the direction of the thesis.
 
 \noindent
 The research questions are as follows (1 main question, 5 supporting questions):
@@ -118,16 +99,16 @@ The project makes the following contributions:
 \begin{enumerate}
     \item A high-fidelity interactive prototype demonstrating a redesigned consent revocation system for photo sharing in WhatsApp-like messaging environments.
     \item A set of realistic interaction flows, UI states, and permission management behaviours modelling how revocable consent could function in practice.
-    \item A usability evaluation of the proposed design, assessing clarity, perceived trustworthiness, and fairness for both senders and recipients.
+    \item A usability evaluation of the proposed design, assessing clarity, perceived trustworthiness, and balance between users.
     \item A human-centred design analysis of the practical implications of enabling revocable consent for photo sharing in messaging platforms.
 \end{enumerate}
 
 \section{Key Takeaways}
-
+The central finding of this project is that consent revocation in messaging-based photo sharing can be meaningfully supported through interface design, but only partially. The prototype evaluation showed that users valued the ability to revise permissions after sending and recognised it as an improvement over current WhatsApp controls. However, it also showed that revocation is inherently limited by screenshots, external-device capture, and prior viewing, and that users interpret permission changes as socially significant acts rather than neutral technical operations. Effective revocation design must therefore balance control, honesty about limits, and sensitivity to interpersonal dynamics.
 
 \section{Report Structure}
 
-
+The remainder of this report is organised as follows. Chapter~2 reviews literature on digital privacy, consent models, and interface design for photo-sharing revocation. Chapter~3 defines stakeholders, use cases, and requirements. Chapter~4 translates these into a design rationale and specification for the Smart Photos model. Chapter~5 covers the implementation, including technology choices, architecture, and testing. Chapter~6 presents the interview-based evaluation and thematic analysis findings. Chapter~7 discusses implications, limitations, and future directions. Chapter~8 addresses legal, social, ethical, and professional issues, and Chapter~9 concludes the report.
 
 
 
@@ -137,7 +118,6 @@ The project makes the following contributions:
 \include{Chapters/Implementation}
 \include{Chapters/Evaluation}
 \include{Chapters/Discussion}
-
 \include{Chapters/ProfessionalIssues} 
 \include{Chapters/Conclusion}
 

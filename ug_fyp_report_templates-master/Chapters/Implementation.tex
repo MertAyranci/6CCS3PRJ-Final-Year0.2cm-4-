@@ -1,5 +1,6 @@
 \chapter{Implementation}
 \section{Brief}
+app linki koymayi unutma.
 
 \section{Technology Choices and Prototype Scope}\label{sec:tech-choices}
 
@@ -41,11 +42,12 @@ As such, the prototype is an interactive proof-of-concept for the Smart Photos p
 \hline
 \textbf{Technology} & \textbf{Version} & \textbf{Role in Prototype} \\
 \hline
-React & 19.2 & Component-based UI library; manages the multi-view layout and reactive permission state via hooks. \\
-Next.js & 16.1 & Application framework; provides the App Router, development server, and optimised production builds. \\
-TypeScript & 5.x & Static type system; enforces the permission data model at compile time. \\
-Tailwind CSS & 4.x & Utility-first CSS framework; enables rapid, consistent styling that approximates WhatsApp's visual patterns. \\
-Vitest + RTL & 3.x & Test framework and React Testing Library; unit and component tests with code-coverage reporting. \\
+React & 19.2.3 & Component-based UI library; manages the multi-view layout and reactive permission state via hooks. \\
+Next.js & 16.1.6 & Application framework; provides the App Router, development server, and optimised production builds. \\
+TypeScript & 5.9.3 & Static type system; enforces the permission data model at compile time. \\
+Tailwind CSS & 4.2.1 & Utility-first CSS framework; enables rapid, consistent styling that approximates WhatsApp's visual patterns. \\
+Vitest & 3.2.4 & Test runner; executes unit, component, and integration-style tests with coverage via \texttt{@vitest/coverage-v8}. \\
+React Testing Library & 16.3.2 & Renders components in tests and queries the UI by roles, labels, and visible text rather than implementation details. \\
 \hline
 \end{tabular}
 \caption{Technology stack and component roles}

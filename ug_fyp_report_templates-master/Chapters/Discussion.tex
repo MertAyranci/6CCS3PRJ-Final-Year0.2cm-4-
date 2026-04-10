@@ -1,6 +1,6 @@
 \chapter{Discussion}
 
-This chapter reflects on the dissertation as a whole, bringing together the research problem, design response, and evaluation findings to discuss the project’s overall contribution. It argues that consent revocation in WhatsApp-like photo sharing can be meaningfully supported through interface design, but remains partial, socially sensitive, and dependent on clear communication of its limits.
+\section{Brief}
 
 
 \section{Implications and Recommendations for Stakeholders}
@@ -36,12 +36,26 @@ The GDPR establishes a right to withdraw consent, and the UK Online Safety Act c
 
 \section{Limitations and Generalisability}
 
-Several limitations should be acknowledged when interpreting the findings of this project. They fall into three categories: study design, prototype scope, and structural constraints.
+Several limitations should be acknowledged when interpreting the findings of this project. They fall into three categories: prototype scope and structural constraints.
 
-(suraya bir daha bak, bir daha bak.).....
-\textbf{Prototype scope.} The prototype was a front-end simulation with in-memory state, operating within a single browser window rather than across networked devices (Section~\ref{sec:tech-choices}). It did not include a backend, a database, real end-to-end encryption, or integration with WhatsApp's actual infrastructure. These constraints were deliberate and appropriate for evaluating the interaction design and permission model, but they mean that the findings do not address production-level concerns such as latency, storage, encryption key management, or cross-device synchronisation. The automated test suite used jsdom rather than a real browser engine, which further limits confidence in layout and rendering fidelity.
+\textbf{Prototype scope.} Because the prototype operated as a
+front-end simulation without networking, persistent storage, or real
+encryption (Section~5.2), the evaluation findings apply to the
+interaction design and permission model rather than to production-level
+concerns such as latency, cross-device synchronisation, or encryption
+key management. Participants interacted with a controlled, immediate
+simulation, meaning their responses may not fully reflect the
+experience of using revocable permissions under real network conditions
+where delays or failures could affect trust and perceived reliability.
 
-\textbf{Structural design constraints.} Some limitations are not specific to this prototype but inherent to any platform-level revocation mechanism. Screenshots, external-device capture, and prior viewing represent hard boundaries that no software control can address once visual content has been displayed on a screen. Five participants independently raised this concern during the evaluation. The design acknowledged this from the outset through its second design principle (expectation management over absolute control, Section~4.2.2) and through explicit pre-send and in-chat warnings, but the evaluation confirmed that this structural reality still shaped some participants' willingness to trust the feature.
+\textbf{Structural design constraints.} As established in earlier
+chapters, screenshots, external-device capture, and prior viewing
+represent hard boundaries on any platform-level revocation. The
+evaluation confirmed that this structural reality shaped some
+participants' willingness to trust the feature (Theme~2), which
+suggests that findings about perceived trustworthiness and control may
+differ in a deployment where additional countermeasures such as
+screenshot detection are present.
 
 Despite these limitations, the findings apply most directly to WhatsApp-like messaging contexts in which users share photos within private conversations and may later wish to revise the terms of that sharing. The underlying main principles such as dynamic consent, multi-party awareness, expectation management, and neutral communication of access changes, are not specific to WhatsApp and could inform the design of revocable sharing features on other platforms where users exchange personal media.
 
@@ -55,7 +69,7 @@ The limitations and evaluation findings identified above point to several direct
 
 \textbf{Co-subject identification and governance.} The evaluation surfaced an unresolved tension between manual tagging, which depends on sender willingness, and automated detection, which introduces accuracy and privacy risks. Future work could explore hybrid approaches in which lightweight detection prompts the sender to confirm co-subject presence, reducing friction while preserving sender agency. The governance question about whether the co-subjects should hold equal, superior, or veto-level control also warrants dedicated experimental comparison.
 
-\textbf{Integration with real platform infrastructure.} Testing the permission model within an actual messaging platform's architecture would reveal implementation constraints that a front-end simulation cannot surface, including latency, storage overhead, encryption compatibility, and the behaviour of permission propagation under unreliable network conditions.
+\textbf{Integration with real platform infrastructure.} Testing the permission model within WhatsApp's architecture would reveal implementation constraints that a front-end simulation cannot surface, including latency, storage overhead, encryption compatibility, and the behaviour of permission propagation under unreliable network conditions.
 
 \textbf{Longitudinal adoption.} The evaluation captured first-exposure reactions. Diary studies or longitudinal field trials tracking how users engage with revocable permissions over weeks or months would address whether the features retain their perceived value as routine settles, or whether users simplify their behaviour by defaulting to a small subset of permission configurations.
 
