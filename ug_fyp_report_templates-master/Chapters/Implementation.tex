@@ -149,9 +149,9 @@ Each group corresponds to a distinct area of the interaction model defined in Ch
 
 \subsection*{Shared Permission State}
 
-All application state that affects what participants see resides in \texttt{PhotoRevocationDemo} as React \texttt{useState} hooks. The most important of these are five message arrays (\texttt{mainMessages}, \texttt{forwardedMessages}, \texttt{senderOnlyMessages}, \texttt{recipientOnlyMessages}, \texttt{coSubjectOnlyMessages}) which together hold every message visible across the four simulated handsets.
+All application state that affects what participants see resides in \texttt{PhotoRevocationDemo} as React \texttt{useState} hooks. The most important of these are 5 message arrays (\texttt{mainMessages}, \texttt{forwardedMessages}, \texttt{senderOnlyMessages}, \texttt{recipientOnlyMessages}, \texttt{coSubjectOnlyMessages}) which together hold every message visible across the four simulated handsets.
 
-The canonical permission record for a photo lives on its entry in \texttt{mainMessages}. Section~\ref{sec:tech-choices} introduced the \texttt{PhotoPermissions} type in prose; Listing~\ref{lst:photo-permissions} shows the definition as it appears in the source:
+The canonical permission record for a photo lives on its entry in \texttt{mainMessages}.  Listing~\ref{lst:photo-permissions} shows the \texttt{PhotoPermissions} as implemented in the source:
 
 \begin{lstlisting}[
   caption={The \texttt{PhotoPermissions} type (\texttt{types.ts}). Each field maps to a permission control in the sender's configuration panel.},
@@ -213,16 +213,16 @@ export function getEffectivePermissions(
 }
 \end{lstlisting}
 
-This derivation pattern means that a single state update to the canonical photo in \texttt{mainMessages} is sufficient for every participant view---sender, recipient, forwarded recipient, and co-subject---to reflect the change on the next render cycle. The prototype does not need to synchronise permission records across message arrays or maintain separate update logic for forwarded copies, because every component derives its view of permissions from the same canonical source.
+This derivation pattern means that a single state update to the canonical photo in \texttt{mainMessages} is sufficient for every participant view (sender, recipient, forwarded recipient, and co-subject) to reflect the change on the next render cycle. The prototype does not need to synchronise permission records across message arrays or maintain separate update logic for forwarded copies, because every component derives its view of permissions from the same canonical source.
 
 \subsection*{Local Interaction State}
 
-Alongside the shared permission state described above, \texttt{PhotoRevocationDemo} maintains a second category of state: transient values that control temporary interface behaviour rather than the canonical permission model. These include boolean flags that govern which overlay is currently visible (\texttt{pickerOpen}, \texttt{composerOpen}, \texttt{timeLimitModalOpen}), a structured value tracking which photo menu is active and in which mode (\texttt{openPhotoMenu}), and draft text fields that hold in-progress user input before it is committed (\texttt{draftCaption}, \texttt{accessRequestDraft}, \texttt{senderInput}, \texttt{recipientInput}). None of these values affect how permissions are stored or derived; they exist only to support the interactive surface of each handset view.
+Alongside the shared permission state described above, \texttt{PhotoRevocationDemo} maintains a second category of state: transient values that control temporary interface behaviour rather than the canonical permission model. These include boolean flags that govern which overlay is currently visible (\texttt{pickerOpen}, \texttt{composerOpen}, \texttt{timeLimitModalOpen}), a structured value tracking which photo menu is active and in which mode (\texttt{openPhotoMenu}), and draft text fields that hold in-progress user input before it is committed (\texttt{draftCaption}, \texttt{accessRequestDraft}, \texttt{senderInput}, \texttt{recipientInput}). None of these values affect how permissions are stored or derived and they exist only to support the interactive surface of each handset view.
 
 One notable piece of local state is the countdown tick. The prototype supports time-limited photo access, and the remaining time must update visually every second. Rather than introducing a timer event system, the orchestrator increments a counter once per second via a \texttt{useEffect} hook:
 
 \begin{lstlisting}[
-  caption={Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}. The tick value itself is never read; its sole purpose is to force React re-renders.},
+  caption={Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}. The tick value itself is never read, its sole purpose is to force React re-renders.},
   label={lst:countdown-tick},
   language={}
 ]
@@ -235,17 +235,17 @@ useEffect(() => {
 \end{lstlisting}
 
 \noindent
-The tick value is never read directly---the destructured state variable is deliberately discarded. Its only purpose is to trigger a React re-render every second so that \texttt{getEffectivePermissions} (Listing~\ref{lst:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}. This allows time-limited photos to expire visually in real time and countdown labels to update continuously, without requiring explicit expiry event handling or additional state-management infrastructure.
+The code intentionally discards the state variable during destructuring, as the underlying tick value remains unused. Its only purpose is to trigger a React re-render every second so that \texttt{getEffectivePermissions} (Listing~\ref{lst:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}. This allows time-limited photos to expire visually in real time and countdown labels to update continuously, without requiring explicit expiry event handling or additional state-management infrastructure.
 
-Separating these transient interaction values from the canonical permission state kept the implementation manageable: the permission model remained a clean, single-source-of-truth structure as described in the previous subsection, while the local state layer provided the flexibility needed to support rich interactions such as modal sequencing, draft composition, and live countdown display.
+Separating these transient interaction values from the canonical permission state kept the implementation manageable. The permission model remained single-source-of-truth structure as described in the previous subsection, while the local state layer provided the flexibility needed to support rich interactions such as modal sequencing, draft composition, and live countdown display.
 
 \subsection*{State Transitions: Revocation and Forwarding}
 
-The two most consequential state transitions in the prototype are post-send revocation and constrained forwarding. Both operate on the canonical--copy architecture described in Section~\ref{sec:components-state}, but they update state in different directions: revocation modifies the canonical record so that all views change, while forwarding reads the canonical record to decide whether a new copy may be created.
+The two most consequential state transitions in the prototype are post-send revocation and constrained forwarding. Both operate on the canonical--copy architecture described in Section~\ref{sec:components-state}, but they update state in different directions. Revocation modifies the canonical record so that all views change, while forwarding reads the canonical record to decide whether a new copy may be created.
 
 \subsubsection*{Post-Send Revocation}
 
-When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update---for example, \texttt{\{~status:~"revoked"~\}}. This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object:
+When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{\{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object:
 
 \begin{lstlisting}[
   caption={\texttt{updateSelectedPhotoPermissions} in \texttt{PhotoRevocationDemo.tsx}. The immutable map-and-merge pattern updates the canonical record without mutating existing state.},
@@ -270,7 +270,7 @@ const updateSelectedPhotoPermissions =
 \end{lstlisting}
 
 \noindent
-Because \texttt{forwardedMessages} is never rewritten, the revocation takes effect across all participant views through the derivation layer already shown in Listing~\ref{lst:get-effective}: on the next render cycle, every \texttt{PhotoMessageBubble} calls \texttt{getEffectivePermissions}, which looks up the now-revoked canonical record and returns \texttt{"revoked"} as the effective status. The same handler is reused for restoring access, toggling the download flag, or enabling the co-subject flag---each is simply a different partial update passed to the same function.
+Because \texttt{forwardedMessages} is never rewritten, the revocation takes effect across all participant views through the derivation layer already shown in Listing~\ref{lst:get-effective}. On the next render cycle, every \texttt{PhotoMessageBubble} calls \texttt{getEffectivePermissions}, which looks up the now-revoked canonical record and returns \texttt{"revoked"} as the effective status. The same handler is reused for restoring access, toggling the download flag, or enabling the co-subject flag where each is simply a different partial update passed to the same function.
 
 \subsubsection*{Constrained Forwarding}
 
@@ -312,7 +312,7 @@ Two details are significant. First, the guard clause calls \texttt{getEffectiveP
 
 \subsubsection*{Time-Limit Expiry}
 
-Time-limited access follows the same derivation principle without requiring a dedicated state transition. When the sender configures a time limit before sending, the photo message is created with an \texttt{expiresAt} timestamp. No handler fires when the deadline passes; instead, \texttt{computeEffectiveStatus} (called within \texttt{getEffectivePermissions}) compares \texttt{expiresAt} against \texttt{Date.now()} on every render and returns \texttt{"revoked"} once the timestamp has elapsed:
+Time-limited access follows the same derivation principle without requiring a dedicated state transition. When the sender configures a time limit before sending, the photo message is created with an \texttt{expiresAt} timestamp. No handler fires when the deadline passes, instead, \texttt{computeEffectiveStatus} (called within \texttt{getEffectivePermissions}) compares \texttt{expiresAt} against \texttt{Date.now()} on every render and returns \texttt{"revoked"} once the timestamp has elapsed:
 
 \begin{lstlisting}[
   caption={\texttt{computeEffectiveStatus} in \texttt{photoModel.ts}. Expiry is treated as implicit revocation---no event or state write is needed.},
@@ -331,10 +331,10 @@ export function computeEffectiveStatus(
 \end{lstlisting}
 
 \noindent
-Combined with the countdown tick described in the previous subsection, this ensures that a time-limited photo transitions smoothly from an active countdown display to a revoked placeholder at the moment of expiry, using the same rendering path as an explicit revocation. This uniformity---where manual revocation, forwarding constraints, and time-limit expiry all resolve through a single derivation function---operationalises the dissertation's treatment of consent as ongoing and revisable: a single state change at the source, whether made by the sender or by the passage of time, is sufficient to update every downstream presentation of the photo.
+Combined with the countdown tick described in the previous subsection, this ensures that a time-limited photo transitions smoothly from an active countdown display to a revoked placeholder at the moment of expiry, using The system translates the concept of ongoing and dynamic consent into a tangible feature by using one core function to handle all access rules. Consequently, any single change made at the source (whether by the user or by time expiring) instantly cascades to update all shared copies of the photo.
 
 
-(should i also talk about the co-subject feature here?)
+
 
 
 
@@ -346,7 +346,7 @@ Combined with the countdown tick described in the previous subsection, this ensu
 
 \section{Translation to a Functional Prototype}\label{sec:translation}
 
-This section shows how the mechanisms described in Section~\ref{sec:components-state} appear in the finished prototype.
+This section shows how the mechanisms described in Section~\ref{sec:components-state} appear in the final prototype.
 
 \subsection*{Pre-Send Permission Configuration}
 
@@ -363,53 +363,50 @@ This section shows how the mechanisms described in Section~\ref{sec:components-s
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
         \includegraphics[width=\linewidth,trim={0 0 0 0},clip]{figures/screenshot-presend-composer.png}
-        \caption{Pre-send composer with configured permissions.}
+        \caption{Pre-send composer}
         \label{fig:composer}
     \end{subfigure}
     \caption{Pre-send permission configuration flow.}
     \label{fig:presend-flow}
 \end{figure}
 
-The sharing flow begins in the sender's chat view. Tapping the attachment icon opens a bottom-sheet photo picker (Figure~\ref{fig:picker}), which presents a grid of preset samples and any user-uploaded files. Multi-photo selection is reflected by numbered badges on each tile and a summary strip with thumbnails and a count---in the figure, two photos are selected. The sender may press \textbf{Send} to deliver immediately with permissive defaults, or \textbf{Send with revocable permissions} to open the pre-send composer. In code, this split is implemented in \texttt{PhotoRevocationDemo.tsx}: the overlay is the \texttt{PickerSheet} component, and the two buttons call \texttt{sendPhotoDirectly} (fixed default \texttt{PhotoPermissions}) versus \texttt{openComposerWithPhotos}, which copies the selection into draft state and swaps the sender handset's body from the message list to the composer.
+The sharing flow begins in the sender's chat view. Tapping the attachment icon opens a bottom-sheet photo picker (Figure~\ref{fig:picker}), which presents a grid of photos and any user-uploaded files. Numbered badges and a summary strip confirm the current selection, and in the figure two photos are chosen. Two actions are available at the bottom of the picker. \textbf{Send} delivers the photos with default permissions, while \textbf{Send with revocable permissions} opens the pre-send composer, branching routine sharing from permission-aware sharing.
 
-The pre-send composer (Figure~\ref{fig:composer}) is rendered by \texttt{ComposerView}. It shows the staged photos, five toggle chips for forwarding, view-once, download, co-subject, and time limit, and a caption field---in the figure, forwarding is on, a 30-second limit is set on the scroll-wheel picker, and the caption reads ``Shared with revocable permissions.''\ Those controls edit in-memory draft values (\texttt{draftPermissions}, \texttt{draftCaption}, \texttt{draftTimeLimit}) until the sender confirms; \texttt{sendConfiguredPhoto} then merges an optional expiry timestamp from the chosen duration and passes the result to \texttt{addPhotoMessage}, which appends the new photo to \texttt{mainMessages} and sets \texttt{sourcePhotoId} equal to the new message id, as described in Section~\ref{sec:components-state}.
+The pre-send composer (Figure~\ref{fig:composer}) groups five toggle chips for forwarding, view-once, download, co-subject, and time limit alongside a caption field and the staged photos.  A persistent, non-dismissible warning appears at the top of the composer stating that screenshots and saved copies cannot be undone and that revocation only limits future in-app access. The sender cannot bypass this warning before confirming, which ensures that limitation awareness precedes every permission-configured send. On confirmation, the photo is appended to the conversation with permission summary chips beneath the bubble, using the canonical state mechanism described in Section~\ref{sec:components-state}.
 
-At the top of the composer, a persistent warning reads: \emph{``Screenshots and saved copies cannot be undone. Revocation only limits future access in this chat. Another device can still photograph the screen.''}\ The sender always sees this copy before sending; it is fixed in the composer layout rather than shown as a dismissible notice. After a successful send, the composer closes, the picker selection is cleared, and the new message appears in the chat with permission summary chips beneath the bubble.
-
-This two-step flow---picker then composer---separates routine photo sharing from permission-aware sharing, satisfying the pre-send configuration requirements (\textbf{FR1}) and the risk-cue disclosure (\textbf{FR2}) while keeping the lightweight direct-send path available for everyday use. The always-visible warning also addresses the learnability concern in \textbf{NFR3} and the expectation-management goal in \textbf{NFR9}, as the sender is never able to configure permissions without first seeing the system's limitations.
+This two-step flow satisfies the pre-send configuration requirement (\textbf{FR1}) and the risk-cue disclosure requirement (\textbf{FR2}), while the always-visible warning addresses learnability (\textbf{NFR3}) and expectation management (\textbf{NFR9}).
 
 \subsection*{Post-Send Permission Management}
-
-Once a photo has been delivered, the sender retains access to its permission state through contextual controls anchored to the message bubble. Tapping the small drop-down overlay on a sent photo opens an initial actions menu (Reply, Forward, Download, Revocation permissions); selecting \emph{Revocation permissions} transitions the menu to a dedicated submenu shown in Figure~\ref{fig:revoke-menu}. In code, this two-level pattern corresponds to the \texttt{openPhotoMenu} state switching between \texttt{mode:~"actions"} and \texttt{mode:~"revoke"} within the \texttt{PhotoMessageBubble} component.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-revocation-menu.png}
+        \includegraphics[width=0.95\textwidth]{figures/screenshot-revocation-menu.png}
         \caption{Revocation submenu on a sent photo, showing the five post-send controls.}
         \label{fig:revoke-menu}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-permission-chips.png}
-        \caption{Expanded permission summary beneath the message bubble, with a live expiry countdown.}
+        \includegraphics[width=0.95\textwidth]{figures/screenshot-permission-chips.png}
+        \caption{Expanded permission summary under the message bubble}
         \label{fig:permission-chips}
     \end{subfigure}
-    \caption{Post-send permission management: the sender's revocation submenu (a) and the in-chat state feedback (b).}
+    \caption{Post-send permission management}
     \label{fig:postsend-flow}
 \end{figure}
 
-The submenu exposes five actions that map directly to \texttt{updateSelectedPhotoPermissions} (Listing~\ref{lst:update-permissions}): \emph{Revoke / Restore photo access} toggles \texttt{status}, \emph{Block / Allow forwarding} toggles \texttt{canForward}, \emph{Block / Allow download} toggles \texttt{canDownload}, \emph{Remove time limit} clears \texttt{expiresAt}, and \emph{Set time limit} opens the \texttt{TimeLimitModal} to assign a new deadline. Each action is a single partial update to the canonical record in \texttt{mainMessages}; the menu labels reflect the current effective state so the sender always sees the available transition rather than the current value.
+Once a photo has been delivered, the sender retains access to its permission state through contextual controls anchored to the message bubble. Tapping the drop-down overlay on a sent photo opens an actions menu, and selecting \emph{Revocation permissions} transitions to the dedicated submenu shown in Figure~\ref{fig:revoke-menu}. This submenu exposes five post-send controls. \emph{Revoke / Restore photo access}, \emph{Block / Allow forwarding} and \emph{Block / Allow download} govern redistribution, and the remaining two options either remove or assign a time limit. Each menu label reflects the available transition rather than the current value, so the sender always sees what action they can take next.
 
-The result of any change is visible immediately in the chat thread. As shown in Figure~\ref{fig:permission-chips}, each photo message carries a collapsible summary row beneath the bubble. In its compact form, colour-coded tick and cross indicators signal status, forwarding, review mode, and download at a glance; expanding the row reveals labelled chips---\emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked}, \emph{Expires in 29m\,40s}---together with the caption and disclaimer text. The expiry chip updates every second via the countdown tick mechanism described in Section~\ref{sec:components-state}. Because every participant view derives its display from the same canonical record through \texttt{getEffectivePermissions}, the recipient's and forwarded recipient's bubbles update on the same render cycle without the sender needing to take any additional action.
+The result of any change is visible immediately in the chat thread. As shown in Figure~\ref{fig:permission-chips}, each photo message carries a collapsible summary row beneath the bubble. In its compact form, colour-coded tick and cross indicators enable to see the current status at a glance. Expanding the row reveals labelled chips such as \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked}, and \emph{Expires in 29m\,40s}, together with the caption and a disclaimer. The expiry chip updates every second using the countdown mechanism described in Section~\ref{sec:components-state}. Because every participant view derives its display from the same canonical record (Section~\ref{sec:components-state}), each stakeholder's bubbles update on the same render cycle without any additional action from the sender.
 
-This post-send surface satisfies the ongoing permission-management requirement (\textbf{FR3}) and the live consent-state requirement (\textbf{FR5}), while the in-chat summary chips address the state-visibility requirement (\textbf{FR4}) and the feedback requirement (\textbf{FR6}).
+This post-send surface satisfies the ongoing permission-management requirement (\textbf{FR3}) and the live consent-state requirement (\textbf{FR5}), while the in-chat summary chips address state visibility (\textbf{FR4}) and feedback (\textbf{FR6}).
 
 \subsection*{Recipient Experience and Revoked States}
 
-The recipient's view mirrors the sender's permission chips but does not expose any management controls. Figure~\ref{fig:recipient-active} shows an active photo in the recipient handset: the two-photo collage is visible, and the expanded summary row displays \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked}, and a live countdown (\emph{Expires in 20m\,49s}). These chips are derived from the same canonical record via \texttt{getEffectivePermissions}, so they always reflect the sender's most recent change. The recipient's action menu offers Reply, Forward (if permitted), Download (if permitted), and---when access has been revoked---\emph{Request access}, but never exposes the revocation controls reserved for the sender.
+The recipient's view mirrors the sender's permission chips but does not expose any management controls. Figure~\ref{fig:recipient-active} shows an active photo in the recipient handset where the two-photo collage is visible and the expanded summary row displays the current permission state. These chips are derived from the same canonical record described in Section~\ref{sec:components-state}, so they always reflect the sender's most recent change. The recipient's action menu offers Reply, Forward if permitted, Download if permitted, and Request access when access has been revoked, but never exposes the revocation controls reserved for the sender.
+
 
 \begin{figure}[H]
     \centering
@@ -430,9 +427,11 @@ The recipient's view mirrors the sender's permission chips but does not expose a
     \label{fig:recipient-states}
 \end{figure}
 
-When the sender revokes access, the recipient's bubble transitions to the state shown in Figure~\ref{fig:recipient-revoked}. The photo is replaced by an \emph{``Access changed --- This photo is no longer visible.''} placeholder with the note \emph{``Screenshots, saved copies, or prior viewing may already exist.''}\ The summary row updates to show all-cross indicators and chips reading \emph{Revoked}, \emph{No forwarding}, \emph{Not reviewable}, and \emph{Download blocked}. In the implementation, \texttt{PhotoMessageBubble} renders this placeholder whenever \texttt{getEffectivePermissions} returns a status of \texttt{"revoked"}, regardless of whether the revocation was manual or caused by time-limit expiry; no separate revocation event or message replacement is needed.
+When the sender revokes access, the recipient's bubble transitions to the state shown in Figure~\ref{fig:recipient-revoked}. The photo is replaced by a neutral placeholder reading ``Access changed'' with the note that screenshots, saved copies, or prior viewing may already exist. The summary row updates to the state where each permission is blocked. This placeholder appears regardless of whether the revocation was manual or caused by time-limit expiry, since both resolve through the same derivation path in Section~\ref{sec:components-state}.
 
-View-once photos follow a similar pattern. Before the recipient opens the content, the bubble shows a \emph{``View once --- Open''} prompt with permission chips including \emph{View once} (Figure~\ref{fig:viewonce-before}). After the recipient taps \emph{Open} and closes the full-screen viewer, the message id is added to the \texttt{consumedViewOnce} array and the bubble transitions to an \emph{``Opened once --- This photo can no longer be viewed.''} notice; the \emph{View once} chip gains a tick mark to confirm consumption (Figure~\ref{fig:viewonce-after}).
+
+View-once photos follow a similar pattern. Before the recipient opens the content, the bubble shows a ``View once'' prompt with a corresponding permission chip (Figure~\ref{fig:viewonce-before}). After the recipient taps Open and closes the full-screen viewer, the bubble transitions to an ``Opened once'' notice confirming that the photo can no longer be viewed, and the chip gains a tick mark to indicate consumption (Figure~\ref{fig:viewonce-after}).
+
 
 \begin{figure}[H]
     \centering
@@ -446,7 +445,7 @@ View-once photos follow a similar pattern. Before the recipient opens the conten
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/screenshot-viewonce-after.png}
-        \caption{After opening: content consumed, tick indicator shown.}
+        \caption{After opening, content consumed.}
         \label{fig:viewonce-after}
     \end{subfigure}
     \caption{View-once lifecycle on the recipient handset: before (a) and after (b) consumption.}
@@ -454,13 +453,16 @@ View-once photos follow a similar pattern. Before the recipient opens the conten
 \end{figure}
 
 \noindent
-Across all three cases---active, revoked, and view-once consumed---the recipient sees neutral, system-mediated language rather than accusatory wording, satisfying the recipient-experience requirement (\textbf{FR10}). The consistent use of the same chip-based summary row across sender and recipient views ensures that both parties read permission state in an identical format, which supports the consistency requirement (\textbf{NFR7}).
+
+Across all three cases the recipient sees neutral, system-mediated language rather than accusatory wording, satisfying the recipient-experience requirement (\textbf{FR10}). The consistent use of the same chip-based summary row across sender and recipient views ensures that both parties read permission state in an identical format, which supports the consistency requirement (\textbf{NFR7}).
 
 \subsection*{Forwarding and Access Requests}
 
-Forwarding is gated by the canonical permission state. When \texttt{canForward} is \texttt{true} and the photo is active, the recipient's action menu enables \emph{Forward}; the handler \texttt{forwardPhotoMessage} (Listing~\ref{lst:forward-photo}) checks \texttt{getEffectivePermissions} at the moment of forwarding and, if permitted, appends a new message to \texttt{forwardedMessages} with the same \texttt{sourcePhotoId}. The forwarded copy therefore remains linked to the canonical record: any later revocation by the sender propagates to both the recipient and the secondary recipient without additional synchronisation, as described in Section~\ref{sec:components-state}.
+Forwarding is gated by the canonical permission state described in Section~\ref{sec:components-state}. When forwarding is permitted and the photo is active, the recipient's action menu enables \emph{Forward}. The forwarded copy carries the same link to the canonical record as the original, which means that any later revocation by the sender propagates to both the recipient and the secondary recipient without additional synchronisation.
 
-Figure~\ref{fig:forward-revoke-request} shows the prototype after the sender has revoked access to a previously forwarded photo. All three handsets reflect the change simultaneously: the sender's view retains the photo but displays a revoked summary; the recipient's bubble is replaced by the ``Access changed'' placeholder with \emph{Forward} and \emph{Download} disabled in the action menu; the secondary recipient's forwarded copy shows the same revoked placeholder and chips (\emph{Revoked}, \emph{No forwarding}, \emph{Not reviewable}, \emph{Download blocked}). The recipient's menu now includes \emph{Request access} as the only actionable option beyond \emph{Reply}.
+
+Figure~\ref{fig:forward-revoke-request} shows the prototype after the sender has revoked access to a previously forwarded photo. All three handsets reflect the change simultaneously. The sender's view retains the photo but displays a revoked summary. The both recipient's bubble is replaced by the ``Access changed'' placeholder with permissionsdisabled in the action menu.  At this point the recipient's menu includes \emph{Request access} as the only actionable option beyond \emph{Reply}.
+
 
 \begin{figure}[H]
     \centering
@@ -469,9 +471,8 @@ Figure~\ref{fig:forward-revoke-request} shows the prototype after the sender has
     \label{fig:forward-revoke-request}
 \end{figure}
 
-When the recipient selects \emph{Request access}, a \texttt{RequestAccessPanel} overlay opens inside the recipient's handset, allowing an optional message to accompany the request. The request is routed to the sender's thread as a text message carrying the photo reference and \emph{Accept} / \emph{Reject} buttons, visible in the sender panel of Figure~\ref{fig:forward-revoke-request}. If the sender accepts, \texttt{updateSelectedPhotoPermissions} restores the canonical record to \texttt{status:~"active"}; if they reject, a follow-up message confirms the decision to the recipient. Access renewal is therefore a negotiated interaction rather than an automatic reversal.
+When the recipient selects \emph{Request access}, an overlay opens inside the recipient's handset allowing an optional message to accompany the request. The request appears in the sender's thread as a text message carrying the photo reference together with \emph{Accept} and \emph{Reject} buttons(Figure~\ref{fig:forward-revoke-request}). If the sender accepts, the canonical record is restored to an active state and all three views return to showing the photo with active permission chips, as shown in Figure~\ref{fig:access-restored}. If they reject, a follow-up message confirms the decision to the recipient. Access renewal is therefore a negotiated interaction rather than an automatic reversal
 
-Figure~\ref{fig:access-restored} shows the prototype immediately after the sender has accepted the request. All three views have returned to an active state: the sender's thread now reads \emph{``Accepted --- access restored.''}, the recipient's photo is visible again with active permission chips, and the secondary recipient's forwarded copy is likewise restored---all driven by the single canonical update propagating through \texttt{getEffectivePermissions}.
 
 \begin{figure}[H]
     \centering
@@ -485,7 +486,8 @@ This flow satisfies the forwarding-control requirements (\textbf{FR7}--\textbf{F
 
 \subsection*{Co-Subject Notification and Revocation Request}
 
-When the sender marks a photo with the \emph{Co-subject} toggle before sending, the prototype generates a notification in the co-subject's dedicated handset view. Figure~\ref{fig:cosubject-notification} shows this notification: a prominent card reading \emph{``You are depicted in this photo --- Tap to view the photo.''}, followed by the explanatory text \emph{``You have been notified that you appear in this photo. You can request the sender to revoke it.''} and a limitation cue: \emph{``Protection is in-app only; screenshots and prior viewing cannot be fully undone.''}\ The same permission chips used throughout the prototype appear beneath the card, so the co-subject can inspect the photo's current state (in Figure~\ref{fig:cosubject-notification}: \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download allowed}).
+When the sender marks a photo with the \emph{Co-subject} toggle before sending, the prototype generates a notification in the co-subject's dedicated handset view. This notification consists of a prominent card informing the co-subject that they are depicted in the photo, accompanied by the same permission chips used throughout the prototype so that the co-subject can inspect the photo's current state. A limitation cue reminds the co-subject that protection is in-app only and that screenshots or prior viewing cannot be fully undone.
+
 
 \begin{figure}[H]
     \centering
@@ -497,28 +499,22 @@ When the sender marks a photo with the \emph{Co-subject} toggle before sending, 
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.42\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-cosubject-request.pdf}
-        \caption{Revocation request panel with optional message and limitation disclaimer.}
-        \label{fig:cosubject-request}
-    \end{subfigure}
-    \caption{Co-subject flow: notification (a) and revocation request (b).}
-    \label{fig:cosubject-flow}
+      \centering
+      \includegraphics[width=\linewidth]{figures/screenshot-cosubject-sender-review.pdf}
+      \caption{Sender's view after receiving the co-subject's revocation request}
+      \label{fig:cosubject-request}
+\end{subfigure}
+\caption{Co-subject flow: notification (a) and revocation request (b).}
+\label{fig:cosubject-flow}
 \end{figure}
-
-If the co-subject wishes to act, selecting \emph{Request revocation} from the photo's action menu opens the \texttt{RequestRevocationPanel} overlay (Figure~\ref{fig:cosubject-request}). The panel identifies the photo by label, provides an optional message field with placeholder text (\emph{``e.g.\ I'd prefer this photo not to be shared.''}), and repeats the platform-limitation warning: \emph{``Revocation affects in-app access only; offline copies may already exist.''}\ Tapping \emph{Send request} routes the revocation request to the sender's thread.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.45\textwidth]{figures/screenshot-cosubject-sender-review.pdf}
-    \caption{Sender's view after receiving the co-subject's revocation request, with \emph{Accept} and \emph{Reject} controls.}
-    \label{fig:cosubject-sender}
-\end{figure}
-
-On the sender's side (Figure~\ref{fig:cosubject-sender}), the request appears as a text message reading \emph{``Requested revocation of the photo: Cafe.''} with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated to \texttt{status:~"revoked"} via \texttt{updateSelectedPhotoPermissions}, and the revocation propagates to all participant views through the same derivation path described in Section~\ref{sec:components-state}. If the sender rejects, a follow-up message confirms the decision. As with access requests, the co-subject flow is a negotiated interaction: the co-subject can express a preference, but the sender retains the final decision over the permission state.
-
 \noindent
-This flow satisfies the co-subject notification and revocation-request requirements (\textbf{FR12}--\textbf{FR17}), while the consistent use of limitation warnings across both the notification card and the request panel reinforces the expectation-management principle introduced in the pre-send composer.
+
+If the co-subject wishes to act, selecting \emph{Request revocation} from the photo's action menu opens the revocation request panel shown in Figure~\ref{fig:cosubject-request}. The panel identifies the photo by label, provides an optional message field, and repeats the platform-limitation warning that revocation affects in-app access only. Tapping \emph{Send request} routes the revocation request to the sender's thread.
+
+On the sender's side (Figure~\ref{fig:cosubject-request}b), the request appears as a text message identifying the photo together with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated to a revoked state and the change propagates to all participant views through the derivation mechanism in Section~\ref{sec:components-state}. If the sender rejects, a follow-up message confirms the decision. As with access requests, the co-subject flow is a negotiated interaction where the co-subject can express a preference but the sender retains the final decision over the permission state.
+
+This flow satisfies the co-subject notification and revocation-request requirements (\textbf{FR12} to \textbf{FR17}), while the consistent use of limitation warnings across both the notification card and the request panel reinforces the expectation-management principle introduced in the pre-send composer.
+
 
 
 
@@ -540,4 +536,4 @@ Edge cases are tested alongside the primary flows. These include restoring acces
 
 \subsection*{Scope and Limitations}
 
-The automated suite operates within jsdom, which faithfully reproduces DOM structure but does not execute real CSS rendering, browser-specific layout, or navigation. No end-to-end browser automation framework such as Playwright or Cypress was introduced: the additional infrastructure cost was not justified for a single-page, single-user prototype where all views coexist in one render tree. Similarly, because the prototype has no backend, there are no API or database tests. These boundaries are consistent with the project's scope as an interactive proof-of-concept for evaluating the Smart Photos permission model, rather than a production messaging system. Automated tests therefore serve as a regression safety net for the permission logic and UI behaviour, while the broader question of whether users understand and trust that behaviour is addressed through the qualitative evaluation in Chapter~6.
+The automated suite operates within jsdom, which reproduces DOM structure but does not execute real CSS rendering or browser navigation. No end-to-end framework such as Playwright was introduced, as the additional cost was not justified for a single-page prototype where all views coexist in one render tree. Similarly, because the prototype has no backend, there are no API or database tests. These boundaries are consistent with the project's scope as an interactive prototype. Automated tests serve as a regression safety net for the permission logic and UI behaviour, while the broader question of whether users understand and trust that behaviour is addressed through the qualitative evaluation in Chapter~6.
