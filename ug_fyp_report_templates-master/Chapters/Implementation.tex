@@ -34,6 +34,10 @@ The prototype operates entirely as a front-end simulation with in-memory state. 
 
 As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, authentication, persistent storage, real-time delivery, multi-device synchronisation, automated co-subject detection, or server-side access control.
 
+\subsection*{Testing Tooling}
+
+Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development environment and supports fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way. The tests were executed in a jsdom environment, which provided a simulated browser DOM suitable for unit, component, and integration-style testing of the front-end prototype.
+
 \subsection*{Technology Summary}
 
 \begin{table}[h]
@@ -89,12 +93,7 @@ For this project, the interviews therefore functioned as a checkpoint between ``
 Phase~2 implemented the interface adjustments motivated by that feedback and, in parallel, restructured the codebase from a single file into a multi-component architecture so that further changes and testing could proceed without entangling unrelated parts of the UI.
 
 \subsubsection*{Architectural Restructuring}
-During the second implementation round, the prototype was refactored from a single large \texttt{page.tsx} file into a modular structure. The top-level page retained responsibility for coordinating the overall multi-view simulation, while dedicated components under \path{components/photo-revocation-demo} handled specific interface elements such as composition, message rendering, previews, request panels, and modal interactions. Shared definitions and reusable logic were moved under \texttt{src/lib}, including the demo-specific modules in \path{photo-revocation-demo} (\texttt{types.ts}, \texttt{helpers.ts}, and \texttt{initialState.ts}) and the shared \texttt{photoModel.ts} file.
-
-This restructuring improved maintainability and made later refinements more manageable. Interface changes could be applied to individual components without repeatedly modifying one monolithic file, while the underlying permission model remained separated from presentation concerns.
-
-bu yanlisin duzeltimis hali (architectureda yanlislar var sanirim):
-During the second implementation round, the prototype was refactored from a single large page.tsx file into a modular structure. Following this refactoring, page.tsx became a thin wrapper responsible only for rendering the prototype entry component, while PhotoRevocationDemo.tsx took over responsibility for coordinating the overall multi-view simulation. Dedicated components under components/photo-revocation-demo then handled specific interface elements such as composition, message rendering, previews, request panels, and modal interactions. Shared definitions and reusable logic were moved under src/lib, including the demo-specific modules in photo-revocation-demo (types.ts, helpers.ts, and initialState.ts) and the shared photoModel.ts file.
+During the second implementation round, the prototype was refactored from a single monolithic file into a modular component structure. The original \texttt{page.tsx} had grown to contain all rendering logic, state management, and UI concerns in one place, making iterative changes increasingly error-prone. Furthermore, this restructuring improved maintainability and made later refinements more manageable. Splitting the codebase allowed interface changes to be applied to individual components without risking unintended side-effects elsewhere, while keeping the underlying permission model separated from presentation concerns. The resulting component hierarchy is described in detail in Section~X.X.
 
 \subsubsection*{Interface Refinements}
 
@@ -115,24 +114,24 @@ Phase~2 focused on improving clarity and prototype fidelity without changing the
 
 \section{Components and State Management}\label{sec:components-state}
 
-\subsection*{Component Hierarchy (burda sanirim bir yanlis var ai ile check et diagrami)}
+\subsection*{Component Hierarchy}
 
-The final prototype comprises a thin entry page (\texttt{page.tsx}), a central orchestrator component (\texttt{PhotoRevocationDemo}), and seventeen leaf components organised into four functional groups. Figure~\ref{fig:component-hierarchy} shows this hierarchy.
+The final prototype comprises a thin entry page (\texttt{page.tsx}), a central orchestrator component \newline (\texttt{PhotoRevocationDemo}), and sixteen supporting components organised into five functional groups. Figure~\ref{fig:component-hierarchy} shows the hierarchy schematically and a detailed diagram is provided in Appendix~X.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/component-hierarchy.pdf}
-    \caption{Component hierarchy of the prototype, showing the four functional groups.}
+    \includegraphics[width=\textwidth]{figures/component-hierarchy.png}
+    \caption{Component hierarchy of the prototype}
     \label{fig:component-hierarchy}
 \end{figure}
 
-\texttt{PhotoRevocationDemo} owns all shared application state and passes data and handler functions down to its children as props. Each simulated handset is wrapped in a \texttt{PhoneFrame}, which renders the device chrome and provides a \texttt{ChatPanelOverlayContext} so that modal overlays such as request panels and view-once confirmations can portal into the correct handset frame rather than covering the entire page. Beneath this shell, the components divide into four groups:
-
+\texttt{PhotoRevocationDemo} owns all shared application state and passes data and handler functions down to its children as props. Each simulated handset is wrapped in a \texttt{PhoneFrame}, which renders the device chrome and provides a \texttt{ChatPanelOverlayContext} so that overlay components such as \newline \texttt{ViewOnceInChatModal} and \texttt{PhotoStackLightbox} can portal into the correct handset frame rather than covering the entire page. Beneath this shell, the components divide into the following groups:
 
 \begin{itemize}
-  \item \textbf{Conversation rendering.} \texttt{MessageList} iterates over a message array and dispatches each entry to \texttt{TextMessageBubble} or \texttt{PhotoMessageBubble}. Photo messages delegate further to \texttt{PhotoPreview} for single images, \texttt{PhotoStackGrid} for multi-photo collages, and \texttt{PhotoStackLightbox} for full-screen gallery viewing.
-  \item \textbf{Composition and configuration.} \texttt{ComposerView} manages the pre-send interface, including caption input and permission toggles. \texttt{PickerSheet} handles photo selection, while \texttt{TimeLimitModal} and its child \texttt{ScrollWheelColumn} provide the time-limit picker.
-  \item \textbf{Request and modal flows.} \texttt{RequestAccessPanel} and \texttt{RequestRevocationPanel} handle the access-request and co-subject revocation-request interfaces respectively. Furthermore, \texttt{ViewOnceInChatModal} manages the view-once confirmation overlay, with \texttt{ViewOnceSingleTick} rendering the single-view indicator on consumed messages.
+  \item \textbf{Device chrome.} \texttt{PhoneFrame} renders the handset shell and header for each of the four stakeholder views. It wraps its children in a \texttt{ChatPanelOverlayContext} provider, which exposes a portal target and scroll reference used by overlay components.
+  \item \textbf{Conversation rendering.} \texttt{MessageList} iterates over a message array and dispatches each entry to \texttt{TextMessageBubble} or \texttt{PhotoMessageBubble}. Photo messages delegate further to \newline \texttt{PhotoPreview} for single images, \texttt{PhotoStackGrid} for multi-photo collages, and \texttt{PhotoStackLightbox} for full-screen gallery viewing.
+  \item \textbf{Composition and configuration.} \texttt{ComposerView} manages the pre-send interface, including caption input and permission toggles. \texttt{PickerSheet} handles photo selection in the sender's footer. Both \texttt{ComposerView} (for the draft time limit) and \texttt{TimeLimitModal} (for post-send adjustment) embed \texttt{ScrollWheelColumn} as a reusable duration picker.
+  \item \textbf{Request and modal flows.} \texttt{RequestAccessPanel} and \texttt{RequestRevocationPanel} handle the access-request and co-subject revocation-request interfaces respectively; both are rendered inline in the relevant handset footer. \texttt{ViewOnceInChatModal} manages the view-once confirmation overlay, portalling into the per-handset overlay layer via \texttt{ChatPanelOverlayContext}.
   \item \textbf{Debug and demonstration.} \texttt{PrototypeStateSummary} surfaces the live permission state of the currently selected photo in a panel alongside the handset views, allowing evaluators to verify that permission changes propagate correctly across participants.
 \end{itemize}
 
@@ -151,67 +150,32 @@ Each group corresponds to a distinct area of the interaction model defined in Ch
 
 All application state that affects what participants see resides in \texttt{PhotoRevocationDemo} as React \texttt{useState} hooks. The most important of these are 5 message arrays (\texttt{mainMessages}, \texttt{forwardedMessages}, \texttt{senderOnlyMessages}, \texttt{recipientOnlyMessages}, \texttt{coSubjectOnlyMessages}) which together hold every message visible across the four simulated handsets.
 
-The canonical permission record for a photo lives on its entry in \texttt{mainMessages}.  Listing~\ref{lst:photo-permissions} shows the \texttt{PhotoPermissions} as implemented in the source:
+The canonical permission record for a photo lives on its entry in \texttt{mainMessages}. Figure~\ref{fig:photo-permissions} shows the \texttt{PhotoPermissions} type as implemented in the source (\texttt{types.ts}).
 
-\begin{lstlisting}[
-  caption={The \texttt{PhotoPermissions} type (\texttt{types.ts}). Each field maps to a permission control in the sender's configuration panel.},
-  label={lst:photo-permissions},
-  language={}
-]
-export type PhotoPermissions = {
-  status: PermissionStatus;     
-  canForward: boolean;
-  viewOnce: boolean;
-  expiresAt: number | null;    
-  canDownload: boolean;
-  hasCoSubject: boolean;
-};
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/listing-5-1-photo-permissions.png}
+  \caption{The \texttt{PhotoPermissions} type (\texttt{types.ts}). Each field maps to a permission control in the sender's configuration panel.}
+  \label{fig:photo-permissions}
+\end{figure}
 
-Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which uses a TypeScript discriminated union to distinguish text messages from photo messages:
+Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which uses a TypeScript discriminated union to distinguish text messages from photo messages. Figure~\ref{fig:chat-message} shows the definition as implemented in the source (\texttt{types.ts}).
 
-\begin{lstlisting}[
-  caption={Photo branch of the \texttt{ChatMessage} discriminated union (\texttt{types.ts}). The \texttt{sourcePhotoId} field links every copy (including forwarded ones) to the canonical permission record.},
-  label={lst:chat-message},
-  language={}
-]
-export type ChatMessage =
-  | { id: number; sender: Participant; type: "text";
-      text: string; time: string;
-      /* ...request metadata fields... */ }
-  | { id: number; sender: Participant; type: "photo";
-      assets: PhotoAsset[];
-      caption: string; time: string;
-      permissions: PhotoPermissions;
-      sourcePhotoId: number; };
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.60\textwidth]{figures/listing-5-1-chat-message.png}
+  \caption{\texttt{sourcePhotoId} links copies to the canonical record.}
+  \label{fig:chat-message}
+\end{figure}
 
-When the sender revokes, restores, or otherwise modifies permissions, only the canonical entry in \texttt{mainMessages} is updated. Forwarded copies in \texttt{forwardedMessages} are never rewritten directly. Instead, every rendering component resolves the live permission state at render time by calling \texttt{getEffectivePermissions}, shown in Listing~\ref{lst:get-effective}. This function looks up the canonical photo in \texttt{mainMessages} by matching \texttt{sourcePhotoId}, reads the stored permission fields, and applies time-limit expiry logic through \texttt{computeEffectiveStatus} before returning the result.
+When the sender revokes, restores, or otherwise modifies permissions, only the canonical entry in \texttt{mainMessages} is updated. Forwarded copies in \texttt{forwardedMessages} are never rewritten directly. Instead, every rendering component resolves the live permission state at render time by calling \texttt{getEffectivePermissions}, shown in Figure~\ref{fig:get-effective}. This function looks up the canonical photo in \texttt{mainMessages} by matching \texttt{sourcePhotoId}, reads the stored permission fields, normalises \texttt{canDownload} and \texttt{hasCoSubject} with defaults when they are undefined on the stored record, and applies time-limit expiry logic through \texttt{computeEffectiveStatus} before returning the result.
 
-\begin{lstlisting}[
-  caption={\texttt{getEffectivePermissions} (\texttt{helpers.ts}). Resolves the live permission state for any photo message by looking up the canonical record in \texttt{mainMessages} and applying expiry logic.},
-  label={lst:get-effective},
-  language={}
-]
-export function getEffectivePermissions(
-  mainMessages: ChatMessage[],
-  message: PhotoMessage,
-): PhotoPermissions {
-  const raw = mainMessages.find(
-    (entry): entry is PhotoMessage =>
-      entry.type === "photo"
-      && entry.sourcePhotoId === message.sourcePhotoId,
-  )?.permissions ?? message.permissions;
-
-  const expiresAt = raw.expiresAt ?? null;
-  const now = Date.now();
-  return {
-    ...raw,
-    expiresAt,
-    status: computeEffectiveStatus(raw.status, expiresAt, now),
-  };
-}
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.70\textwidth]{figures/get-effective-permissions.png}
+  \caption{Resolving live permissions in \texttt{helpers.ts}}
+  \label{fig:get-effective}
+\end{figure}
 
 This derivation pattern means that a single state update to the canonical photo in \texttt{mainMessages} is sufficient for every participant view (sender, recipient, forwarded recipient, and co-subject) to reflect the change on the next render cycle. The prototype does not need to synchronise permission records across message arrays or maintain separate update logic for forwarded copies, because every component derives its view of permissions from the same canonical source.
 
@@ -219,23 +183,17 @@ This derivation pattern means that a single state update to the canonical photo 
 
 Alongside the shared permission state described above, \texttt{PhotoRevocationDemo} maintains a second category of state: transient values that control temporary interface behaviour rather than the canonical permission model. These include boolean flags that govern which overlay is currently visible (\texttt{pickerOpen}, \texttt{composerOpen}, \texttt{timeLimitModalOpen}), a structured value tracking which photo menu is active and in which mode (\texttt{openPhotoMenu}), and draft text fields that hold in-progress user input before it is committed (\texttt{draftCaption}, \texttt{accessRequestDraft}, \texttt{senderInput}, \texttt{recipientInput}). None of these values affect how permissions are stored or derived and they exist only to support the interactive surface of each handset view.
 
-One notable piece of local state is the countdown tick. The prototype supports time-limited photo access, and the remaining time must update visually every second. Rather than introducing a timer event system, the orchestrator increments a counter once per second via a \texttt{useEffect} hook:
+One notable piece of local state is the countdown tick. The prototype supports time-limited photo access, and the remaining time must update visually every second. Rather than introducing a timer event system, the orchestrator increments a counter once per second via a \texttt{useEffect} hook, as shown in Figure~\ref{fig:countdown-tick}.
 
-\begin{lstlisting}[
-  caption={Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}. The tick value itself is never read, its sole purpose is to force React re-renders.},
-  label={lst:countdown-tick},
-  language={}
-]
-const [, setCountdownTick] = useState(0);
-
-useEffect(() => {
-  const id = setInterval(() => setCountdownTick((t) => t + 1), 1000);
-  return () => clearInterval(id);
-}, []);
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{figures/countdown-tick-effect.png}
+  \caption{Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}. The tick value itself is never read; its sole purpose is to force React re-renders.}
+  \label{fig:countdown-tick}
+\end{figure}
 
 \noindent
-The code intentionally discards the state variable during destructuring, as the underlying tick value remains unused. Its only purpose is to trigger a React re-render every second so that \texttt{getEffectivePermissions} (Listing~\ref{lst:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}. This allows time-limited photos to expire visually in real time and countdown labels to update continuously, without requiring explicit expiry event handling or additional state-management infrastructure.
+The code intentionally discards the state variable during destructuring, as the underlying tick value remains unused. Its only purpose is to trigger a React re-render every second so that \texttt{getEffectivePermissions} (Figure~\ref{fig:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}. This allows time-limited photos to expire visually in real time and countdown labels to update continuously, without requiring explicit expiry event handling or additional state-management infrastructure.
 
 Separating these transient interaction values from the canonical permission state kept the implementation manageable. The permission model remained single-source-of-truth structure as described in the previous subsection, while the local state layer provided the flexibility needed to support rich interactions such as modal sequencing, draft composition, and live countdown display.
 
@@ -245,90 +203,40 @@ The two most consequential state transitions in the prototype are post-send revo
 
 \subsubsection*{Post-Send Revocation}
 
-When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{\{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object:
+When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{\{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object, as shown in Figure~\ref{fig:update-permissions}.
 
-\begin{lstlisting}[
-  caption={\texttt{updateSelectedPhotoPermissions} in \texttt{PhotoRevocationDemo.tsx}. The immutable map-and-merge pattern updates the canonical record without mutating existing state.},
-  label={lst:update-permissions},
-  language={}
-]
-const updateSelectedPhotoPermissions =
-  (updates: Partial<PhotoPermissions>) => {
-    if (selectedPhotoId === null) return;
-    setMainMessages((currentMessages) =>
-      currentMessages.map((message) => {
-        if (message.type !== "photo"
-            || message.sourcePhotoId !== selectedPhotoId)
-          return message;
-        return {
-          ...message,
-          permissions: { ...message.permissions, ...updates },
-        };
-      }),
-    );
-  };
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/update-selected-photo-permissions.png}
+  \caption{\texttt{updateSelectedPhotoPermissions} in \texttt{PhotoRevocationDemo.tsx}. The immutable map-and-merge pattern updates the canonical record without mutating existing state.}
+  \label{fig:update-permissions}
+\end{figure}
 
 \noindent
-Because \texttt{forwardedMessages} is never rewritten, the revocation takes effect across all participant views through the derivation layer already shown in Listing~\ref{lst:get-effective}. On the next render cycle, every \texttt{PhotoMessageBubble} calls \texttt{getEffectivePermissions}, which looks up the now-revoked canonical record and returns \texttt{"revoked"} as the effective status. The same handler is reused for restoring access, toggling the download flag, or enabling the co-subject flag where each is simply a different partial update passed to the same function.
+Because \texttt{forwardedMessages} is never rewritten, the revocation takes effect across all participant views through the derivation layer already shown in Figure~\ref{fig:get-effective}. On the next render cycle, every \texttt{PhotoMessageBubble} calls \texttt{getEffectivePermissions}, which looks up the now-revoked canonical record and returns \texttt{"revoked"} as the effective status. The same handler is reused for restoring access, toggling the download flag, or enabling the co-subject flag where each is simply a different partial update passed to the same function.
 
 \subsubsection*{Constrained Forwarding}
+Forwarding adds a message to \texttt{forwardedMessages} only after checking the canonical permission state, as shown in Figure~\ref{fig:forward-photo}.
 
-Forwarding introduces a new message into \texttt{forwardedMessages}, but only after checking the canonical permission state. Listing~\ref{lst:forward-photo} shows the handler:
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.67\textwidth]{figures/forward-photo-message.png}
+  \caption{Forwarding under effective permissions}
+  \label{fig:forward-photo}
+\end{figure}
 
-\begin{lstlisting}[
-  caption={\texttt{forwardPhotoMessage} in \texttt{PhotoRevocationDemo.tsx}. The function guards on effective permissions before creating a linked copy.},
-  label={lst:forward-photo},
-  language={}
-]
-const forwardPhotoMessage = (message: PhotoMessage) => {
-  const effectivePermissions =
-    getEffectivePermissions(mainMessages, message);
-
-  if (effectivePermissions.status !== "active"
-      || !effectivePermissions.canForward) {
-    return;
-  }
-
-  const forwardedMessage: PhotoMessage = {
-    id: getNextMessageId(mainMessages, forwardedMessages,
-      senderOnlyMessages, coSubjectOnlyMessages,
-      recipientOnlyMessages),
-    sender: "recipient",
-    type: "photo",
-    assets: [...message.assets],
-    caption: `Forwarded: ${message.caption}`,
-    time: getTimeLabel(),
-    permissions: effectivePermissions,
-    sourcePhotoId: message.sourcePhotoId,
-  };
-
-  setForwardedMessages((prev) => [...prev, forwardedMessage]);
-};
-\end{lstlisting}
-
-\noindent
 Two details are significant. First, the guard clause calls \texttt{getEffectivePermissions} to evaluate the canonical record at the moment of forwarding; if the photo has been revoked or its \texttt{canForward} flag is \texttt{false}, the function returns early and no copy is created. Second, the forwarded message carries the same \texttt{sourcePhotoId} as the original. This means that if the sender later revokes access, the derivation layer will resolve the forwarded copy against the updated canonical record, and the forwarded recipient's view will reflect the revocation without any additional update to \texttt{forwardedMessages}.
 
 \subsubsection*{Time-Limit Expiry}
 
-Time-limited access follows the same derivation principle without requiring a dedicated state transition. When the sender configures a time limit before sending, the photo message is created with an \texttt{expiresAt} timestamp. No handler fires when the deadline passes, instead, \texttt{computeEffectiveStatus} (called within \texttt{getEffectivePermissions}) compares \texttt{expiresAt} against \texttt{Date.now()} on every render and returns \texttt{"revoked"} once the timestamp has elapsed:
+Time-limited access follows the same derivation principle without requiring a dedicated state transition. When the sender configures a time limit before sending, the photo message is created with an \texttt{expiresAt} timestamp. No handler fires when the deadline passes; instead, \texttt{computeEffectiveStatus} (called within \texttt{getEffectivePermissions}) compares \texttt{expiresAt} against \texttt{Date.now()} on every render and returns \texttt{"revoked"} once the timestamp has elapsed, as shown in Figure~\ref{fig:compute-effective-status}.
 
-\begin{lstlisting}[
-  caption={\texttt{computeEffectiveStatus} in \texttt{photoModel.ts}. Expiry is treated as implicit revocation---no event or state write is needed.},
-  label={lst:compute-status},
-  language={}
-]
-export function computeEffectiveStatus(
-  storedStatus: PermissionStatus,
-  expiresAt: number | null,
-  nowMs: number,
-): PermissionStatus {
-  if (storedStatus === "revoked") return "revoked";
-  if (expiresAt != null && nowMs >= expiresAt) return "revoked";
-  return "active";
-}
-\end{lstlisting}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{figures/compute-effective-status.png}
+  \caption{\texttt{computeEffectiveStatus} in \texttt{photoModel.ts}. Expiry is treated as implicit revocation---no event or state write is needed.}
+  \label{fig:compute-effective-status}
+\end{figure}
 
 \noindent
 Combined with the countdown tick described in the previous subsection, this ensures that a time-limited photo transitions smoothly from an active countdown display to a revoked placeholder at the moment of expiry, using The system translates the concept of ongoing and dynamic consent into a tangible feature by using one core function to handle all access rules. Consequently, any single change made at the source (whether by the user or by time expiring) instantly cascades to update all shared copies of the photo.
@@ -523,17 +431,45 @@ This flow satisfies the co-subject notification and revocation-request requireme
 
 \subsection*{Manual Cross-View Verification}
 
-After each substantive change, the prototype was exercised manually in the browser across all four stakeholder views (sender, recipient, forwarded recipient, and co-subject). These manual checks concentrated on cross-view consistency: confirming that a revocation performed in the sender panel was immediately reflected in the recipient and forwarded-recipient panels, that permission chips updated accordingly, and that warning text remained visible where expected. Manual verification was particularly important for visual and layout details---such as colour-coded status indicators, animation transitions, and responsive scaling---that automated tests running in a simulated DOM environment cannot fully capture. Version control was maintained with Git throughout both development phases, providing a traceable history of changes and the ability to isolate regressions.
+After each substantive change, the prototype was exercised manually in the browser across all four stakeholder views (sender, recipient, forwarded recipient, and co-subject). These manual checks concentrated on cross-view consistency. They confirmed that when a revocation was made in the sender panel, it was immediately reflected in the recipient and forwarded-recipient panels and that permission chips updated correctly. Manual verification was particularly important for visual and layout details such as colour-coded status indicators, animation transitions, and responsive scaling, that automated tests running in a simulated DOM environment cannot fully capture. Version control was maintained with Git throughout both development phases, providing a traceable history of changes and the ability to isolate regressions.
+
+
+
 
 \subsection*{Automated Unit and Component Tests}
 
-To supplement manual checks, an automated test suite was developed using the tooling listed in Table~\ref{tab:tech-summary}: Vitest as the test runner, React Testing Library (RTL) for component rendering, and jsdom as the simulated browser environment. RTL's design philosophy prioritises testing components through their user-facing behaviour---querying by accessible roles, labels, and visible text rather than internal implementation details. % TODO: You may optionally cite RTL's guiding principle here if you add the reference.
-This aligns well with the prototype's goals, since the critical question is whether a user would see the correct permission state, not whether a particular internal variable holds the expected value.
+To supplement the manual checks described above, an automated test suite was developed and organised into three layers within a dedicated \texttt{tests/} directory.
 
-The test suite, located under a dedicated \texttt{tests/} directory, is organised into three layers. \emph{Unit tests} verify pure helper functions and the permission model in isolation: for example, confirming that \texttt{computeEffectiveStatus} treats a past expiry as revoked regardless of the stored status, or that \texttt{getEffectivePermissions} falls back to the message's own permissions when the canonical source is absent from the main thread. \emph{Component tests} render individual UI elements (the photo bubble, composer, picker, time-limit modal, request panels, and text message bubble) within a lightweight harness that supplies controlled props. These tests exercise specific branches: a revoked photo displaying the ``Access changed'' placeholder, a view-once photo transitioning to ``Opened once'' after consumption, the download button being disabled when \texttt{canDownload} is false, and the co-subject depicted-person card reflecting both the active and revoked states. \emph{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate multi-step user journeys spanning several handset panels: revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying it appears on the secondary handset, sending and then accepting or rejecting access and revocation requests, and consuming a view-once photo through the modal lifecycle.
+\textbf{Unit tests} verify pure helper functions and the permission model in isolation, confirming for example that \texttt{computeEffectiveStatus} treats a past expiry timestamp as revoked regardless of the stored status field and that \texttt{getEffectivePermissions} falls back to a message's own permission record when the canonical source is absent from the main thread.
 
-Edge cases are tested alongside the primary flows. These include restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message (which should produce no new entry), cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variants---``View once unavailable'' versus ``Not reviewable''---depending on whether the underlying policy was view-once. Coverage is collected using \texttt{@vitest/coverage-v8}; at the time of writing the suite comprises over one hundred assertions and achieves statement coverage above ninety per cent for the included source files, with an eighty per cent function-coverage threshold enforced in the Vitest configuration.
+\textbf{Component tests} render individual UI elements such as the photo bubble, composer, picker, time-limit modal, request panels, and text message bubble within a lightweight harness that supplies controlled props. These tests exercise behavioural branches including a revoked photo displaying the ``Access changed'' placeholder, a view-once photo transitioning to ``Opened once'' after consumption, the download button appearing disabled when \texttt{canDownload} is false, and the co-subject card reflecting both active and revoked states.
 
-\subsection*{Scope and Limitations}
+\textbf{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate multi-step user journeys spanning several handset panels, including revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying its appearance on the secondary handset, accepting or rejecting access and revocation requests, and consuming a view-once photo through the full modal lifecycle.
 
-The automated suite operates within jsdom, which reproduces DOM structure but does not execute real CSS rendering or browser navigation. No end-to-end framework such as Playwright was introduced, as the additional cost was not justified for a single-page prototype where all views coexist in one render tree. Similarly, because the prototype has no backend, there are no API or database tests. These boundaries are consistent with the project's scope as an interactive prototype. Automated tests serve as a regression safety net for the permission logic and UI behaviour, while the broader question of whether users understand and trust that behaviour is addressed through the qualitative evaluation in Chapter~6.
+Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases across 16 test files. Table~\ref{tab:coverage} summarises the coverage collected by \texttt{@vitest/coverage-v8}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{P{3cm} P{2.5cm}}
+\hline
+\textbf{Metric} & \textbf{Coverage (\%)} \\
+\hline
+Statements & 96.22 \\
+Branches & 90.84 \\
+Functions & 91.66 \\
+Lines & 96.22 \\
+\hline
+\end{tabular}
+\caption{Aggregate test coverage across all source files}
+\label{tab:coverage}
+\end{table}
+
+
+
+
+
+\subsection*{Scope and Limitations of Testing}
+
+The automated suite operates within jsdom, which reproduces DOM structure but does not execute real CSS rendering or browser navigation. No end-to-end framework such as Playwright was introduced, as the additional cost was not justified for a single-page prototype where all views coexist in one render tree. Similarly, because the prototype has no backend, there are no API or database tests. These boundaries are consistent with the project's scope as an interactive prototype. As Myers notes, testing can reveal the presence of defects but never prove their complete absence \cite{myers_2011}. Automated tests serve as a regression safety net for the permission logic and UI behaviour, while the broader question of whether users understand and trust that behaviour is addressed through the qualitative evaluation in Chapter~6. Broader prototype limitations and production considerations are discussed in Section 7.2.
+
+

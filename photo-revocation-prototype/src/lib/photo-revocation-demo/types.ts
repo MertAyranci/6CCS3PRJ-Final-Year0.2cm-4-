@@ -42,7 +42,6 @@ export type ChatMessage =
       id: number;
       sender: Participant;
       type: "photo";
-      /** One logical send; shared permissions for the whole stack (single sourcePhotoId). */
       assets: PhotoAsset[];
       caption: string;
       time: string;
@@ -52,7 +51,6 @@ export type ChatMessage =
 
 export type PhotoMessage = Extract<ChatMessage, { type: "photo" }>;
 
-/** One row in the prototype send log (main thread, sender photo messages). */
 export type SendHistoryEntry = {
   sourcePhotoId: number;
   time: string;
