@@ -155,15 +155,15 @@ The canonical permission record for a photo lives on its entry in \texttt{mainMe
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{figures/listing-5-1-photo-permissions.png}
-  \caption{The \texttt{PhotoPermissions} type (\texttt{types.ts}). Each field maps to a permission control in the sender's configuration panel.}
+  \caption{The \texttt{PhotoPermissions} type with fields matching the sender's permission controls.}
   \label{fig:photo-permissions}
 \end{figure}
 
-Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which uses a TypeScript discriminated union to distinguish text messages from photo messages. Figure~\ref{fig:chat-message} shows the definition as implemented in the source (\texttt{types.ts}).
+Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which uses a TypeScript discriminated union to distinguish text messages from photo messages (Figure~\ref{fig:chat-message}).
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.60\textwidth]{figures/listing-5-1-chat-message.png}
+  \includegraphics[width=0.55\textwidth]{figures/listing-5-1-chat-message.png}
   \caption{\texttt{sourcePhotoId} links copies to the canonical record.}
   \label{fig:chat-message}
 \end{figure}
@@ -308,14 +308,14 @@ Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears.
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[t]{0.42\textwidth}
+    \begin{subfigure}[t]{0.40\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/screenshot-recipient-active.png}
         \caption{Active photo with expanded permission chips and live expiry countdown.}
         \label{fig:recipient-active}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.42\textwidth}
+    \begin{subfigure}[t]{0.40\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/screenshot-recipient-revoked.png}
         \caption{Revoked state: photo replaced by a neutral placeholder.}
@@ -396,7 +396,7 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
 \end{figure}
 \noindent
 
-If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens inline in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern used in the recipient's access-request flow to maintain the consistency across stakeholder roles as a user might be any stakeholder in the flow depending on the context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherents to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies that share the same \texttt{sourcePhotoId}. This cross-context propagation is the same mechanism used for sender-initiated revocation which means co-subject triggered revocations requires no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
+If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens inline in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern used in the recipient's access-request flow to maintain the consistency across stakeholder roles as a user might be any stakeholder in the flow depending on the context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherents to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies that share the same \texttt{sourcePhotoId} This cross-context propagation is the same mechanism used for sender-initiated revocation which means co-subject triggered revocations requires no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
 
 
 \section{Software Testing}\label{sec:software-testing}
