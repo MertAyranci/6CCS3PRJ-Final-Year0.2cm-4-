@@ -31,7 +31,6 @@ The final principle is that new revocation and permission features should remain
 
 For that reason, the design does not attempt to invent an entirely separate privacy-management environment detached from ordinary messaging behaviour. Instead, it follows familiar WhatsApp-like interaction conventions such as photo-level action menus, recognisable icons, in-chat state cues, and lightweight bottom-sheet style controls. This principle supports learnability and consistency, and helps ensure that the proposed system feels like a plausible extension of an existing messaging platform rather than an unfamiliar parallel application. By embedding consent and revocation controls within established patterns of use, the design aims to support meaningful control without introducing so much novelty or friction that the feature becomes difficult to adopt in everyday communication.
 
-\newpage
 \section{Functional Specification}
 
 \subsection{Pre-send Permission Configuration}
@@ -79,6 +78,15 @@ To achieve \textbf{FR15}, the outcome of a co-subject request is communicated th
 To achieve \textbf{FR16}, accepting a co-subject revocation request changes the permission state of the source photo itself. Because forwarded copies remain linked to that source and inherit its state, co-subject-triggered revocations propagate into downstream redistribution contexts rather than stopping at the original exchange.
 
 To achieve \textbf{FR17}, the prototype makes the limits of co-subject protection explicit. Both the co-subject view and the revocation-request flow state that protection is in-app only and that screenshots or prior viewing cannot be fully undone, presenting these controls as meaningful but bounded without implying complete erasure after disclosure.
+
+\subsection{Permission State Flow }
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth,height=0.88\textheight,keepaspectratio]{figures/smart-photos-flow-chart.png}
+  \caption{Flow chart of Smart Photos}
+  \label{fig:smart-photos-flow-chart}
+\end{figure}
 
 \section{Non-Functional Specification}
 
