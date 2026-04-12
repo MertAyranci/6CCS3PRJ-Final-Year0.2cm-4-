@@ -6,7 +6,7 @@ This chapter details the implementation of the Smart Photos prototype, covering 
 
 \subsection*{Next.js and React}
 
-React~19 was chosen for its component-based architecture, which supports modular development, reuse across the interface, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as the sender, recipient, forwarded recipient, and co-subject perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes, such as revocation, forwarding restrictions, and time-limit expiry, to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation rather than a networked multi-user system, this behaviour could be implemented without introducing an external state-management library.
+React~19 was chosen for its component-based architecture, which supports modular development, reuse across the interface, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as the sender, recipient, forwarded recipient, and co-subject perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation, this behaviour could be implemented without introducing an external state-management library.
 
 Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is essentially a single-page application, Next.js streamlined development and supported rapid iteration across the two implementation rounds described in Section~\ref{sec:dev-process}.
 
@@ -38,9 +38,13 @@ As such, the prototype is an interactive proof-of-concept for the Smart Photos p
 
 Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development environment and supports fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way. The tests were executed in a jsdom environment, which provided a simulated browser DOM suitable for unit, component, and integration-style testing of the front-end prototype.
 
+\subsection*{Version Control and Deployment}
+
+GitHub was used for version control throughout development, supporting iterative process across the prototype’s implementation rounds. The prototype was deployed on Vercel, which provided lightweight hosting for demonstrating the Next.js front-end during testing and evaluation. A link to the deployed version is given at the end of the Section \ref{sec:translation}.
+
 \subsection*{Technology Summary}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{P{3.2cm} P{1.8cm} P{8cm}}
 \hline
@@ -408,7 +412,7 @@ To supplement the manual checks described above, an automated test suite was dev
 
 \textbf{Component tests} render individual UI elements such as the photo bubble, composer, picker, time-limit modal, request panels, and text message bubble within a lightweight harness that supplies controlled props. These tests exercise behavioural branches including a revoked photo displaying the ``Access changed'' placeholder, a view-once photo transitioning to ``Opened once'' after consumption, the download button appearing disabled when \texttt{canDownload} is false, and the co-subject card reflecting both active and revoked states.
 
-\textbf{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate multi-step user journeys spanning several handset panels, including revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying its appearance on the secondary handset, accepting or rejecting access and revocation requests, and consuming a view-once photo through the full modal lifecycle.
+\textbf{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate user journeys  across several handset panels, including revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying its appearance on the secondary handset, accepting or rejecting access and revocation requests, and consuming a view-once photo through the full modal lifecycle.
 
 Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases across 16 test files. Table~\ref{tab:coverage} summarises the coverage collected by \texttt{@vitest/coverage-v8}.
 

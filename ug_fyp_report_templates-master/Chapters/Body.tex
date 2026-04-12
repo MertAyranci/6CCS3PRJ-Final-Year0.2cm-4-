@@ -101,13 +101,14 @@ This chapter defines the requirements for the WhatsApp-like prototype developed 
 \multicolumn{4}{|l|}{\textbf{1. Pre-send consent configuration}} \\ \hline
 FR1 &
 The prototype must allow the sender to select a photo and configure permissions before sending. &
-Supports contextual, pre-send consent by enabling the sender to define sharing conditions at the point of disclosure, consistent with literature on dynamic consent, in-context privacy choices, and interface support for notice and control. \cite{kaye_dynamic_2015,robol_consent_2023,schuler_scott_dynamic_consent_2022,lee_identifying_2023,heath_2023,wilbanks_design_2018,cherubini_2021,schaub_notice_2015,im_yes_2021,whatsapp_view_once,whatsapp_disappearing_messages,whatsapp_advanced_chat_privacy} &
+Supports contextual, pre-send consent by enabling the sender to define sharing conditions at the point of disclosure, consistent with literature on dynamic consent, in-context privacy choices, and interface support for notice and control.
+\cite{kaye_dynamic_2015,schuler_scott_dynamic_consent_2022,im_yes_2021,schaub_notice_2015}&
 RG1 
 \\ \hline
 
 FR2 &
 The prototype must explicitly address screenshot and download risk (e.g.\ indicate that screenshots cannot be fully prevented). &
-Treats screenshot and download risk as a central limitation of photo-sharing control, with literature emphasising that users should be warned before sharing that some forms of capture cannot be fully prevented.  \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025} &
+Treats screenshot and download risk as a central limitation of photo-sharing control, with literature emphasising that users should be warned before sharing that some forms of capture cannot be fully prevented.  \cite{ingber_2025,heath_2023,schaub_notice_2015,cherubini_2021,whatsapp_disappearing_messages,whatsapp_view_once}&
 RG2
 \\ \hline
 
@@ -124,7 +125,7 @@ RG2
 
 FR4 &
 The prototype must show a compact permission summary under each shared photo so every user sees the current access state. &
-Makes permission states visible in-chat; literature emphasises that users do not always understand what access changes mean, so interfaces should present clear, legible outcomes. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
+Makes permission states visible in-chat; literature emphasises that users do not always understand what access changes mean, so interfaces should present clear, legible outcomes. \cite{schnitzler_2020,im_yes_2021,wilbanks_design_2018,albesher_2021,schaub_notice_2015} &
 RG2
 \\ \hline
 
@@ -148,14 +149,15 @@ RG2
 \multicolumn{4}{|l|}{\textbf{3. Redistribution and forwarding control}} \\ \hline
 FR7 &
 The prototype must constrain forwarding according to the sender's current permission state. &
-Allows forwarding only when explicitly permitted, consistent with literature emphasising that forwarding changes information flow and should remain subject to the sender's transmission constraints.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023,ingber_2025} &
+Allows forwarding only when explicitly permitted, consistent with literature emphasising that forwarding changes information flow and should remain subject to the sender's transmission constraints.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,ingber_2025} &
 RG2
 \\ \hline
 
 
 FR8 &
 The prototype must propagate sender-defined permissions to forwarded content within the prototype. &
-Ensures forwarded content inherits the original sender's permissions, consistent with literature emphasising that transmission constraints should persist across forwarding to reduce secondary privacy loss.\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,whatsapp_advanced_chat_privacy,whatsapp_advanced_chat_privacy_blog_2025,heath_2023} &
+Ensures forwarded content inherits the original sender's permissions, consistent with literature emphasising that transmission constraints should persist across forwarding to reduce secondary privacy loss.
+\cite{nissenbaum_contextual_2011,cherubini_2021,zhang_go-sharing_2023,liu_privacy_2023,heath_2023} &
 RG2 
 RG3
 \\ \hline
@@ -172,7 +174,7 @@ RG2
 \multicolumn{4}{|l|}{\textbf{4. Recipient Awareness and negotiated consent}} \\ \hline
 FR10 &
 The prototype must provide recipients with a neutral inline indication when access is revoked or when permissions change.&
-Communicates access changes in neutral language, consistent with literature emphasising that revocation notices should manage expectations without creating unnecessary blame or ambiguity. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018} &
+Communicates access changes in neutral language, consistent with literature emphasising that revocation notices should manage expectations without creating unnecessary blame or ambiguity. \cite{schnitzler_2020,petronio_cpm_2020,cherubini_2021,ingber_2025,short_williams_christie_1976,wilbanks_design_2018} &
 RG3
 \\ \hline
 
@@ -296,14 +298,14 @@ RG1
 \multicolumn{4}{|l|}{\textbf{3. Social impact}} \\ \hline
 NFR6 &
 The interface must use neutral, non-blaming language to reduce unnecessary social tension when permissions change. &
-Ensures that permission changes are communicated in a socially careful and non-accusatory way. Literature on privacy boundary management and revocation emphasises that such changes are socially meaningful, so interface wording should ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020,daft_lengel_mrt_1986,short_williams_christie_1976,ishii_etal_2019,wilbanks_design_2018,schaub_notice_2015} &
+Ensures that permission changes are communicated in a socially careful and non-accusatory way. Literature on privacy boundary management and revocation emphasises that such changes are socially meaningful, so interface wording should ambiguity, and interpersonal friction while keeping changes intelligible. \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,schnitzler_2020, wilbanks_design_2018,schaub_notice_2015} &
 RG3
 \\ \hline
 
 \multicolumn{4}{|l|}{\textbf{4. Consistency}} \\ \hline
 NFR7 &
 Permission menus, indicators, and states should remain consistent with familiar WhatsApp-like interaction patterns. &
-Ensures that new permission controls are easier to learn and less confusing by following interaction patterns users already recognise. Literature on usable privacy controls emphasises that consistency supports interpretability, and that settings should avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,im_yes_2021,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
+Ensures that new permission controls are easier to learn and less confusing by following interaction patterns users already recognise. Literature on usable privacy controls emphasises that consistency supports interpretability, and that settings should avoid inconsistent placement or presentation that makes actions harder to locate or understand. \cite{albesher_2021,schaub_notice_2015,wilbanks_design_2018,schnitzler_2020,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once} &
 RG1 
 RG4
 \\ \hline
@@ -318,7 +320,7 @@ RG4
 \multicolumn{4}{|l|}{\textbf{5. Transparency}} \\ \hline
 NFR9 &
 The system must not over-promise. It should clearly indicate that revocation may not affect screenshots, saved copies, or prior viewing. &
-Ensures that users understand the practical limits of revocation clearly and honestly. Literature on revocation and media control emphasises that revocation is only partial and prospective, so interfaces should avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,ingber_2025,whatsapp_delete_messages,whatsapp_disappearing_messages,whatsapp_view_once,whatsapp_advanced_chat_privacy,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
+Ensures that users understand the practical limits of revocation clearly and honestly. Literature on revocation and media control emphasises that revocation is only partial and prospective, so interfaces should avoid implying complete erasure where screenshots, saved copies, exports, or prior viewing remain outside full platform control. \cite{politou_2018,schnitzler_2020,heath_2023,whatsapp_privacy_policy_uk_2025,schaub_notice_2015} &
 RG2
 \\ \hline
 
