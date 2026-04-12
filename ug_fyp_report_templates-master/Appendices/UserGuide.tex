@@ -1,3 +1,78 @@
 \chapter{User Guide}
-\section{Instructions}
-You must provide an adequate user guide for your software. The guide should provide easily understood instructions on how to use your software. A particularly useful approach is to treat the user guide as a walk-through of a typical session, or set of sessions, which collectively display all of the features of your package. Technical details of how the package works are rarely required. Keep the guide concise and simple. The extensive use of diagrams, illustrating the package in action, can often be particularly helpful. The user guide is sometimes included as a chapter in the main body of the report, but is often better included in an appendix to the main report.
+\label{app:user-guide}
+
+\section{Purpose}
+
+\noindent
+This appendix explains how to run the \textbf{Smart Photos} prototype on a local machine. Also a deployed version can be accessed at \url{https://smart-photos.vercel.app}
+A concise, illustrated tour of every major flow is already given in Section~\ref{sec:translation}. 
+
+\section{Prerequisites}
+
+\begin{itemize}
+  \item \textbf{Node.js} version \textbf{20.x} (LTS recommended). The project uses TypeScript tooling aligned with Node~20; older major versions may fail to install or run dependencies.
+  \item \textbf{npm} (bundled with Node.js). The instructions below use \texttt{npm}
+\end{itemize}
+
+\section{Install and run}
+
+\begin{enumerate}
+  \item Open a terminal and change into the prototype folder:
+  \begin{verbatim}
+cd photo-revocation-prototype
+  \end{verbatim}
+  \item Install dependencies:
+  \begin{verbatim}
+npm install
+  \end{verbatim}
+  \item Start the development server:
+  \begin{verbatim}
+npm run dev
+  \end{verbatim}
+  \item Open the default address printed in the terminal and make it full screen to have a better view. 
+\end{enumerate}
+
+\section{Optional: production build}
+
+\noindent
+To run an optimised build (closer to a deployed Next.js app, useful for a stable demo):
+
+\begin{verbatim}
+npm run build
+npm run start
+\end{verbatim}
+
+\section{Feature checklist (where to see each behaviour)}
+
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{3.6cm}P{9.8cm}@{}}
+\hline
+\textbf{Feature} & \textbf{What to do in the running prototype} \\
+\hline
+Pre-send permissions and screenshot warning & From the sender handset, open the photo picker, choose one or more images, then use \emph{Send with revocable permissions}. \\
+\hline
+Post-send permission changes / revocation & On the sender handset, open the action menu on a sent photo message and use the post-send options (e.g.\ revoke access, forwarding, download, time limit). Expand the permission summary row under the bubble if needed. \\
+\hline
+Recipient view and revoked placeholder & Compare the recipient handset before and after sender-side revocation. Use recipient menu actions such as \emph{Forward}, \emph{Download}, or \emph{Request access} when the design allows them. \\
+\hline
+View-once consumption & On the recipient handset, open a view-once photo via \emph{Open}, then close the viewer and observe the consumed state on the bubble. \\
+\hline
+Forwarding and access request & Forward from a recipient handset when permitted. After revocation, use \emph{Request access} and respond on the sender handset with \emph{Accept} or \emph{Reject}. Observe the forwarded-recipient panel for propagated state. \\
+\hline
+Co-subject flow & Use the co-subject handset panel. Read the notification card, open the photo menu, and use \emph{Request revocation} where available. Complete \emph{Accept}/\emph{Reject} on the sender handset. \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Optional: automated tests}
+
+\noindent
+
+\begin{verbatim}
+npm test:coverage
+\end{verbatim}
+
+\noindent
+Further detail on testing is given in Section~\ref{sec:software-testing}.
