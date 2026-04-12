@@ -30,7 +30,6 @@ export const DEFAULT_PANEL_TIME_LIMIT: TimeLimitDuration = {
 export const INITIAL_LAST_SEND_SUMMARY =
   "Sent Beach with visible access and forwarding blocked.";
 
-/** Matches the first sender photo in `INITIAL_MAIN_MESSAGES` (id / time must stay aligned). */
 export const INITIAL_SEND_HISTORY: SendHistoryEntry[] = [
   {
     sourcePhotoId: 2,

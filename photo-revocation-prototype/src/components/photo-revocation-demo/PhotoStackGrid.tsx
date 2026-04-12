@@ -36,15 +36,10 @@ function StackSquare({
 
 export type PhotoStackGridProps = {
   assets: PhotoAsset[];
-  /** Rounded top to align with message bubble (chat). Omit for composer inset. */
   roundedTop?: boolean;
-  /** When set, each tile opens the in-chat gallery at that index. */
   onPhotoClick?: (index: number) => void;
 };
 
-/**
- * WhatsApp-style collage: 2×2 when there are at least four items, with +N on the last tile when there are more than four.
- */
 export function PhotoStackGrid({
   assets,
   roundedTop = true,

@@ -1,7 +1,3 @@
-/**
- * Pure helpers for photo permission state and time limits.
- * Extracted for unit testing and to keep permission rules explicit.
- */
 
 export type PermissionStatus = "active" | "revoked";
 
@@ -29,9 +25,6 @@ export function formatTimeLimit(d: TimeLimitDuration): string {
   return parts.length ? parts.join(" ") : "No limit";
 }
 
-/**
- * Effective access status: expiry forces revoked even when stored status is active.
- */
 export function computeEffectiveStatus(
   storedStatus: PermissionStatus,
   expiresAt: number | null,
@@ -42,7 +35,6 @@ export function computeEffectiveStatus(
   return "active";
 }
 
-/** True when the recipient may forward under current effective rules. */
 export function forwardingAllowed(
   storedStatus: PermissionStatus,
   canForward: boolean,
@@ -52,7 +44,6 @@ export function forwardingAllowed(
   return computeEffectiveStatus(storedStatus, expiresAt, nowMs) === "active" && canForward;
 }
 
-/** Returns "Expired" or "Expires in …" for a live countdown. */
 export function formatExpiryCountdown(expiresAt: number, nowMs: number): string {
   const remainingMs = expiresAt - nowMs;
   if (remainingMs <= 0) return "Expired";

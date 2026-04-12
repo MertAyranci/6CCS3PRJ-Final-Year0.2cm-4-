@@ -45,7 +45,6 @@ function sendComposerPhotoWithCoSubject(sender: HTMLElement) {
   fireEvent.click(screen.getByRole("button", { name: "Send photo" }));
 }
 
-/** Message rows inside a handset’s chat scroll area (`MessageList`). */
 function messageRowCount(panel: HTMLElement): number {
   const list = panel.querySelector(".space-y-4");
   return list?.children.length ?? 0;

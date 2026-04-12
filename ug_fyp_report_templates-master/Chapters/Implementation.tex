@@ -1,6 +1,6 @@
 \chapter{Implementation}
 \section{Brief}
-app linki koymayi unutma.
+This chapter details the implementation of the Smart Photos prototype, covering technology choices, the iterative development process, the core architecture and shared state model, a final system walkthrough, and testing results.
 
 \section{Technology Choices and Prototype Scope}\label{sec:tech-choices}
 
@@ -58,11 +58,7 @@ React Testing Library & 16.3.2 & Renders components in tests and queries the UI 
 \label{tab:tech-summary}
 \end{table}
 
-
-
-
-
-
+\noindent
 
 
 
@@ -93,7 +89,7 @@ For this project, the interviews therefore functioned as a checkpoint between ``
 Phase~2 implemented the interface adjustments motivated by that feedback and, in parallel, restructured the codebase from a single file into a multi-component architecture so that further changes and testing could proceed without entangling unrelated parts of the UI.
 
 \subsubsection*{Architectural Restructuring}
-During the second implementation round, the prototype was refactored from a single monolithic file into a modular component structure. The original \texttt{page.tsx} had grown to contain all rendering logic, state management, and UI concerns in one place, making iterative changes increasingly error-prone. Furthermore, this restructuring improved maintainability and made later refinements more manageable. Splitting the codebase allowed interface changes to be applied to individual components without risking unintended side-effects elsewhere, while keeping the underlying permission model separated from presentation concerns. The resulting component hierarchy is described in detail in Section~X.X.
+During the second implementation round, the prototype was refactored from a single monolithic file into a modular component structure. The original \texttt{page.tsx} had grown to contain all rendering logic, state management, and UI concerns in one place, making iterative changes increasingly error-prone. Furthermore, this restructuring improved maintainability and made later refinements more manageable. Splitting the codebase allowed interface changes to be applied to individual components without risking unintended side-effects elsewhere, while keeping the underlying permission model separated from presentation concerns. The resulting component hierarchy is described in detail in Figure~\ref{fig:component-hierarchy}.
 
 \subsubsection*{Interface Refinements}
 
@@ -247,12 +243,7 @@ Combined with the countdown tick described in the previous subsection, this ensu
 
 
 
-
-
-
-
-
-\section{Final Prototype Walkthrough}\label{sec:translation}
+\section{Final Prototype Overview}\label{sec:translation}
 
 This section shows how the mechanisms described in Section~\ref{sec:components-state} and how the specifications in 4.3 and 4.4 are appear in the final prototype.
 
@@ -398,6 +389,7 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
 
 If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens inline in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern used in the recipient's access-request flow to maintain the consistency across stakeholder roles as a user might be any stakeholder in the flow depending on the context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherents to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies that share the same \texttt{sourcePhotoId} This cross-context propagation is the same mechanism used for sender-initiated revocation which means co-subject triggered revocations requires no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
 
+Also a deployed version can be accessed at \url{https://smart-photos.vercel.app}.
 
 \section{Software Testing}\label{sec:software-testing}
 

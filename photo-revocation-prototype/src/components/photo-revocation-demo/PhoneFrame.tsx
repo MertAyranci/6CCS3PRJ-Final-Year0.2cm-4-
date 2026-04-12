@@ -10,7 +10,6 @@ export type PhoneFrameProps = {
   phoneOwner: Participant;
   children: ReactNode;
   footer: ReactNode;
-  /** Portalled UI (e.g. view-once) that should use this phone’s chat overlay layer. */
   chatOverlays?: ReactNode;
 };
 

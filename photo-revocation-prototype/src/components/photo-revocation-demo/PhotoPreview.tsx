@@ -4,12 +4,8 @@ import type { PhotoAsset } from "@/lib/photo-revocation-demo/types";
 
 export type PhotoPreviewProps = {
   asset: PhotoAsset;
-  /** `top`: only top radii (flush above caption). `none`: square grid cells. */
   corners?: "all" | "top" | "none";
-  /**
-   * `fill` — stretch/crop to the parent (grids, composer, thumbnails).
-   * `containMaxWidth` — entire image visible, scaled to bubble width with light padding (message bubbles).
-   */
+
   fit?: "fill" | "containMaxWidth";
 };
 

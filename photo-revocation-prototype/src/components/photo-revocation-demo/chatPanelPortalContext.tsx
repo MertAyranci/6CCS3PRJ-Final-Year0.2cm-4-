@@ -7,7 +7,6 @@ export type ChatPanelOverlayRefs = {
   scrollEl: RefObject<HTMLDivElement | null>;
 };
 
-/** Scoped to one phone: gallery overlays mount here; chat scroll is locked while open. */
 export const ChatPanelOverlayContext = createContext<ChatPanelOverlayRefs | null>(null);
 
 export function useChatPanelOverlay(): ChatPanelOverlayRefs | null {

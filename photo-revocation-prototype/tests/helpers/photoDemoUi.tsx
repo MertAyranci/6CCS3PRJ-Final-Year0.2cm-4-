@@ -1,7 +1,6 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { expect } from "vitest";
 
-/** Sender handset section (subtitle is stable in the prototype). */
 export function senderSectionEl(): HTMLElement {
   const marker = screen.getByText("Sender controls available");
   const section = marker.closest("section");
