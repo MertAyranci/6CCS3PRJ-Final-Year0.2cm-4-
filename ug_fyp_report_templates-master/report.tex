@@ -11,8 +11,14 @@
 \usepackage{array}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{longtable}
+\usepackage{enumitem}
 \usepackage{needspace}
 \usepackage{graphicx}
+\usepackage[implicit=false]{hyperref}
+\usepackage{soul}
+\usepackage{xcolor}
+\definecolor{linkhl}{RGB}{210, 230, 255}
+
 \setkeys{Gin}{interpolate=false}% Avoid PDF /Interpolate on bitmaps (often looks softer in viewers).
 \usepackage{listings}
 \lstset{
@@ -130,6 +136,7 @@ The central finding of this project is that consent revocation in messaging-base
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
 \include{Appendices/Appendix}
+\include{Appendices/InterviewGuide}
 \include{Appendices/UserGuide}
 \include{Appendices/SourceCode}
 \end{document}
