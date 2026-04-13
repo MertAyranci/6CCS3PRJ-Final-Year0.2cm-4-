@@ -270,9 +270,12 @@ This section shows how the mechanisms described in Section~\ref{sec:components-s
     \end{subfigure}
     \caption{Pre-send permission configuration flow.}
     \label{fig:presend-flow}
-\end{figure}
+\end{figure}          
 
-Figure 5.10 shows the realisation of the sharing flow specified in Section 4.3.1. The photo picker (Figure~\ref{fig:picker}) implements the dual-path design as two distinc buttons at the bottom of the sheet. The two options are: \emph{Send} for default sharing and \emph{Send with revocable permissions} for permission configured sharing. Numbered badges on each thumbnail and a summary strip beneath the grid provide but was added to keep the interaction consistent with the familiar gallery-selections patterns which was adviced from the participants and (NFR7). The pre-send composer (Figure~\ref{fig:composer}) presents the five permission toggles as horizontally arranged chips to keep the composer compact enough to display alongside the staged photos and caption field without scrolling. The FR2 screenshot warning is implemented as a persistent, non-dismissible banner anchored to the top of the composer so that it remains visible regardless of the scroll position so the sender cannot bypass it before confirming. On confirmation of sending, the photo is committed to the conversation through the canonical state mechanism described in \ref{sec:components-state} and permission summary chips appear beneath the message bubble.
+
+Figure 5.10 shows the realisation of the sharing flow specified in Section 4.3.1. The photo picker (Figure~\ref{fig:picker}) implements the dual-path design as two distinct buttons at the bottom of the sheet. The two options are: \emph{Send} for default sharing and \emph{Send with revocable permissions} for permission configured sharing. Badges numbered
+on each thumbnail and a summary strip below the grid were added to create an interaction pattern
+consistent with participant feedback and other familiar gallery selection patterns (NFR7). The pre-send composer (Figure~\ref{fig:composer}) displays the five permission toggles as horizontally arranged chips to keep the composer compact enough to display alongside the staged photos and caption field without scrolling. The FR2 screenshot warning is implemented as a persistent, non-dismissible banner at the top of the composer screenso that it remains visible regardless of the scroll position. After confirmation has made, the photo is sent to the conversation through the canonical state mechanism described in \ref{sec:components-state} and permission summary of chips will be shown below the message bubble.
 
 
 \subsection*{Post-Send Permission Management}
@@ -393,13 +396,13 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
 
 If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens inline in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern used in the recipient's access-request flow to maintain the consistency across stakeholder roles as a user might be any stakeholder in the flow depending on the context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherents to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies that share the same \texttt{sourcePhotoId} This cross-context propagation is the same mechanism used for sender-initiated revocation which means co-subject triggered revocations requires no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
 
-Also a deployed version can be accessed at \url{https://smart-photos.vercel.app}.
+Also a deployed version can be accessed at \url{https://smart-photos.vercel.app} (works better full screen).
 
 \section{Software Testing}\label{sec:software-testing}
 
 \subsection*{Manual Cross-View Verification}
 
-After each substantive change, the prototype was exercised manually in the browser across all four stakeholder views (sender, recipient, forwarded recipient, and co-subject). These manual checks concentrated on cross-view consistency. They confirmed that when a revocation was made in the sender panel, it was immediately reflected in the recipient and forwarded-recipient panels and that permission chips updated correctly. Manual verification was particularly important for visual and layout details such as colour-coded status indicators, animation transitions, and responsive scaling, that automated tests running in a simulated DOM environment cannot fully capture. Version control was maintained with Git throughout both development phases, providing a traceable history of changes and the ability to isolate regressions.
+After each significant modification to the prototype, it is manually tested in the browser using all four views of stakeholders (co-subject, forwarded recipient, recipient and sender) for cross-view consistency. The exercise verified that a revocation created by the sender is immediately visible in the views of the recipient and forwarded recipient, and that the permission chips are updated appropriately. Manual testing was especially crucial for the visual and layout aspects of the system such as color coded status indicators, animations and responsive scaling since they could not be completely captured through automated testing in a simulated DOM environment. All modifications were documented with version control with git during both phases of the development process, so there was an audit trail of all changes to help identify where regressions occurred.
 
 
 
@@ -414,7 +417,7 @@ To supplement the manual checks described above, an automated test suite was dev
 
 \textbf{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate user journeys  across several handset panels, including revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying its appearance on the secondary handset, accepting or rejecting access and revocation requests, and consuming a view-once photo through the full modal lifecycle.
 
-Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases across 16 test files. Table~\ref{tab:coverage} summarises the coverage collected by \texttt{@vitest/coverage-v8}.
+Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases across 16 test files. Table~\ref{tab:coverage} summarises the coverage collected by Vitest coverage.
 
 \begin{table}[h]
 \centering
