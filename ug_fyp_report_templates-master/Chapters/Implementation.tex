@@ -8,7 +8,7 @@ This chapter details the implementation of the Smart Photos prototype, covering 
 
 React~19 was chosen for its component-based architecture, which supports modular development, reuse across the interface, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as the sender, recipient, forwarded recipient, and co-subject perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation, this behaviour could be implemented without introducing an external state-management library.
 
-Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is essentially a single-page application, Next.js streamlined development and supported rapid iteration across the two implementation rounds described in Section~\ref{sec:dev-process}.
+Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is  a single-page application, Next.js streamlined development and supported two rounds of iterative implementation described in Section~\ref{sec:dev-process}.
 
 \subsection*{TypeScript}
 
@@ -21,13 +21,13 @@ TypeScript was used to define and enforce the core data structures of the protot
 \end{itemize}
 
 \noindent
-Using explicit types helped keep these structures consistent across components and reduced the likelihood of development errors as the prototype evolved. This was especially valuable because the permission model is the central contribution of the prototype and any inconsistency in how permissions, messages, or stakeholder roles were represented would have weakened the credibility of the resulting user evaluation. Although TypeScript does not replace runtime permission logic, it improved maintainability and made the implementation safer to extend during iterative refinement.
+Using explicit types helped keep these structures consistent across components and reduced the likelihood of development errors as the prototype evolved. This was important because the permission model is the central contribution of the prototype and any inconsistency in how permissions, or stakeholder roles were represented would have weakened the credibility of the resulting user evaluation. Although TypeScript does not replace runtime permission logic, it improved maintainability and made the implementation safer for the second round of refinement.
 
 \subsection*{Tailwind CSS}
 
 Tailwind CSS~4 was chosen as the styling framework because its utility-first approach enabled rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
 
-The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was particularly valuable in a prototype that underwent multiple rounds of refinement following participant feedback.
+The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was particularly valuable for a prototype that went through multiple rounds of refinement following participant feedback.
 
 \subsection*{Front-End Simulation and Prototype Scope}
 The prototype operates entirely as a front-end simulation with in-memory state. Conversation data, permission records, and photo metadata are managed through React state in the browser, with no server, database, or external API. This design was chosen to support the project’s aim of evaluating the interaction design and user experience of consent revocation, without focusing on engineering feasibility of a production messaging system. It also allowed multiple perspectives to be demonstrated in a single browser window and made permission changes immediately observable during evaluation.
