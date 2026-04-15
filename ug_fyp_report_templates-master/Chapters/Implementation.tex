@@ -33,6 +33,7 @@ The prototype operates entirely as a front-end simulation with in-memory state. 
 
 As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, persistent storage, multi-device synchronisation or automated co-subject detection.
 
+
 \subsection*{Testing Tooling}
 
 Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development setting and facilitates fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way. The tests were executed in a jsdom environment, which provided a simulated browser DOM suitable for unit, component, and integration-style testing of the front-end prototype.
