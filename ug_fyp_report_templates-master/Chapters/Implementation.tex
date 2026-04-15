@@ -21,18 +21,17 @@ TypeScript was used to define and enforce the core data structures of the protot
 \end{itemize}
 
 \noindent
-Using explicit types helped keep these structures consistent across components and reduced the likelihood of development errors as the prototype evolved. This was important because the permission model is the core of the prototype and any inconsistency in how permissions, or stakeholder roles were represented would have weakened the credibility of the resulting user evaluation. Although TypeScript does not replace runtime permission logic, it improved maintainability and made the implementation safer for the second round of refinement.
+Explicit types kept these structures consistent across components as the prototype evolved. This was important because any inconsistency in the permission model would have weakened the credibility of the evaluation. It also improved maintainability and made the implementation safer for the second round of refinement.
 
 \subsection*{Tailwind CSS}
 
 Tailwind CSS~4 was chosen as the styling framework because its utility-first approach allowed rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
 
-The framework was also useful during iterative refinement. Because visual adjustments could be made directly within the JSX, interface details could be revised quickly between implementation rounds without introducing substantial styling overhead. This was valuable for a prototype that went through multiple rounds of refinement following participant feedback.
 
 \subsection*{Front-End Simulation and Prototype Scope}
 The prototype operates entirely as a front-end simulation with in-memory state. Conversation data, permission records, and photo metadata are managed through React state in the browser, with no server, database, or external API. This design was chosen to support the project’s aim of evaluating the interaction design and user experience of consent revocation, without focusing on engineering feasibility of a production messaging system. It also allowed multiple perspectives to be demonstrated in a single browser window and made permission changes immediately observable during evaluation.
 
-As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, authentication, persistent storage, real-time delivery, multi-device synchronisation, automated co-subject detection, or server-side access control.
+As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, persistent storage, multi-device synchronisation or automated co-subject detection.
 
 \subsection*{Testing Tooling}
 
@@ -44,7 +43,7 @@ GitHub was used for version control throughout development, supporting iterative
 
 \subsection*{Technology Summary}
 
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{P{3.2cm} P{1.8cm} P{8cm}}
 \hline
@@ -55,7 +54,7 @@ Next.js & 16.1.6 & Application framework; provides the App Router, development s
 TypeScript & 5.9.3 & Static type system; enforces the permission data model at compile time. \\
 Tailwind CSS & 4.2.1 & Utility-first CSS framework; enables rapid, consistent styling that approximates WhatsApp's visual patterns. \\
 Vitest & 3.2.4 & Test runner; executes unit, component, and integration-style tests with coverage via \texttt{@vitest/coverage-v8}. \\
-React Testing Library & 16.3.2 & Renders components in tests and queries the UI by roles, labels, and visible text. \\
+RTL & 16.3.2 & Renders components in tests and queries the UI by roles, labels, and visible text. \\
 \hline
 \end{tabular}
 \caption{Technology stack and component roles}
@@ -82,11 +81,11 @@ The first implementation round focused on realising the core interaction flows d
 
 At this stage the entire prototype resided in a single \texttt{page.tsx} file. This monolithic structure was a pragmatic choice for rapid prototyping. This avoided premature abstraction and kept all state and handlers visible in one place while the interaction model was still being tested and revised. That build was then used for the screenshot-driven interviews reported in Chapter~6.
 
-\subsection*{Evaluation and Rationale for a Second Round}
+\subsection*{Rationale for a Second Round}
 
 A second implementation round was justified on methodological rather than evaluative grounds. As Gould and Lewis argue, usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements and once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic conditions.
 
-For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers find problems and learn how users actually engage with an interface \cite{moran_usability_testing_101}. A second round was therefore scoped deliberately to visual and structural refinements, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. Chapter~6 documents what was learned from participants and how it was analysed.
+For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers find problems and learn how users actually engage with an interface \cite{moran_usability_testing_101}. A second round was therefore scoped deliberately to visual and structural refinements, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. 
 
 \subsection*{Phase 2: Post-Evaluation Refinements}
 
@@ -97,11 +96,7 @@ During the second implementation round, the prototype was refactored from a sing
 
 \subsubsection*{Interface Refinements}
 
-Phase~2 focused on improving clarity and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Modal overlays were also scoped to individual handset frames so that each simulated participant view remained visually distinct. Further minor copy and layout adjustments were applied in the same spirit; they are not enumerated here. All these refinements are reflected in the final prototype described in the following sections. 
-
-
-
-
+Phase~2 focused on improving clarity and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Additional refinements to modal scoping, copy, and layout are reflected in the final prototype below.
 
 
 
@@ -193,7 +188,7 @@ One notable piece of local state is the countdown tick. The prototype supports t
 \end{figure}
 
 \noindent
-The code intentionally discards the state variable during destructuring, as the underlying tick value remains unused. Its only purpose is to trigger a React re-render every second so that \texttt{getEffectivePermissions} (Figure~\ref{fig:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}. This allows time-limited photos to expire visually in real time and countdown labels to update continuously, without requiring explicit expiry event handling or additional state-management infrastructure.
+The tick value itself is unused; its sole purpose is to trigger React re-renders so that \texttt{getEffectivePermissions} (Figure~\ref{fig:get-effective}) and \texttt{formatExpiryCountdown} re-evaluate with a fresh \texttt{Date.now()}, allowing time-limited photos to expire visually in real time.
 
 Separating these transient interaction values from the canonical permission state kept the implementation manageable. The permission model remained single-source-of-truth structure as described in the previous subsection, while the local state layer provided the flexibility needed to support rich interactions such as modal sequencing, draft composition, and live countdown display.
 
