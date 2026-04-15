@@ -36,7 +36,9 @@ As such, the prototype is an interactive proof-of-concept for the Smart Photos p
 
 \subsection*{Testing Tooling}
 
-Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development setting and facilitates fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way. The tests were executed in a jsdom environment, which provided a simulated browser DOM suitable for unit, component, and integration-style testing of the front-end prototype.
+Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development setting and facilitates fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way.
+
+
 
 \subsection*{Version Control and Deployment}
 
@@ -98,11 +100,6 @@ During the second implementation round, the prototype was refactored from a sing
 \subsubsection*{Interface Refinements}
 
 Phase~2 focused on improving clarity and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Additional refinements to modal scoping, copy, and layout are reflected in the final prototype below.
-
-
-
-
-
 
 
 
