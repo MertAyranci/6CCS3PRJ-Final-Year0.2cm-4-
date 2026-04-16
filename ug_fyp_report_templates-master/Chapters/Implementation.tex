@@ -12,7 +12,7 @@ Next.js~16 was used as the application framework, providing project scaffolding,
 
 \subsection*{TypeScript}
 
-TypeScript was used to define and enforce the core data structures of the prototype at compile time \cite{typescript_docs}. This was particularly important because the Smart Photos prototype relies on a structured permission model spanning message content, stakeholder roles alongside photo-specific controls. Several types were used throughout the implementation:
+TypeScript was used to define and enforce the core data structures of the prototype at compile time \cite{typescript_docs}. This matters because the Smart Photos prototype relies on a structured permission model spanning message content, stakeholder roles alongside photo-specific controls. Several types were used throughout the implementation:
 
 \begin{itemize}
   \item \texttt{PhotoPermissions} --- encodes revocation status, forwarding, view-once, download, time-limit, and co-subject flags;
@@ -80,7 +80,7 @@ RTL & 16.3.2 & Renders components in tests and queries the UI by roles, labels, 
 
 \subsection*{Phase 1: Initial Prototype}
 
-The first implementation round focused on realising the core interaction flows defined in the functional specification: pre-send permission configuration (FR1--FR2), post-send permission management including revocation and restoration (FR3, FR5, FR6), recipient-side state presentation (FR4, FR10), constrained forwarding to a secondary recipient (FR7--FR9), access-request and response flows (FR11), and co-subject notification and revocation-request mechanisms (FR12--FR17). Each flow was built as a self-contained interaction path within a single-page React application, with all four stakeholder views rendered side by side so that the consequences of any permission change could be observed across participants in real time.
+The first implementation round focused on realising the core interaction flows defined in the functional specification (FR1-FR17). Each flow was built as a self-contained interaction path within a single-page React application, with all four stakeholder views rendered side by side so that the consequences of any permission change could be observed across participants in real time.
 
 At this stage the entire prototype resided in a single \texttt{page.tsx} file. This monolithic structure was a pragmatic choice for rapid prototyping. This avoided premature abstraction and kept all state and handlers visible in one place while the interaction model was still being tested and revised. That build was then used for the screenshot-driven interviews reported in Chapter~6.
 
