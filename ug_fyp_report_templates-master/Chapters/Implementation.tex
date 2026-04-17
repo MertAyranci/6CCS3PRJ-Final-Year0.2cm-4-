@@ -193,7 +193,7 @@ The two most consequential state transitions in the prototype are post-send revo
 
 \subsubsection*{Post-Send Revocation}
 
-When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{\{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object, as shown in Figure~\ref{fig:update-permissions}.
+When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{ \{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object, as shown in Figure~\ref{fig:update-permissions}.
 
 \begin{figure}[H]
   \centering

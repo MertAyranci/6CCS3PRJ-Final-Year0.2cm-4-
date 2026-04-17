@@ -1,9 +1,33 @@
 \chapter{Conclusion and Future Work}
+This project set out to design and evaluate interface mechanisms for
+revocable consent in WhatsApp-style photo sharing. The literature review
+identified four gaps around usable dynamic-consent controls,
+post-delivery misunderstanding, multi-party support, and limited
+WhatsApp-specific empirical evidence, and these gaps shaped the
+requirements, design, and implementation of the Smart Photos prototype.
 
-This report investigated how WhatsApp could better support revocable consent for photo sharing in private conversations. The findings show that current platform controls are too limited to reflect the ongoing and changing nature of consent after a photo has been sent. In response, this report designed and evaluated \textbf{Smart Photos}, which is a prototype that treats photo sharing as an ongoing permission process. It allows permissions to be set before sending and revised afterwards. The evaluation showed that participants generally found this model supportive for user control and consent revocation when compared to existing WhatsApp features. At the same time the project also showed that consent revocation in messaging can only ever be partial. Screenshots, prior viewing and external-device capture remain structural limits that interface design cannot fully prevent. This means revocation gives meaningful control over future platform-mediated access, but does not guarantee complete erasure. The co-subject findings also suggest that photo-sharing consent can extend beyond sender and recipient to include people depicted in the image.
+The evaluation showed that participants generally found the model
+supportive for user control when compared to existing WhatsApp features.
+At the same time, the project showed that consent revocation in messaging
+can only ever be partial. Screenshots, prior viewing and external-device
+capture remain structural limits that interface design cannot fully
+prevent. This means revocation gives meaningful control over future
+platform-mediated access, but does not guarantee complete erasure.
+Participants who understood this were more willing to trust the feature
+than those who expected full deletion. The co-subject findings also
+suggest that photo-sharing consent extends beyond sender and recipient to
+include people depicted in the image, though questions of shared authority
+remain unresolved.
 
-Future work should validate these findings through live-prototype studies with broader samples and real messaging infrastructure, as discussed in Section 7.4.
+Future work should move from screenshot-based evaluation to
+live-prototype testing with real conversations and gender-balanced
+samples, and embed the permission model within server-side infrastructure
+to measure how revocation latency and offline access affect trust, as
+discussed in Section~7.4.
 
-
-
-
+The findings extend beyond WhatsApp to any platform where users exchange
+personal images privately and may later wish to revise the terms of that
+sharing. While the prototype remains a proof-of-concept, it demonstrates
+that treating photo sharing as an ongoing permission process rather than
+a one-off transfer is both technically realisable and recognised by users
+as a step toward more trustworthy sharing.
