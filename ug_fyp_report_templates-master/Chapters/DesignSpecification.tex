@@ -4,7 +4,7 @@
 This chapter presents the design and specification of the proposed consent revocation system for photo sharing in WhatsApp. It explains the interaction design and system specification, drawing on the requirements and literature. The chapter first introduces the Smart Photos concept and design rationale, before covering the specification in section 4.3. 
 
 \section{Design Rationale and Principles}
-The design of \textbf{Smart Photos} is grounded in the central argument of this dissertation: consent in messaging-based photo sharing should not be treated as a one-off permission granted at the moment of sending, but as an ongoing and revisable process. In the proposed model, each shared photo treated as a photo associated with a persistent permission state that can specify whether it may be forwarded, saved, viewed once,or accessed for a limited period. These permissions are not exhausted at disclosure, but remain reviewable and revisable through the interface after sending. The design principles set out below are informed by Communication Privacy Management, Contextual Integrity, revised consent models, and privacy-focused HCI research \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,nissenbaum_contextual_2011,im_yes_2021,wilbanks_design_2018,schaub_notice_2015}. They provide the conceptual basis for the structure of the model and the prioritisation of particular interaction choices.
+The design of \textbf{Smart Photos} is grounded in the central argument of this dissertation: consent in messaging-based photo sharing should not be treated as a one-off permission granted at the moment of sending, but as an ongoing and revisable process. In the proposed model, each shared photo is treated as a photo associated with a persistent permission state that can specify whether it may be forwarded, saved, viewed once or accessed for a limited period. These permissions are not exhausted at disclosure, but remain reviewable and revisable through the interface after sending. The design principles set out below are informed by Communication Privacy Management, Contextual Integrity, revised consent models, and privacy-focused HCI research \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011,nissenbaum_contextual_2011,im_yes_2021,wilbanks_design_2018,schaub_notice_2015}. They provide the conceptual basis for the structure of the model and the prioritisation of particular interaction choices.
 
 \subsection{Dynamic and Revocable Consent by Default}
 The first design principle is that consent should be treated as dynamic and revocable by default. This follows directly from the literature reviewed in Chapter 2, which shows that one-off consent models are poorly suited to interpersonal messaging, where disclosures unfold over time and may later feel inappropriate as relationships, or expectations change \cite{kaye_dynamic_2015,im_yes_2021}. In CPM terms, sharing a photo does not eliminate the need for later boundary management; but, it creates a situation in which privacy rules may need to be revisited and renegotiated after disclosure \cite{petronio_cpm_2020,child_petronio_cmc_privacy_2011}. 
@@ -78,15 +78,6 @@ To achieve \textbf{FR16}, accepting a co-subject revocation request changes the 
 
 To achieve \textbf{FR17}, the prototype makes the limits of co-subject protection explicit. Both the co-subject view and the revocation-request flow state that protection is in-app only and that screenshots or prior viewing cannot be fully undone, presenting these controls as meaningful but bounded without implying complete erasure after disclosure.
 
-\subsection{Permission State Flow }
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.75\textwidth,height=0.88\textheight,keepaspectratio]{figures/smart-photos-flow-chart.png}
-  \caption{Flow chart of Smart Photos}
-  \label{fig:smart-photos-flow-chart}
-\end{figure}
-
 \section{Non-Functional Specification}
 
 \subsection{Usability and Interaction Clarity}
@@ -109,11 +100,20 @@ To achieve \textbf{NFR8}, the prototype is specified as operating alongside fami
 
 To achieve \textbf{NFR9}, the prototype communicates the limits of revocation explicitly and avoids implying complete erasure after disclosure. In the current interface, this is expressed through pre-send warning text in the composer, explanatory notes beneath shared photos, revoked-state placeholders, and co-subject request flows by stating that screenshots, saved copies, offline retention, and prior viewing cannot be fully undone. The design is intentionally scoped as platform-level visibility control rather than a guarantee of universal deletion. This means, the prototype remains honest about the partial and prospective nature of revocation and aims to calibrate user expectations about what its controls can and cannot enforce after a photo has been shared.
 
+\subsection{Permission State Flow }
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth,height=0.88\textheight,keepaspectratio]{figures/smart-photos-flow-chart.png}
+  \caption{Flow chart of Smart Photos}
+  \label{fig:smart-photos-flow-chart}
+\end{figure}
+
 
 
 \section{Alternative Design Approaches}
-One alternative design approach considered was a conversation-level privacy mode instead of having photo-level permissions. This approach approach would allow an entire chat to enter a privacy mode in which shared images are blurred by default and restrictions on permission apply across the whole chat.
+One alternative design approach considered was a conversation-level privacy mode instead of having photo-level permissions. This approach would allow an entire chat to enter a privacy mode in which shared images are blurred by default and restrictions on permission apply across the whole chat.
 
-However, this approach was not selected as the main approach. Firs, conversation-level controls were too broad for the project's central aim of exploring ongoing, revisable consent for photos. Different images within the same chat may require different permissions and durations and a single conversation-level mode could not represent these distinctions effectively. Second concern was about friction in everyday use. A conversation-level privacy mode would require users to think about and menage privacy at the chat level even when only some images are sensitive, which increases the mode confusion and interrupts the ordinary messaging flow. Lee et al. note that dynamic consent systems can face barriers such as consent fatigue and implementation complexity, and a chat-wide privacy mode risked increasing this burden in everyday messaging \cite{lee_identifying_2023}. For both of these reasons, such design carried a greater risk of being ignored by users over time.
+However, this approach was not selected as the main approach. First, conversation-level controls were too broad for the project's central aim of exploring ongoing, revisable consent for photos. Different images within the same chat may require different permissions and durations and a single conversation-level mode could not represent these distinctions effectively. Second concern was about friction in everyday use. A conversation-level privacy mode would require users to think about and menage privacy at the chat level even when only some images are sensitive, which increases the mode confusion and interrupts the ordinary messaging flow. Lee et al. note that dynamic consent systems can face barriers such as consent fatigue and implementation complexity, and a chat-wide privacy mode risked increasing this burden in everyday messaging \cite{lee_identifying_2023}. For both of these reasons, such design carried a greater risk of being ignored by users over time.
 
 Also at an earlier stage, a Figma-only prototype was also considered but dropped because a coded version could represent live permission states, giving a closer approximation of the intended experience. The coded implementation is described in Chapter 5.

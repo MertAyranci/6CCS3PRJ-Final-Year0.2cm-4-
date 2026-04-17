@@ -8,7 +8,7 @@ This chapter details the implementation of the Smart Photos prototype, covering 
 
 React~19 was chosen for its component-based architecture, which supports modular, reusable development, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as each stakeholder perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation, this behaviour could be implemented without introducing an external state-management library.
 
-Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is  a single-page application, Next.js streamlined development and supported two rounds of iterative implementation described in Section~\ref{sec:dev-process}.
+Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is a single-page application, Next.js streamlined development and supported two rounds of iterative implementation described in Section~\ref{sec:dev-process}.
 
 \subsection*{TypeScript}
 
@@ -67,7 +67,6 @@ RTL & 16.3.2 & Renders components in tests and queries the UI by roles, labels, 
 \noindent
 
 
-
 \section{Development Process}\label{sec:dev-process}
 
 
@@ -100,8 +99,6 @@ During the second implementation round, the prototype was refactored from a sing
 \subsubsection*{Interface Refinements}
 
 Phase~2 focused on improving clarity and prototype fidelity without changing the underlying permission model. Permission information beneath photo messages was condensed into a compact summary with on-demand detail expansion, reducing visual clutter in the chat transcript. The pre-send limitation disclaimer was made more prominent, and the revoked-state placeholder was simplified to reduce repeated explanation. In addition, the prototype was extended to support multi-photo messages with a shared permission set, together with collage and gallery views, bringing the interaction closer to familiar photo-sharing behaviour in mainstream messaging clients. Additional refinements to modal scoping, copy, and layout are reflected in the final prototype below.
-
-
 
 
 
@@ -161,7 +158,7 @@ Every photo message carries a \texttt{sourcePhotoId} that links it back to the c
   \label{fig:chat-message}
 \end{figure}
 
-When the sender revokes, restores, or otherwise modifies permissions, only the canonical entry in \texttt{mainMessages} is updated. Forwarded copies in \texttt{forwardedMessages} are never rewritten directly. Instead, every rendering component resolves the live permission state at render time by calling \texttt{getEffectivePermissions}, shown in Figure~\ref{fig:get-effective}. This function looks up the canonical photo in \texttt{mainMessages} by matching \texttt{sourcePhotoId}, reads the stored permission fields, normalises \texttt{canDownload} and \texttt{hasCoSubject} with defaults when they are undefined on the stored record, and applies time-limit expiry logic through \texttt{computeEffectiveStatus} before returning the result.
+When the sender revokes, restores, or otherwise modifies permissions, only the canonical entry in \texttt{mainMessages} is updated. Forwarded copies in \texttt{forwardedMessages} are never rewritten directly. Instead, every rendering component resolves the live permission state at render time by calling \newline \texttt{getEffectivePermissions}, shown in Figure~\ref{fig:get-effective}. This function looks up the canonical photo in \texttt{mainMessages} by matching \texttt{sourcePhotoId}, reads the stored permission fields, normalises \texttt{canDownload} and \texttt{hasCoSubject} with defaults when they are undefined on the stored record, and applies time-limit expiry logic through \texttt{computeEffectiveStatus} before returning the result.
 
 \begin{figure}[H]
   \centering
@@ -227,7 +224,7 @@ Time-limited access follows the same derivation principle without requiring a de
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.65\textwidth]{figures/compute-effective-status.png}
-  \caption{\texttt{computeEffectiveStatus} in \texttt{photoModel.ts}. Expiry is treated as implicit revocation---no event or state write is needed.}
+  \caption{\texttt{computeEffectiveStatus} in \texttt{photoModel.ts} where expiry acts as implicit revocation.}
   \label{fig:compute-effective-status}
 \end{figure}
 
@@ -292,7 +289,7 @@ consistent with participant feedback and other familiar gallery selection patter
     \label{fig:postsend-flow}
 \end{figure}
 
-Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears. The revocation submenu (Figure~\ref{fig:revoke-menu}) is accessed through a drop-down overlay on the message bubble and presents each control as a transition label. For example the sender sees \emph{Revoke photo access} rather than \emph{Status: active}, so that available action is alway s immediately legible. This wording convention was an implementation-level decision in order to reduce the cognitive step between reading and acting and not detailed in the specifications. The permission summary beneath each photo (Figure~\ref{fig:postsend-flow}) implements the state visibility required by FR4 through a collapsible row. In its compact form, colour-coded tick and cross indicators give an at-a-glance status reading and expanding the row reveals labelled chips such as \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked} and live expiry countdown (\emph{Expires in 29m\,40s}) that updates every second through the countdown tick mechanism described in section 5.4. The collapsable design was adopted during Phase 2 refinement in response to the interface density concerns raised by participant (discussed in Section 6.3.5), balancing the need for visible permission state against the risk of overwhelming the chat transcript. Because all stakeholder views derive their display from the same canonical record (Section 5.4), a single permission change by the sender is reflected across every stakeholder's bubbles on the next render cycle without additional synchronisation.
+Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears. The revocation submenu (Figure~\ref{fig:revoke-menu}) is accessed through a drop-down overlay on the message bubble and presents each control as a transition label. For example the sender sees \emph{Revoke photo access} rather than \emph{Status: active}, so that available action is alway s immediately legible. This wording convention was an implementation-level decision in order to reduce the cognitive step between reading and acting and not detailed in the specifications. The permission summary beneath each photo (Figure~\ref{fig:postsend-flow}) implements the state visibility required by FR4 through a collapsible row. In its compact form, colour-coded tick and cross indicators give an at-a-glance status reading and expanding the row reveals labelled chips such as \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked} and live expiry countdown that updates every second through the countdown tick mechanism described in section 5.4. The collapsable design was adopted during Phase 2 refinement in response to the interface density concerns raised by participant (discussed in Section 6.3.5), balancing the need for visible permission state against the risk of overwhelming the chat transcript. Because all stakeholder views derive their display from the same canonical record (Section 5.4), a single permission change by the sender is reflected across every stakeholder's bubbles on the next render cycle without additional synchronisation.
 
 
 \subsection*{Recipient Experience and Revoked States}
@@ -387,7 +384,8 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
 \end{figure}
 \noindent
 
-If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens inline in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern used in the recipient's access-request flow to keep the consistency across stakeholder roles as a user might be any stakeholder in the flow depending on the context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherents to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies that share the same \texttt{sourcePhotoId} This cross-context propagation is the same mechanism used for sender-initiated revocation which means co-subject triggered revocations requires no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
+If the co-subject selects \emph{Request revocation}, from the photo actions menu the \texttt{RequestRevocationPanel} component opens in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern as the recipient’s access-request flow to maintain consistency across stakeholder roles, since a user may occupy different roles depending on context. On the sender's side (Figure~\ref{fig:cosubject-flow}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherits to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies sharing the same \texttt{sourcePhotoId}. This cross-context propagation uses the same mechanism as sender-initiated revocation meaning co-subject triggered revocations require no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
+
 
 Also a deployed version can be accessed at \url{https://smart-photos.vercel.app} (works better full screen).
 
