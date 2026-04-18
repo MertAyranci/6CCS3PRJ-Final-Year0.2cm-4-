@@ -3,12 +3,10 @@
 %
 % This file produces the appendices-only PDF that is submitted alongside
 % report.pdf. The preamble mirrors report.tex so the typesetting matches.
-% Cross-references to labels defined in the main report are resolved via
-% the xr package (\externaldocument{report}); for those references to
-% appear correctly the main report.aux must already exist when this file
-% is compiled. The recommended build order is therefore:
-%   pdflatex report.tex     (twice, with bibtex in between)
-%   pdflatex report-appendices.tex   (twice)
+% Cross-references to the main report use the xr package.  Labels from
+% \include{} chapters live in Chapters/*.aux (not in report.aux), so this
+% file calls \externaldocument on each chapter file (see below).  Compile
+% report.tex first so those .aux files exist, then compile this file twice.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[11pt]{informatics-report}
 \usepackage{color}
@@ -49,10 +47,16 @@
 \usepackage{subcaption}
 \usepackage{float}
 
-%% Resolve cross-references to the main report (sections, figures, chapters).
-%% Compile report.tex first so report.aux is available.
+%% Resolve cross-references to the main report (labels are in chapter .aux files).
 \usepackage{xr}
-\externaldocument{report}
+\externaldocument{Chapters/Background}
+\externaldocument{Chapters/Body}
+\externaldocument{Chapters/DesignSpecification}
+\externaldocument{Chapters/Implementation}
+\externaldocument{Chapters/Evaluation}
+\externaldocument{Chapters/Discussion}
+\externaldocument{Chapters/ProfessionalIssues}
+\externaldocument{Chapters/Conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Front Matter

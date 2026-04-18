@@ -18,21 +18,50 @@
 %%   linktoc=all      makes the entire Table of Contents entry (title + page number) a link.
 %%   colorlinks=true  uses coloured text for links instead of the default red box.
 %%   linkcolor=black  internal references (\ref, \pageref) and chapter/section links keep the
-%%                    document's normal black colour, so they look like plain text.
-%%   citecolor=black  citations (\cite{...}) likewise stay black and visually unobtrusive.
+%%                    document's normal black colour, so they look like plain text (still clickable).
+%%   citecolor=black  citations (\cite{...}) likewise stay black; in addition, the natbib
+%%                    hyperlink hooks below are disabled so they are not clickable at all.
 %%   urlcolor=blue    external URLs remain visibly clickable (standard convention).
-%% The Table of Contents is then re-coloured to a subtle navy locally, around
-%% \tableofcontents, so it is the only clearly-clickable region of the document.
+%% The Table of Contents uses the same linkcolour as internal references (black),
+%% so it reads like normal body text while remaining clickable in the PDF.
 \usepackage[linktoc=all, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
 \usepackage{pdfpages}
 
-%% Resolve cross-references that point at labels in the appendices volume
-%% (compiled separately from report-appendices.tex). Without this, every
-%% \ref{app:...} or \ref{sec:...} pointing into an appendix prints as ``??''.
-%% Build order: pdflatex report -> pdflatex report-appendices -> pdflatex report
-%% (so that report-appendices.aux exists when report is compiled the second time).
+%% Disable hyperlinks on \cite{...} citations only.
+%% hyperref wraps every natbib citation through the four hooks below; turning
+%% them into no-ops makes citations render as plain (black) text without a
+%% PDF link annotation, while leaving in-document \ref, \pageref, the TOC,
+%% URLs and PDF bookmarks clickable.  Cross-volume appendix pointers use
+%% \appxref (defined below) so they stay plain text without a PDF link.
+\makeatletter
+\AtBeginDocument{%
+  \let\hyper@natlinkstart\@gobble
+  \let\hyper@natlinkend\@empty
+  \let\hyper@natanchorstart\@gobble
+  \let\hyper@natanchorend\@empty
+}
+\makeatother
+
+%% Cross-references into the separate appendices PDF (report-appendices.tex).
+%% Modern LaTeX writes \newlabel entries into each \include{} auxiliary file
+%% (e.g. Appendices/InterviewGuide.aux), not into the root report-appendices.aux,
+%% so a single \externaldocument{report-appendices} never sees appendix labels and
+%% yields ``Appendix ??''.  Point xr at each appendix .aux explicitly.
+%%
+%% Overleaf / clean checkout: compile report-appendices.tex at least once (twice
+%% is safer) before the final passes on report.tex, so these .aux files exist.
+%% When the appendices change order, recompile report-appendices before report.
 \usepackage{xr}
-\externaldocument{report-appendices}
+\externaldocument{Appendices/Appendix}
+\externaldocument{Appendices/InterviewGuide}
+\externaldocument{Appendices/UserGuide}
+\externaldocument{Appendices/EthicsApproval}
+\externaldocument{Appendices/SourceCode}
+
+%% Appendix mentions in the body link to a different PDF; use plain text (no
+%% hyperlink) for those cross-references only.  Internal \ref{} elsewhere
+%% stays clickable as usual.
+\newcommand{\appxref}[1]{\ref*{#1}}
 \usepackage{soul}
 \usepackage{xcolor}
 \definecolor{linkhl}{RGB}{210, 230, 255}
@@ -74,7 +103,7 @@
 \begin{document}
 \createFrontMatter
 \onehalfspacing
-{\hypersetup{linkcolor=blue!60!black}\tableofcontents}
+\tableofcontents
 \doublespacing
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,7 +129,7 @@ The project is guided by one main research question and five supporting question
 \item What expectations, concerns, and behaviours do WhatsApp users have regarding post-sharing control of personal photos?
 \item Which interface elements and interaction patterns best communicate photo permissions and make revocation options understandable within WhatsApp’s existing UI?
 \item How can the process of revoking or modifying consent be designed to be intuitive and fair for users?
-\item How do the proposed revocation features affect the users’ perceived trust, safety, and sense of control of users when sharing photos on WhatsApp?
+\item How do the proposed revocation features affect the users’ perceived trust, safety, and sense of control when sharing photos on WhatsApp?
 \end{enumerate}
 
 \section{Aim and Objectives}
@@ -120,9 +149,9 @@ To achieve this aim, the project pursues the following objectives:
 \section{Contributions}
 The project makes the following contributions:
 \begin{enumerate}
-    \item A interactive prototype demonstrating a redesigned consent revocation system for photo sharing in WhatsApp-like messaging environments.
+    \item An interactive prototype demonstrating a redesigned consent revocation system for photo sharing in WhatsApp-like messaging environments.
     \item A set of realistic interaction flows, UI states, and permission management behaviours modelling how revocable consent could function in practice.
-    \item A usability evaluation of the proposed design, assessing clarity, perceived trustworthiness, and balance between users.
+    \item A interview-based qualitative evaluation of the proposed design, assessing clarity, perceived trustworthiness, and balance between users.
     \item A qualitative analysis of enabling revocable consent for photo sharing in messaging platforms.
 \end{enumerate}
 
