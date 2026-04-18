@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Photos (photo-revocation prototype)
 
-## Getting Started
+Front-end research prototype for **6CCS3PRJ** — a WhatsApp-style **private chat** mock-up used to demonstrate **revocable photo permissions** (pre-send and post-send). This repository is the implementation submitted with the dissertation; fuller step-by-step instructions and a feature checklist appear in the report’s **User Guide** appendix.
 
-First, run the development server:
+**Deployed demo:** [https://smart-photos.vercel.app](https://smart-photos.vercel.app)
+
+## Stack
+
+- **Next.js** 16 (App Router), **React** 19, **TypeScript**
+- **Tailwind CSS** v4
+- **Vitest** and **React Testing Library** for automated tests
+
+## Prerequisites
+
+- **Node.js 20.x** (LTS recommended)
+- **npm** (bundled with Node)
+
+## Install and run (development)
 
 ```bash
+cd photo-revocation-prototype
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the URL shown in the terminal (default [http://localhost:3000](http://localhost:3000)). Use a full-screen browser window for the best view of the dual-handset layout.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production-style run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Tests
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run test          # single run
+npm run test:watch    # watch mode
+npm run test:coverage # with coverage report
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Lint
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+```
 
-## Deploy on Vercel
+## Repository layout (brief)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Path | Role |
+|------|------|
+| `src/app/` | Next.js App Router entry (`page.tsx`), layout, global styles |
+| `src/components/photo-revocation-demo/` | UI for the chat mock-up and flows |
+| `src/lib/` | Shared permission logic; `src/lib/photo-revocation-demo/` holds domain types, state, and helpers |
+| `tests/` | Vitest tests (`unit/`, `components/`, `app/`, `helpers/`) |
+| `docs/` | Manual test plan and requirement traceability (if present) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Submission archive
+
+When preparing **`photo-revocation-prototype.zip`**, include source, tests, configuration, and lockfile (`package-lock.json`). Exclude **`node_modules/`**, **`.next/`**, and generated **`coverage/`** — reinstall with `npm ci` or `npm install` after unzipping.
