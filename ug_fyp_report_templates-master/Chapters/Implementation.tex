@@ -115,7 +115,7 @@ The final prototype comprises a thin entry page (\texttt{page.tsx}), a central o
     \label{fig:component-hierarchy}
 \end{figure}
 
-\texttt{PhotoRevocationDemo} owns all shared application state and passes data and handler functions down to its children as props. Each simulated handset is wrapped in a \texttt{PhoneFrame}, which renders the device chrome and provides a \texttt{ChatPanelOverlayContext} so that overlay components such as \newline \texttt{ViewOnceInChatModal} and \texttt{PhotoStackLightbox} can portal into the correct handset frame rather than covering the entire page. Beneath this shell, the components divide into the following groups:
+\texttt{PhotoRevocationDemo} owns all shared application state and passes data and handler functions down to its children as props. Each simulated handset is wrapped in a \texttt{PhoneFrame}, which renders the device chrome and provides a \texttt{ChatPanelOverlayContext} (defined in \texttt{chatPanelPortalContext.tsx}) so that overlay components such as \texttt{ViewOnceInChatModal} and \texttt{PhotoStackLightbox} can portal into the correct handset frame rather than covering the entire page. Beneath this shell, the components divide into the following groups:
 
 \begin{itemize}
   \item \textbf{Device chrome.} \texttt{PhoneFrame} renders the handset shell and header for each of the four stakeholder views. It wraps its children in a \texttt{ChatPanelOverlayContext} provider, which exposes a portal target and scroll reference used by overlay components.
