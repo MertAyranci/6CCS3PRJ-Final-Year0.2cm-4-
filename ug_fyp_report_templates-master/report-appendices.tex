@@ -74,23 +74,27 @@
 %% command emits the abstract and originality avowal of the main report,
 %% which are inappropriate for an appendices-only file.
 \makeatletter
-\thispagestyle{empty}
-\begin{center}
-  \begin{flushright}
-    \includegraphics[scale=0.4]{FrontMatter/logo.png}\\*
-  \end{flushright}
-  \vspace*{2.2in}
-  {\huge \bfseries \@title\par}
-  \vspace*{0.4in}
-  {\Large Final Project Report --- Appendices\par}
-  \vspace*{1.2in}
-  {\large
-    Author: \@author\\*
-    Supervisor: \@supervisor\\*
-    Student ID: \@studentID\\*
-    \vspace*{0.2in}
-    \@date\par}
-\end{center}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \begin{flushright}
+      \includegraphics[scale=0.35]{FrontMatter/logo.png}\\*
+    \end{flushright}
+    \vspace*{0.25in}
+    \vfill
+    {\LARGE \bfseries \@title\par}
+    \vspace{0.35in}
+    {\large\bfseries Final Project Report --- Appendices\par}
+    \vfill
+    {\large
+      Author: \@author\\*
+      Supervisor: \@supervisor\\*
+      Student ID: \@studentID\\*
+      \vspace{0.25in}
+      \@date\par}
+    \vspace*{0.6in}
+  \end{center}
+\end{titlepage}
 \makeatother
 \clearpage
 
