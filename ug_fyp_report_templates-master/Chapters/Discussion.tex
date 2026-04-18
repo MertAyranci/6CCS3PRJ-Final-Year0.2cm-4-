@@ -5,7 +5,7 @@ This chapter discusses the thesis as a whole, bringing together the design, impl
 
 \section{Implications and Recommendations for Stakeholders}
 
-This section outlines what the report suggests for five stakeholder groups.
+This section outlines what the report suggests for four stakeholder groups.
 
 \subsection*{Users}
 
@@ -47,7 +47,7 @@ The GDPR establishes a right to withdraw consent, and the UK Online Safety Act c
 
 \section{Prototype Scope and Limitations }
 \label{sec:production-limitations}
-The prototype fulfils the functional and non-functional requirements set out in Chapter~4 and all the requirements have been implemented and verified through both manual checks and an automated test suite. The second implementation round addressed the interface and structural issues identified during the evaluation, while preserving the core permission model unchanged from the specification.
+The prototype fulfils the functional and non-functional specifications set out in Chapter~4 and the requirements have been implemented and verified through both manual checks and an automated test suite. The second implementation round addressed the interface and structural issues identified during the evaluation, while preserving the core permission model unchanged from the specification.
 
 \textbf{Prototype scope.} Because the prototype operated as a front-end simulation without networking, persistent storage, or real encryption (Section~\ref{sec:tech-choices}), the evaluation findings apply to the interaction design and permission model rather than to production-level concerns. Participants interacted with a controlled, immediate simulation, meaning their responses may not fully reflect the experience of using revocable permissions under real network conditions where delays or failures could affect trust and perceived reliability. In a networked system, the canonical permission record would need to be stored server-side and queried by every client that holds a copy, raising questions around latency, offline access, and conflict resolution. A recipient viewing a forwarded photo while temporarily disconnected might see a stale permission state, and the system would need to decide whether to block rendering until the latest state is fetched. Platforms with end-to-end encryption such as WhatsApp would face the additional constraint that permission metadata must travel through the same encrypted channel as message content, since storing permissions in plaintext on the server would undermine the privacy guarantees that users expect. The evaluation also confirmed that structural limits shaped some participants' willingness to trust the feature (Theme 2), suggesting that user perceptions of control may shift in deployments that incorporate additional countermeasures.
 
