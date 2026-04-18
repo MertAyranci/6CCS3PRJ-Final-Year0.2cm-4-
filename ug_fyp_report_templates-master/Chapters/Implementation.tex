@@ -6,7 +6,7 @@ This chapter details the implementation of the Smart Photos prototype, covering 
 
 \subsection*{Next.js and React}
 
-React~19 was chosen for its component-based architecture, which supports modular, reusable development, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as each stakeholder perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes to propagate immediately across the relevant views, supporting the responsiveness specified by \textbf{NFR5}. Because the prototype operates as a single-browser simulation, this behaviour could be implemented without introducing an external state-management library.
+React~19 was chosen for its component-based architecture, which supports modular, reusable development, and manageable UI state \cite{react_docs}. This suited the prototype particularly well, as each stakeholder perspectives could be implemented as distinct interface regions while still sharing a common permission state. React's built-in state hooks allowed permission changes to propagate immediately across the relevant views, supporting the responsiveness required by \textbf{NFR5}. Because the prototype operates as a single-browser simulation, this behaviour could be implemented without introducing an external state-management library.
 
 Next.js~16 was used as the application framework, providing project scaffolding, routing, TypeScript integration, CSS processing, and an optimised production build pipeline \cite{nextjs_docs}. Although the prototype is a single-page application, Next.js streamlined development and supported two rounds of iterative implementation described in Section~\ref{sec:dev-process}.
 
@@ -21,28 +21,28 @@ TypeScript was used to define and enforce the core data structures of the protot
 \end{itemize}
 
 \noindent
-Explicit types kept these structures consistent across components as the prototype evolved. This was important because any inconsistency in the permission model would have weakened the credibility of the evaluation. It also improved maintainability and made the implementation safer for the second round of refinement.
+Explicit types kept these structures consistent across components as the prototype evolved. This was important because any inconsistency in the permission model would have weakened the credibility of the evaluation. It also improved maintainability for the second round of refinement.
 
 \subsection*{Tailwind CSS}
 
-Tailwind CSS~4 was chosen as the styling framework because its utility-first approach allowed rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns in order to support the familiarity and consistency specified by \textbf{NFR7}. Tailwind's utility classes made it straightforward to replicate these patterns while keeping styling close to the relevant component markup.
+Tailwind CSS~4 was chosen for its utility-first approach which allowed rapid and consistent interface development without relying on large separate stylesheet files \cite{tailwindcss_docs}. This suited the prototype well, as the interface needed to visually approximate familiar WhatsApp patterns in order to support the familiarity and consistency specified by \textbf{NFR7} while keeping styling close to the relevant component markup.
 
 
 \subsection*{Front-End Simulation and Prototype Scope}
-The prototype operates entirely as a front-end simulation with in-memory state. Conversation data, permission records, and photo metadata are managed through React state in the browser, with no server, database, or external API. This design was chosen to support the project’s aim of evaluating the interaction design and user experience of consent revocation, without focusing on engineering feasibility of a production messaging system. It also allowed multiple perspectives to be demonstrated in a single browser window and made permission changes immediately observable during evaluation.
+The prototype operates entirely as a front-end simulation with in-memory state. Conversation data, permission records, and photo metadata are managed through React state in the browser, with no server, database, or external API. This supports the project’s aim of evaluating the interaction design and user experience of consent revocation, without focusing on engineering feasibility of a production messaging system. It also allowed multiple perspectives to be demonstrated in a single browser window and made permission changes immediately observable during evaluation.
 
 As such, the prototype is an interactive proof-of-concept for the Smart Photos permission model. It demonstrates revocable consent, permission configuration, forwarding control, view-once behaviour, time-limited access, and co-subject involvement, but does not include production infrastructure such as encryption, persistent storage, multi-device synchronisation or automated co-subject detection.
 
 
 \subsection*{Testing Tooling}
 
-Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript development setting and facilitates fast execution of both logic-level and UI-level tests. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way.
+Vitest was used as the test runner for the prototype because it integrates naturally with the Next.js and TypeScript setup and executes both logic-level and UI-level tests easily. React Testing Library was used for rendering components and interacting with them through accessible roles, labels, and visible text rather than implementation details. This was appropriate for the Smart Photos prototype because the key question was whether the interface presented the correct permission state and interaction options to users, not whether particular internal variables changed in a specific way.
 
 
 
 \subsection*{Version Control and Deployment}
 
-GitHub was used for version control throughout development, supporting iterative process across the prototype’s implementation rounds. The prototype was deployed on Vercel, which provided lightweight hosting for demonstrating the Next.js front-end during testing and evaluation. A link to the deployed version is given at the end of the Section \ref{sec:translation}.
+GitHub was used for version control throughout the implementation rounds. The prototype was deployed on Vercel, which provided lightweight hosting for demonstrating the Next.js front-end during testing and evaluation. A link to the deployed version is given at the end of the Section \ref{sec:translation}.
 
 \subsection*{Technology Summary}
 
@@ -56,7 +56,7 @@ React & 19.2.3 & Component-based UI library; manages the multi-view layout and r
 Next.js & 16.1.6 & Application framework; provides the App Router, development server, and optimised production builds. \\
 TypeScript & 5.9.3 & Static type system; enforces the permission data model at compile time. \\
 Tailwind CSS & 4.2.1 & Utility-first CSS framework; enables rapid, consistent styling that approximates WhatsApp's visual patterns. \\
-Vitest & 3.2.4 & Test runner; executes unit, component, and integration-style tests with coverage via \texttt{@vitest/coverage-v8}. \\
+Vitest & 3.2.4 & Test runner; executes unit, component, and integration-style tests with coverage. \\
 RTL & 16.3.2 & Renders components in tests and queries the UI by roles, labels, and visible text. \\
 \hline
 \end{tabular}
@@ -85,9 +85,9 @@ At this stage the entire prototype resided in a single \texttt{page.tsx} file. T
 
 \subsection*{Rationale for a Second Round}
 
-A second implementation round was justified on methodological rather than evaluative grounds. As Gould and Lewis argue, usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements and once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic conditions.
+Usability-oriented design is inherently iterative, requiring a system to be modified and tested repeatedly as it develops from simulation to prototype and beyond \cite{gould_lewis_1985}. The design in Chapter~4 was derived from literature and requirements and once a runnable prototype existed, it became possible to observe how people interpreted unfamiliar permission states, warnings, and labels under realistic conditions.
 
-For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers find problems and learn how users actually engage with an interface \cite{moran_usability_testing_101}. A second round was therefore scoped deliberately to visual and structural refinements, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. 
+For this project, the interviews therefore functioned as a checkpoint between ``specification-faithful'' code and a version suitable for continued demonstration and assessment. This reflects the role of usability testing in helping designers find problems and learn how users actually engage with an interface \cite{moran_usability_testing_101}. The second round was scoped deliberately to visual and structural refinements, leaving the core types and permission logic aligned with Chapter~4 unless a change was strictly required for consistency. 
 
 \subsection*{Phase 2: Post-Evaluation Refinements}
 
@@ -126,12 +126,7 @@ The final prototype comprises a thin entry page (\texttt{page.tsx}), a central o
 \end{itemize}
 
 \noindent
-Each group corresponds to a distinct area of the interaction model defined in Chapter~4, so that changes to one concern do not entangle another.
-
-
-
-
-
+Each group corresponds to a distinct area of the interaction model defined in Chapter~4, so changes to one concern do not entangle another.
 
 
 
@@ -148,7 +143,7 @@ The canonical permission record for a photo lives on its entry in \texttt{mainMe
   \label{fig:photo-permissions}
 \end{figure}
 
-Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which uses a TypeScript discriminated union to distinguish text messages from photo messages (Figure~\ref{fig:chat-message}).
+Every photo message carries a \texttt{sourcePhotoId} that links it back to the canonical entry in \texttt{mainMessages}. This linking is encoded in the \texttt{ChatMessage} type, which distinguishes text messages from photo messages (Figure~\ref{fig:chat-message}).
 
 \begin{figure}[H]
   \centering
@@ -246,14 +241,14 @@ This section shows how the mechanisms described in Section~\ref{sec:components-s
     \centering
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=\linewidth,trim={0 0 0 0},clip]{figures/screenshot-photo-picker.png}
+        \includegraphics[width=0.85\linewidth,trim={0 0 0 0},clip]{figures/screenshot-photo-picker.png}
         \caption{Photo picker with two images selected.}
         \label{fig:picker}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=\linewidth,trim={0 0 0 0},clip]{figures/screenshot-presend-composer.png}
+        \includegraphics[width=0.85\linewidth,trim={0 0 0 0},clip]{figures/screenshot-presend-composer.png}
         \caption{Pre-send composer}
         \label{fig:composer}
     \end{subfigure}
@@ -273,14 +268,14 @@ consistent with participant feedback and other familiar gallery selection patter
     \centering
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{figures/screenshot-revocation-menu.png}
+        \includegraphics[width=0.85\textwidth]{figures/screenshot-revocation-menu.png}
         \caption{Revocation submenu on a sent photo, showing the five post-send controls.}
         \label{fig:revoke-menu}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{figures/screenshot-permission-chips.png}
+        \includegraphics[width=0.85\textwidth]{figures/screenshot-permission-chips.png}
         \caption{Expanded permission summary under the message bubble}
         \label{fig:permission-chips}
     \end{subfigure}
@@ -288,7 +283,7 @@ consistent with participant feedback and other familiar gallery selection patter
     \label{fig:postsend-flow}
 \end{figure}
 
-Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears. The revocation submenu (Figure~\ref{fig:revoke-menu}) is accessed through a drop-down overlay on the message bubble and presents each control as a transition label. For example the sender sees \emph{Revoke photo access} rather than \emph{Status: active}, so that available action is always immediately legible. This wording convention was an implementation-level decision in order to reduce the cognitive step between reading and acting and not detailed in the specifications. The permission summary beneath each photo (Figure~\ref{fig:postsend-flow}) implements the state visibility required by FR4 through a collapsible row. In its compact form, colour-coded tick and cross indicators give an at-a-glance status reading and expanding the row reveals labelled chips such as \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked} and live expiry countdown that updates every second through the countdown tick mechanism described in section 5.4. The collapsable design was adopted during Phase 2 refinement in response to the interface density concerns raised by participant (discussed in Section 6.3.5), balancing the need for visible permission state against the risk of overwhelming the chat transcript. Because all stakeholder views derive their display from the same canonical record (Section 5.4), a single permission change by the sender is reflected across every stakeholder's bubbles on the next render cycle without additional synchronisation.
+Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears. The revocation submenu (Figure~\ref{fig:revoke-menu}) is accessed through a drop-down overlay on the message bubble and presents each control as a transition label. For example the sender sees \emph{Revoke photo access} rather than \emph{Status: active}, so that available action is always immediately legible. This wording convention was an implementation-level decision in order to reduce the cognitive step between reading and acting and not detailed in the specifications. The permission summary beneath each photo (Figure~\ref{fig:postsend-flow}) implements the state visibility required by FR4 through a collapsible row. In its compact form, colour-coded tick and cross indicators give an at-a-glance status reading and expanding the row reveals labelled chips such as \emph{Visible}, \emph{Forwarding allowed}, \emph{Reviewable later}, \emph{Download blocked} and live expiry countdown updated every second through the countdown tick mechanism described in section 5.4. The collapsable design was adopted during Phase 2 refinement in response to the interface density concerns raised by participant (discussed in Section 6.3.5), balancing the need for visible permission state against the risk of overwhelming the chat transcript. Because all stakeholder views derive their display from the same canonical record (Section 5.4), a single permission change by the sender is reflected across every stakeholder's bubbles on the next render cycle without additional synchronisation.
 
 
 \subsection*{Recipient Experience and Revoked States}
@@ -297,14 +292,14 @@ Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears.
     \centering
     \begin{subfigure}[t]{0.40\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-recipient-active.png}
+        \includegraphics[width=0.85\linewidth]{figures/screenshot-recipient-active.png}
         \caption{Active photo with expanded permission chips and live expiry countdown.}
         \label{fig:recipient-active}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.40\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-recipient-revoked.png}
+        \includegraphics[width=0.85\linewidth]{figures/screenshot-recipient-revoked.png}
         \caption{Revoked state: photo replaced by a neutral placeholder.}
         \label{fig:recipient-revoked}
     \end{subfigure}
@@ -313,7 +308,9 @@ Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears.
 \end{figure}
 
 
-Figure 5.12 shows the recipient-side realisation of the states specified in Section 4.3.3. The recipient's view reuses the same chip-based summary row as the sender's interface but strips out all management controls, so the action menu is limited to \emph{reply}, \emph{Forward} (if permitted), \emph{Download} (if permitted) and \emph{Request access} (when revoked). This role-based filtering is handled at render time by checking the user type against each menu option, instead of maintaining separate menu definition per stakeholder. When access is revoked (Figure~\ref{fig:recipient-revoked}), the photo is replaced by a neutral placeholder reading "Access changed" accompanied by the note that "screenshots, saved copies or prior viewing may already exist". The same placeholder is used regardless of whether revocation was manual or triggered by time-limit expiry, since both resolve through the identical derivation path in Section 5.4. The result is that the recipient experience stays consistent across all revocation causes and simplifies the language used which minimises the social friction. View-once photos, which already exist in WhatsApp, are revised in the prototype. The revision follow a distinct visual appearance shown in Figure~\ref{fig:viewonce-before} where a bubble initially displays a "View-once" prompt with an \emph{Open} button and after the recipient opens and closes the full-screen viewer managed by \texttt{ViewOnceInChatModal}, the bubble transitions to an "Opened once" notice and the chip gains a tick mark to indicate consumption (Figure~\ref{fig:viewonce-after}). The state change is triggered by a "consumed" indicator that activates when the view is closed. Because this represents a final condition, the sender cannot undo it, which distinguishes it from regular revocation processes.
+Figure 5.12 shows the recipient-side realisation of the states specified in Section 4.3.3. The recipient's view reuses the same chip-based summary row as the sender's interface but strips out all management controls, so the action menu is limited to \emph{reply}, \emph{Forward} (if permitted), \emph{Download} (if permitted) and \emph{Request access} (when revoked). This role-based filtering is handled at render time by checking the user type against each menu option, instead of maintaining separate menu definition per stakeholder. When access is revoked (Figure~\ref{fig:recipient-revoked}), the photo is replaced by a neutral placeholder reading "Access changed" accompanied by the note that "screenshots, saved copies or prior viewing may already exist". The same placeholder is used regardless of whether revocation was manual or triggered by time-limit expiry, since both resolve through the identical derivation path in Section 5.4. The result is that the recipient experience stays consistent across all revocation causes and simplifies the language used which minimises the social friction. 
+
+View-once photos, which already exist in WhatsApp, are revised in the prototype with a distinct visual appearance (Figure~\ref{fig:viewonce-before}): a bubble initially displays a "View-once" prompt with an \emph{Open} button and after the recipient opens and closes the full-screen viewer managed by \texttt{ViewOnceInChatModal}, the bubble transitions to an "Opened once" notice and the chip gains a tick mark to indicate consumption (Figure~\ref{fig:viewonce-after}). The state change is triggered by a "consumed" indicator that activates when the view is closed. Because this represents a final condition, the sender cannot undo it, which distinguishes it from regular revocation processes.
 
 
 \begin{figure}[H]
@@ -350,7 +347,7 @@ Figure ~\ref{fig:forward-revoke-request} demonstrates the three-way propagation 
     \label{fig:forward-revoke-request}
 \end{figure}
 
-When therecipient selects \emph{Request access}, the request appears in the sender's thread as a text message carrying the photo label together with \emph{Accept} and \emph{Reject} buttons (Figure~\ref{fig:forward-revoke-request}) which implements the negotiated access-renewal flow specified in section 4.3.3. If the sender accepts, the canonical records is restored to active and all views return to showing the photo with active permission chips (Figure~\ref{fig:access-restored}). The side-by-side layout in both figures was a deliberate evaluation choice, allowing participants to see how a single permission change propagates to downstream recipients in real time and making the single-source-of-truth architecture in Section 5.4 directly verifiable through the interface.
+When the recipient selects \emph{Request access}, the request appears in the sender's thread as a text message carrying the photo label together with \emph{Accept} and \emph{Reject} buttons (Figure~\ref{fig:forward-revoke-request}) which implements the negotiated access-renewal flow specified in section 4.3.3. If the sender accepts, the canonical records is restored to active and all views return to showing the photo with active permission chips (Figure~\ref{fig:access-restored}). The side-by-side layout in both figures was a intentional evaluation choice, allowing participants to see how a single permission change propagates to downstream recipients in real time and making the single-source-of-truth architecture directly verifiable through the interface.
 
 \begin{figure}[H]
     \centering
@@ -367,14 +364,14 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
     \centering
     \begin{subfigure}[t]{0.42\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/screenshot-cosubject-notification.pdf}
+        \includegraphics[width=0.85\linewidth]{figures/screenshot-cosubject-notification.pdf}
         \caption{Co-subject notification with depicted-person card and permission chips.}
         \label{fig:cosubject-notification}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.42\textwidth}
       \centering
-      \includegraphics[width=\linewidth]{figures/screenshot-cosubject-sender-review.pdf}
+      \includegraphics[width=0.85\linewidth]{figures/screenshot-cosubject-sender-review.pdf}
       \caption{Sender's view after receiving the co-subject's revocation request}
       \label{fig:cosubject-request}
 \end{subfigure}
@@ -395,11 +392,9 @@ Also a deployed version can be accessed at \url{https://smart-photos.vercel.app}
 After each significant modification to the prototype, it is manually tested in the browser using all four views of stakeholders for cross-view consistency. The exercise verified that a revocation created by the sender is immediately visible in the views of the recipient and forwarded recipient, and that the permission chips are updated appropriately. Manual testing was necessary for the visual and layout aspects of the system since they could not be completely captured through automated testing in a simulated DOM environment. All modifications were documented with version control with git during both phases of the development process, so there was an audit trail of all changes to help identify where regressions occurred.
 
 
-
-
 \subsection*{Automated Unit and Component Tests}
 
-To supplement the manual checks described above, an automated test suite was developed and organised into three layers within a dedicated \texttt{tests/} directory.
+To supplement the manual checks, an automated test suite was developed in three layers within a dedicated \texttt{tests/} directory.
 
 \textbf{Unit tests} verify pure helper functions and the permission model in isolation, confirming for example that \texttt{computeEffectiveStatus} treats a past expiry timestamp as revoked regardless of the stored status field and that \texttt{getEffectivePermissions} falls back to a message's own permission record when the canonical source is absent from the main thread.
 
