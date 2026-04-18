@@ -4,4 +4,13 @@
 \noindent
 This appendix reproduces the ethics approval documentation issued for the user study reported in this dissertation.
 
-\includepdf[pages=-,pagecommand={\thispagestyle{plain}}]{appendix-materials/ethics/ethics-approval.pdf}
+%% If the PDF is missing (e.g.\ on Overleaf before upload), \includepdf would
+%% error and this \include{} unit might not finish, so Appendices/EthicsApproval.aux
+%% would lack \texttt{app:ethical-clearance} and the main report would print
+%% ``Appendix ??''.  The fallback keeps the build alive; add
+%% \texttt{appendix-materials/ethics/ethics-approval.pdf} for the scanned document.
+\IfFileExists{appendix-materials/ethics/ethics-approval.pdf}{%
+  \includepdf[pages=-,pagecommand={\thispagestyle{plain}}]{appendix-materials/ethics/ethics-approval.pdf}%
+}{%
+  \noindent\textit{The file \texttt{appendix-materials/ethics/ethics-approval.pdf} was not found. Add it to the project (same path as on your local machine) and recompile the appendices document so this page shows the scanned approval.}%
+}
