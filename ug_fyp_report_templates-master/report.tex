@@ -179,6 +179,12 @@ This dissertation reviews the literature on privacy, consent, and photo sharing 
 \bibliography{references}
 \addcontentsline{toc}{section}{Bibliography}
 
+%% Appendix chapter/section titles for the main table of contents (full text is
+%% in report-appendices.pdf).  Must run after all body chapters and after the
+%% bibliography \addcontentsline so the .toc order is correct.  Two pdflatex
+%% passes are needed for the TOC pages to settle.
+\input{FrontMatter/appendix-toc-entries}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Appendices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
