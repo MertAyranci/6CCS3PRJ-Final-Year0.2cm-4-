@@ -40,9 +40,6 @@ The evaluation findings demonstrate clear user demand for post and pre-send cont
     that providers should factor into their sustainability planning.
 \end{itemize} 
 
-\subsection*{Educators}
-
-The evaluation revealed that people's ability to use the revocation feature came down to whether they actually understood how digital persistence works in the real world. Several participants were surprised by the structural limits of platform-level control, such as the impossibility of preventing external-device capture. This suggests that consent education would benefit from concrete, scenario-based demonstrations of what revocation can and cannot achieve, rather than abstract policy explanations. The Smart Photos model, with its explicit permission states and visible limitation warnings, could be used to teach that digital consent is ongoing and partial.
 
 \subsection*{Policymakers and Regulators}
 
@@ -76,19 +73,20 @@ The limitations and evaluation findings identified above point to several direct
 
 
 
-
-\newpage
 \section{Evaluation Against WhatsApp and Requirements}
 
 Table~\ref{tab:whatsapp-smartphotos-comparison} compares Smart Photos against WhatsApp while also indicating the extent to which each intended capability was achieved within the prototype and its evaluation.
-\begin{table}[H]
-    \centering
-    \footnotesize
-    \setlength{\tabcolsep}{4pt}
-    \renewcommand{\arraystretch}{1.15}
-    \begin{tabularx}{\textwidth}{|p{3.5cm}|p{1.9cm}|p{1.3cm}|p{2.4cm}|X|}
+
+\begin{xltabular}{\textwidth}{|p{3.5cm}|p{1.9cm}|p{1.3cm}|p{2.4cm}|X|}
     \hline
     \textbf{Capability / Requirement} & \textbf{WhatsApp (current)} & \textbf{Smart Photos} & \textbf{Extent achieved} & \textbf{Evidence / limitation} \\
+    \hline
+    \endfirsthead
+
+    \hline
+    \textbf{Capability / Requirement} & \textbf{WhatsApp (current)} & \textbf{Smart Photos} & \textbf{Extent achieved} & \textbf{Evidence / limitation} \\
+    \hline
+    \endhead
     \hline
     Pre-send permission configuration & No & Yes & Achieved & Implemented in the prototype; participants valued sender control before sharing. \\
     \hline
@@ -106,7 +104,7 @@ Table~\ref{tab:whatsapp-smartphotos-comparison} compares Smart Photos against Wh
     \hline
     Recipient request for renewed access & No & Yes & Achieved & Implemented as a negotiation flow; evaluated conceptually through interview materials. \\
     \hline
-    \end{tabularx}
     \caption{Smart Photos versus WhatsApp and prototype achievement.}
-    \label{tab:whatsapp-smartphotos-comparison}
-    \end{table}
+    \label{tab:whatsapp-smartphotos-comparison}\\
+    \end{xltabular}
+    

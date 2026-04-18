@@ -126,8 +126,7 @@ The final prototype comprises a thin entry page (\texttt{page.tsx}), a central o
 \end{itemize}
 
 \noindent
-Each group corresponds to a distinct area of the interaction model defined in Chapter~4, so that changes to one concern---such as the composition interface---do not entangle another, such as request handling or message rendering.
-
+Each group corresponds to a distinct area of the interaction model defined in Chapter~4, so that changes to one concern do not entangle another.
 
 
 
@@ -167,7 +166,7 @@ When the sender revokes, restores, or otherwise modifies permissions, only the c
   \label{fig:get-effective}
 \end{figure}
 
-This derivation pattern means that a single state update to the canonical photo in \texttt{mainMessages} is sufficient for every participant view (sender, recipient, forwarded recipient, and co-subject) to reflect the change on the next render cycle. The prototype does not need to synchronise permission records across message arrays or maintain separate update logic for forwarded copies, because every component derives its view of permissions from the same canonical source.
+This derivation pattern means that a single state update to the canonical photo in \texttt{mainMessages} is sufficient for every participant view to reflect the change on the next render cycle. The prototype does not need to synchronise permission records across message arrays or maintain separate update logic for forwarded copies, because every component derives its view of permissions from the same canonical source.
 
 \subsection*{Local Interaction State}
 
@@ -178,7 +177,7 @@ One notable piece of local state is the countdown tick. The prototype supports t
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.65\textwidth]{figures/countdown-tick-effect.png}
-  \caption{Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}. The tick value itself is never read; its sole purpose is to force React re-renders.}
+  \caption{Countdown tick effect in \texttt{PhotoRevocationDemo.tsx}.}
   \label{fig:countdown-tick}
 \end{figure}
 
@@ -193,12 +192,12 @@ The two most consequential state transitions in the prototype are post-send revo
 
 \subsubsection*{Post-Send Revocation}
 
-When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{ \{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object, as shown in Figure~\ref{fig:update-permissions}.
+When the sender revokes access, the handler \texttt{updateSelectedPhotoPermissions} is called with a partial update (for example, \texttt{ \{~status:~"revoked"~\}}). This function maps over \texttt{mainMessages}, locates every entry whose \texttt{sourcePhotoId} matches the currently selected photo, and merges the update into its \texttt{permissions} object (Figure~\ref{fig:update-permissions}).
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{figures/update-selected-photo-permissions.png}
-  \caption{\texttt{updateSelectedPhotoPermissions} in \texttt{PhotoRevocationDemo.tsx}. The immutable map-and-merge pattern updates the canonical record without mutating existing state.}
+  \caption{\texttt{updateSelectedPhotoPermissions} in \texttt{PhotoRevocationDemo.tsx}.}
   \label{fig:update-permissions}
 \end{figure}
 
@@ -224,7 +223,7 @@ Time-limited access follows the same derivation principle without requiring a de
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.65\textwidth]{figures/compute-effective-status.png}
-  \caption{\texttt{computeEffectiveStatus} in \texttt{photoModel.ts} where expiry acts as implicit revocation.}
+  \caption{\texttt{computeEffectiveStatus} in \texttt{photoModel.ts}. Expiry acts as implicit revocation.}
   \label{fig:compute-effective-status}
 \end{figure}
 
@@ -314,7 +313,7 @@ Figure 5.11 shows how the post-send controls specified in Section 4.3.2 appears.
 \end{figure}
 
 
-Figure 5.12 shows the recipient-side realisation of the states specified in Section 4.3.3. The recipient's view reuses the same chip-based summary row as the sender's interface but strips out all management controls, so the action menu is limited to \emph{reply}, \emph{Forward} (if permitted), \emph{Download} (if permitted) and \emph{Request access} (when revoked). This role-based filtering is handled at render time by checking the user type against each menu option, instead of maintaining separate menu definition per stakeholder. When access is revoked (Figure~\ref{fig:recipient-revoked}), the photo is replaced by a neutral placeholder reading "Access changed" accompanied by the note that screenshots, saved copies or prior viewing may already exist. The same placeholder is used regardless of whether revocation was manual or triggered by time-limit expiry, since both resolve through the identical derivation path in Section 5.4. The result is that the recipient experience stays consistent across all revocation causes and simplifies the language used which minimises the social friction. View-once photos, which already exist in WhatsApp, are revised in the prototype. The revision follow a distinct visual appearance shown in Figure~\ref{fig:viewonce-before} where a bubble initially displays a "View-once" prompt with an \emph{Open} button and after the recipient opens and closes the full-screen viewer managed by \texttt{ViewOnceInChatModal}, the bubble transitions to an "Opened once" notice and the chip gains a tick mark to indicate consumption (Figure~\ref{fig:viewonce-after}). The state change is triggered by a "consumed" indicator that activates when the view is closed. Because this represents a final condition, the sender cannot undo it, which distinguishes it from regular revocation processes.
+Figure 5.12 shows the recipient-side realisation of the states specified in Section 4.3.3. The recipient's view reuses the same chip-based summary row as the sender's interface but strips out all management controls, so the action menu is limited to \emph{reply}, \emph{Forward} (if permitted), \emph{Download} (if permitted) and \emph{Request access} (when revoked). This role-based filtering is handled at render time by checking the user type against each menu option, instead of maintaining separate menu definition per stakeholder. When access is revoked (Figure~\ref{fig:recipient-revoked}), the photo is replaced by a neutral placeholder reading "Access changed" accompanied by the note that "screenshots, saved copies or prior viewing may already exist". The same placeholder is used regardless of whether revocation was manual or triggered by time-limit expiry, since both resolve through the identical derivation path in Section 5.4. The result is that the recipient experience stays consistent across all revocation causes and simplifies the language used which minimises the social friction. View-once photos, which already exist in WhatsApp, are revised in the prototype. The revision follow a distinct visual appearance shown in Figure~\ref{fig:viewonce-before} where a bubble initially displays a "View-once" prompt with an \emph{Open} button and after the recipient opens and closes the full-screen viewer managed by \texttt{ViewOnceInChatModal}, the bubble transitions to an "Opened once" notice and the chip gains a tick mark to indicate consumption (Figure~\ref{fig:viewonce-after}). The state change is triggered by a "consumed" indicator that activates when the view is closed. Because this represents a final condition, the sender cannot undo it, which distinguishes it from regular revocation processes.
 
 
 \begin{figure}[H]
@@ -351,7 +350,7 @@ Figure ~\ref{fig:forward-revoke-request} demonstrates the three-way propagation 
     \label{fig:forward-revoke-request}
 \end{figure}
 
-When therecipient selects \emph{Request access}, the request appears in the sender's thread as a text message carrying the photo label together with \emph{Accept} and \emph{Reject} buttons (Figure~\ref{fig:forward-revoke-request}) which implements the negotiated access-renewal flow specified in section 4.3.3. If the sender accepts, the canonical recors is restored to active and all views return to showing the photo with active permission chips as shown in Figure~\ref{fig:access-restored}. The side-by-side layout used in both figures was a deliberate evaluation choice that allowed participants to observe how a single permission change propagates across downstream recipients in real time, making the single-source-of-truth architecture described in Section 5.4 directly verifiable through the interface itself.
+When therecipient selects \emph{Request access}, the request appears in the sender's thread as a text message carrying the photo label together with \emph{Accept} and \emph{Reject} buttons (Figure~\ref{fig:forward-revoke-request}) which implements the negotiated access-renewal flow specified in section 4.3.3. If the sender accepts, the canonical records is restored to active and all views return to showing the photo with active permission chips (Figure~\ref{fig:access-restored}). The side-by-side layout in both figures was a deliberate evaluation choice, allowing participants to see how a single permission change propagates to downstream recipients in real time and making the single-source-of-truth architecture in Section 5.4 directly verifiable through the interface.
 
 \begin{figure}[H]
     \centering
@@ -384,7 +383,7 @@ Figure ~\ref{fig:cosubject-notification} shows the appearance of the co-subject 
 \end{figure}
 \noindent
 
-If the co-subject selects \emph{Request revocation}, from the photo actions menu, the \texttt{RequestRevocationPanel} component opens in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern as the recipient’s access-request flow to maintain consistency across stakeholder roles, since a user may occupy different roles depending on context. On the sender's side (Figure~\ref{fig:cosubject-request}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherits to all participant views through the derivation mechanism in Section~\ref{sec:components-state} including any forwarded copies sharing the same \texttt{sourcePhotoId}. This cross-context propagation uses the same mechanism as sender-initiated revocation meaning co-subject triggered revocations require no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
+If the co-subject selects \emph{Request revocation}, from the photo actions menu, the \texttt{RequestRevocationPanel} component opens in the handset footer. The panel identifies the photo by its caption label and provides an optional message field, following the same request pattern as the recipient’s access-request flow to maintain consistency across stakeholder roles, since a user may occupy different roles depending on context. On the sender's side (Figure~\ref{fig:cosubject-request}), the request appears as a text message with \emph{Accept} and \emph{Reject} buttons. If the sender accepts, the canonical record is updated into a revoked state and the change inherits to all participant views through the derivation mechanism  including any forwarded copies sharing the same \texttt{sourcePhotoId} (Section~\ref{sec:components-state}). This cross-context propagation uses the same mechanism as sender-initiated revocation meaning co-subject triggered revocations require no additional state logic beyond routing the request to the existing \texttt{updateSelectedPhotoPermissions} handler.
 
 
 Also a deployed version can be accessed at \url{https://smart-photos.vercel.app} (works better full screen).
@@ -393,7 +392,7 @@ Also a deployed version can be accessed at \url{https://smart-photos.vercel.app}
 
 \subsection*{Manual Cross-View Verification}
 
-After each significant modification to the prototype, it is manually tested in the browser using all four views of stakeholders (co-subject, forwarded recipient, recipient and sender) for cross-view consistency. The exercise verified that a revocation created by the sender is immediately visible in the views of the recipient and forwarded recipient, and that the permission chips are updated appropriately. Manual testing was necessary for the visual and layout aspects of the system such as color coded status indicators, animations and responsive scaling since they could not be completely captured through automated testing in a simulated DOM environment. All modifications were documented with version control with git during both phases of the development process, so there was an audit trail of all changes to help identify where regressions occurred.
+After each significant modification to the prototype, it is manually tested in the browser using all four views of stakeholders for cross-view consistency. The exercise verified that a revocation created by the sender is immediately visible in the views of the recipient and forwarded recipient, and that the permission chips are updated appropriately. Manual testing was necessary for the visual and layout aspects of the system since they could not be completely captured through automated testing in a simulated DOM environment. All modifications were documented with version control with git during both phases of the development process, so there was an audit trail of all changes to help identify where regressions occurred.
 
 
 
@@ -408,7 +407,7 @@ To supplement the manual checks described above, an automated test suite was dev
 
 \textbf{Integration-style tests} render the full \texttt{PhotoRevocationDemo} orchestrator and simulate user journeys  across several handset panels, including revoking a photo and observing the recipient subtitle change, forwarding a photo and verifying its appearance on the secondary handset, accepting or rejecting access and revocation requests, and consuming a view-once photo through the full modal lifecycle.
 
-Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases across 16 test files. Table~\ref{tab:coverage} summarises the coverage collected by Vitest coverage.
+Edge cases are tested alongside the primary flows, including restoring access on an already-expired time limit (which must also clear the \texttt{expiresAt} field), sending an empty text message, cancelling the time-limit modal without applying an expiry, and verifying that permission-detail chips display the correct label variant depending on whether the underlying policy was view-once. At the time of writing the suite comprises all test cases. Table~\ref{tab:coverage} summarises the coverage collected by Vitest coverage.
 
 \begin{table}[h]
 \centering
