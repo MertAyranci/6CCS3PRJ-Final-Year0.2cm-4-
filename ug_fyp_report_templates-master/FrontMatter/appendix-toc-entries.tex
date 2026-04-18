@@ -6,37 +6,39 @@
 % \addcontentsline) so entries appear after the main chapters and Bibliography,
 % not at the front of the .toc file.
 %
-% The page column is an em rule (---): pagination applies only to the companion
-% PDF (report-appendices.pdf). When you add or rename appendix sections, update
-% these lines to match report-appendices.toc after a successful appendices build.
+% Page numbers are cumulative across both PDFs: each integer below is the page
+% column from report-appendices.toc (physical page within report-appendices.pdf).
+% The main TOC displays \appendixcontinuedpage{that number} = LastPage + p from
+% report.tex (lastpage + hyperref).  Recompile report at least twice after edits.
+% When appendices change length, refresh the integers from report-appendices.toc.
 %
-\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{A}Thematic Analysis Materials}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.1}Interview extracts board (raw)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.2}Inductive codebook (initial iteration)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.3}Interview extracts (refined subset)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.4}Working codebook (simplified)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.5}Quote-to-code coding sheet}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.6}Final themes table}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{B}Interview Guide}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.1}Section 0: Mandatory consent statement}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.2}Section 1: Warm-up and current photo-sharing behaviour}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.3}Section 2: Scenario 1 --- Before sending a photo}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.4}Section 3: Scenario 2 --- Changing permissions after sending}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.5}Section 4: Scenario 3 --- Recipient view, request access, and fairness}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.6}Section 5: Scenario 4 --- Forwarding and residual concerns}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.7}Section 6: Scenario 5 --- Co-subject request for revocation}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.8}Section 7: Wrap-up and final reflections}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.9}Interview scenario slides (stimulus material)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{C}User Guide}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.1}Purpose}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.2}Prerequisites}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.3}Install and run}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.4}Optional: production build}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.5}Feature checklist (where to see each behaviour)}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.6}Optional: automated tests}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{D}Ethical clearance}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{E}Source Code}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.1}Submission contents}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.2}Repository layout}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.3}File index}{---}{}}%
-\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.4}Notes for the examiner}{---}{}}%
+\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{A}Thematic Analysis Materials}{\protect\appendixcontinuedpage{3}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.1}Interview extracts board (raw)}{\protect\appendixcontinuedpage{4}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.2}Inductive codebook (initial iteration)}{\protect\appendixcontinuedpage{5}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.3}Interview extracts (refined subset)}{\protect\appendixcontinuedpage{7}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.4}Working codebook (simplified)}{\protect\appendixcontinuedpage{8}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.5}Quote-to-code coding sheet}{\protect\appendixcontinuedpage{9}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{A.6}Final themes table}{\protect\appendixcontinuedpage{10}}{}}%
+\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{B}Interview Guide}{\protect\appendixcontinuedpage{11}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.1}Section 0: Mandatory consent statement}{\protect\appendixcontinuedpage{12}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.2}Section 1: Warm-up and current photo-sharing behaviour}{\protect\appendixcontinuedpage{12}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.3}Section 2: Scenario 1 --- Before sending a photo}{\protect\appendixcontinuedpage{13}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.4}Section 3: Scenario 2 --- Changing permissions after sending}{\protect\appendixcontinuedpage{14}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.5}Section 4: Scenario 3 --- Recipient view, request access, and fairness}{\protect\appendixcontinuedpage{14}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.6}Section 5: Scenario 4 --- Forwarding and residual concerns}{\protect\appendixcontinuedpage{15}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.7}Section 6: Scenario 5 --- Co-subject request for revocation}{\protect\appendixcontinuedpage{16}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.8}Section 7: Wrap-up and final reflections}{\protect\appendixcontinuedpage{16}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{B.9}Interview scenario slides (stimulus material)}{\protect\appendixcontinuedpage{17}}{}}%
+\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{C}User Guide}{\protect\appendixcontinuedpage{20}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.1}Purpose}{\protect\appendixcontinuedpage{20}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.2}Prerequisites}{\protect\appendixcontinuedpage{20}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.3}Install and run}{\protect\appendixcontinuedpage{20}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.4}Optional: production build}{\protect\appendixcontinuedpage{21}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.5}Feature checklist (where to see each behaviour)}{\protect\appendixcontinuedpage{21}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{C.6}Optional: automated tests}{\protect\appendixcontinuedpage{22}}{}}%
+\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{D}Ethical clearance}{\protect\appendixcontinuedpage{23}}{}}%
+\addtocontents{toc}{\protect\contentsline{chapter}{\protect\numberline{E}Source Code}{\protect\appendixcontinuedpage{32}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.1}Submission contents}{\protect\appendixcontinuedpage{32}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.2}Repository layout}{\protect\appendixcontinuedpage{32}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.3}File index}{\protect\appendixcontinuedpage{33}}{}}%
+\addtocontents{toc}{\protect\contentsline{section}{\protect\numberline{E.4}Notes for the examiner}{\protect\appendixcontinuedpage{37}}{}}%

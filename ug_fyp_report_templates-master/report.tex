@@ -24,8 +24,18 @@
 %%   urlcolor=blue    external URLs remain visibly clickable (standard convention).
 %% The Table of Contents uses the same linkcolour as internal references (black),
 %% so it reads like normal body text while remaining clickable in the PDF.
+%% lastpage must be loaded before hyperref (see lastpage package documentation).
+\usepackage{lastpage}
 \usepackage[linktoc=all, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
 \usepackage{pdfpages}
+
+%% Appendix lines in the main TOC use physical page = LastPage + p, where p is
+%% the page number shown for that entry in report-appendices.toc (continuous
+%% numbering across the two submitted PDFs).  Defined after hyperref for
+%% \getpagerefnumber.
+\newcommand{\appendixcontinuedpage}[1]{%
+  \number\numexpr\getpagerefnumber{LastPage}+#1\relax
+}
 
 %% Disable hyperlinks on \cite{...} citations only.
 %% hyperref wraps every natbib citation through the four hooks below; turning
