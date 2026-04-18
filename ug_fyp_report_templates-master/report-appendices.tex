@@ -1,0 +1,114 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 6CCS3PRJ Final Year Individual Project Report -- Appendices volume
+%
+% This file produces the appendices-only PDF that is submitted alongside
+% report.pdf. The preamble mirrors report.tex so the typesetting matches.
+% Cross-references to labels defined in the main report are resolved via
+% the xr package (\externaldocument{report}); for those references to
+% appear correctly the main report.aux must already exist when this file
+% is compiled. The recommended build order is therefore:
+%   pdflatex report.tex     (twice, with bibtex in between)
+%   pdflatex report-appendices.tex   (twice)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt]{informatics-report}
+\usepackage{color}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{graphicx}
+\usepackage[implicit=false]{hyperref}
+\usepackage{pdfpages}
+\usepackage{soul}
+\usepackage{xcolor}
+\definecolor{linkhl}{RGB}{210, 230, 255}
+
+\setkeys{Gin}{interpolate=false}
+\usepackage{listings}
+\lstset{
+  language=[ISO]C++,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  breaklines=true,
+  frame=single,
+  numbers=none,
+  xleftmargin=2em,
+  framexleftmargin=1.5em,
+  aboveskip=1em,
+  belowskip=1em,
+  columns=flexible
+}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{subcaption}
+\usepackage{float}
+
+%% Resolve cross-references to the main report (sections, figures, chapters).
+%% Compile report.tex first so report.aux is available.
+\usepackage{xr}
+\externaldocument{report}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Front Matter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{6CCS3PRJ \\\vspace{0.2cm}Designing for Consent Revocation in Online Platforms: WhatsApp Photo Sharing}
+\author{Mert Ayranci}
+\studentID{21175534}
+\supervisor{Kovila Coopamootoo}
+\date{\today}
+
+\begin{document}
+
+%% Custom cover page for the appendices volume. We deliberately do not call
+%% \createFrontMatter (defined in informatics-report.cls) because that
+%% command emits the abstract and originality avowal of the main report,
+%% which are inappropriate for an appendices-only file.
+\makeatletter
+\thispagestyle{empty}
+\begin{center}
+  \begin{flushright}
+    \includegraphics[scale=0.4]{FrontMatter/logo.png}\\*
+  \end{flushright}
+  \vspace*{2.2in}
+  {\huge \bfseries \@title\par}
+  \vspace*{0.4in}
+  {\Large Final Project Report --- Appendices\par}
+  \vspace*{1.2in}
+  {\large
+    Author: \@author\\*
+    Supervisor: \@supervisor\\*
+    Student ID: \@studentID\\*
+    \vspace*{0.2in}
+    \@date\par}
+\end{center}
+\makeatother
+\clearpage
+
+\thispagestyle{empty}
+\noindent
+\textbf{About this document.} This file contains the appendices that accompany the main project report (\textit{report.pdf}). It is submitted as a separate PDF in line with the university's submission instructions. Cross-references of the form ``Section~X'' or ``Chapter~X'' refer to the main report unless stated otherwise.
+\clearpage
+
+\onehalfspacing
+\setcounter{tocdepth}{1}
+\renewcommand{\contentsname}{Contents of appendices}
+\tableofcontents
+\doublespacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\include{Appendices/Appendix}
+\include{Appendices/InterviewGuide}
+\include{Appendices/UserGuide}
+\include{Appendices/EthicsApproval}
+\include{Appendices/SourceCode}
+
+\end{document}

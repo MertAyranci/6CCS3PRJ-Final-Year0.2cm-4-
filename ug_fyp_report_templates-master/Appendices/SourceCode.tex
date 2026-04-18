@@ -1,8 +1,185 @@
 \chapter{Source Code}
-\section{Instructions}
-Complete source code listings must be submitted as an appendix to the report. The project source codes are usually spread out over several files/units. You should try to help the reader to navigate through your source code by providing a ``table of contents'' (titles of these files/units and one line descriptions). The first page of the program listings folder must contain the following statement certifying the work as your own: ``I verify that I am the sole author of the programs contained in this folder, except where explicitly stated to the contrary''. Your (typed) signature and the date should follow this statement.
+\label{app:source-code}
 
-All work on programs must stop once the code is submitted to KEATS. You are required to keep safely several copies of this version of the program and you must use one of these copies in the project examination. Your examiners may ask to see the last-modified dates of your program files, and may ask you to demonstrate that the program files you use in the project examination are identical to the program files you have uploaded to KEATS. Any attempt to demonstrate code that is not included in your submitted source listings is an attempt to cheat; any such attempt will be reported to the KCL Misconduct Committee.
+\section*{Authorship statement}
 
-\textbf{You may find it easier to firstly generate a PDF of your source code using a text editor and then merge it to the end of your report. There are many free tools available that allow you to merge PDF files.}
+\noindent
+I verify that I am the sole author of the programs contained in this folder, except where explicitly stated to the contrary.
 
+\vspace{1em}
+\noindent
+\textbf{Signed:} Mert Ayranci \hfill \textbf{Date:} \today
+
+\section{Submission contents}
+\label{sec:source-submission}
+
+\noindent
+The complete source code is submitted alongside this report as a separate ZIP archive (named \texttt{photo-\linebreak[0]revocation-\linebreak[0]prototype.zip}). This appendix is intended as a navigation aid for that archive rather than a verbatim listing. It mirrors the structure of the prototype repository and gives a one-line description of every file or unit.
+
+The prototype is a Next.js (App~Router) front-end written in TypeScript, styled with Tailwind CSS, and tested with Vitest and React Testing Library. Build and run instructions are provided in Appendix~\ref{app:user-guide}; the architectural narrative is given in Chapter~\ref{sec:components-state}.
+
+\section{Repository layout}
+\label{sec:source-layout}
+
+\noindent
+At the top level the archive is organised as follows:
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{3.6cm}P{9.8cm}@{}}
+\hline
+\textbf{Path} & \textbf{Purpose} \\
+\hline
+\texttt{src/app/} & Next.js App Router entry point, root layout, and global stylesheet. \\
+\texttt{src/components/photo-\linebreak[0]revocation-demo/} & React components implementing every interface region of the prototype. \\
+\texttt{src/lib/photo-\linebreak[0]revocation-demo/} & Domain types, helper functions, constants, and initial in-memory state. \\
+\texttt{src/lib/} & Cross-cutting permission logic shared between components and tests. \\
+\texttt{tests/} & Vitest suite organised into \texttt{unit/}, \texttt{components/}, \texttt{app/}, and shared \texttt{helpers/}. \\
+\texttt{docs/} & Manual test plan and requirement traceability matrix. \\
+Root configuration & TypeScript, Next.js, Vitest, ESLint, Tailwind PostCSS, and package manifest files. \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{File index}
+\label{sec:source-index}
+
+\noindent
+The following table lists every file in the submitted archive, grouped by directory, with a one-line description of its responsibility.
+
+\subsection*{Application entry (\texttt{src/app/})}
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{4.6cm}P{9.0cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{page.tsx} & Thin route component that mounts the \texttt{PhotoRevoca\-tionDemo} orchestrator on the root URL. \\
+\texttt{layout.tsx} & Root layout, metadata, and font configuration applied to every page. \\
+\texttt{globals.css} & Tailwind CSS entry point and global style resets. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Domain logic (\texttt{src/lib/})}
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{4.6cm}P{9.0cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{photoModel.ts} & Pure permission model: \texttt{computeEffectiveStatus}, \texttt{forwardingAllowed}, \texttt{formatExpiryCountdown}, and time-limit helpers. \\
+\texttt{photo-revoca\-tion-demo/types.ts} & TypeScript types for messages, permissions, participants, and modal state (single source of truth for the data model). \\
+\texttt{photo-revoca\-tion-demo/constants.ts} & Static configuration: scroll-wheel sizing and the preset photo album. \\
+\texttt{photo-revoca\-tion-demo/initialState.ts} & Default draft permissions, default time limits, initial conversation, and send-history seeds. \\
+\texttt{photo-revoca\-tion-demo/helpers.ts} & Derivation helpers used by the UI: \texttt{getEffectivePermissions}, \texttt{getSourcePolicyPermissions}, view-once consumption checks, and download utilities. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{React components (\texttt{src/components/photo-revocation-demo/})}
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{5.2cm}P{8.4cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{PhotoRevocationDemo.tsx} & Central orchestrator: owns all shared state, handlers, and the four-handset layout. \\
+\texttt{PhoneFrame.tsx} & Renders the device chrome for each stakeholder view and provides the per-handset overlay context. \\
+\texttt{chatPanelPortalContext.tsx} & React context exposing portal and scroll references so overlays render inside the correct handset. \\
+\texttt{MessageList.tsx} & Iterates a message array and dispatches each entry to a text or photo bubble. \\
+\texttt{TextMessageBubble.tsx} & Renders text, reply previews, and accept/reject controls for access and revocation requests. \\
+\texttt{PhotoMessageBubble.tsx} & Renders photo messages, the collapsible permission summary, role-aware action menu, and revocation submenu. \\
+\texttt{PhotoPreview.tsx} & Renders a single photo asset with placeholder, view-once, and revoked variants. \\
+\texttt{PhotoStackGrid.tsx} & Multi-photo collage layout for messages with several attached assets. \\
+\texttt{PhotoStackLightbox.tsx} & Full-screen gallery viewer that portals into the active handset frame. \\
+\texttt{ComposerView.tsx} & Pre-send composer with caption input, permission chips, and the screenshot warning. \\
+\texttt{PickerSheet.tsx} & Photo picker sheet with multi-select and the dual \emph{Send}/\emph{Send with revocable permissions} actions. \\
+\texttt{ScrollWheelColumn.tsx} & Reusable wheel control used by the time-limit picker. \\
+\texttt{TimeLimitModal.tsx} & Post-send modal for adjusting a photo's expiry. \\
+\texttt{RequestAccessPanel.tsx} & Inline footer panel for recipients to compose an access request. \\
+\texttt{RequestRevocationPanel.tsx} & Inline footer panel for co-subjects to compose a revocation request. \\
+\texttt{ViewOnceInChatModal.tsx} & Full-screen viewer that handles the view-once consumption lifecycle. \\
+\texttt{ViewOnceSingleTick.tsx} & Small SVG indicator marking a view-once photo as consumed. \\
+\texttt{PrototypeStateSummary.tsx} & Side panel exposing the live canonical permission record for evaluator inspection. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Tests (\texttt{tests/})}
+
+\noindent
+File names below are listed relative to the \texttt{tests/} root and are grouped by sub-directory.
+
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}P{5.8cm}P{8.0cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{unit/photoModel.test.ts} & Unit tests for the pure permission model and time-limit helpers. \\
+\texttt{unit/helpers.test.ts} & Unit tests for derivation helpers, including effective-status fallbacks. \\
+\texttt{components/ComposerView.\linebreak[0]test.tsx} & Component tests for the caption input, permission chips, and the warning banner. \\
+\texttt{components/PickerSheet.\linebreak[0]test.tsx} & Component tests for multi-select and the two send actions. \\
+\texttt{components/PhotoMessageBubble.\linebreak[0]test.tsx} & Branch tests for active, revoked, view-once, and download-disabled variants. \\
+\texttt{components/PhotoStackGrid.\linebreak[0]test.tsx} & Layout tests for multi-photo collages. \\
+\texttt{components/PhotoStackLightbox.\linebreak[0]test.tsx} & Tests for the portalled full-screen gallery. \\
+\texttt{components/RequestPanels.\linebreak[0]test.tsx} & Tests for both inline request panels (access and revocation). \\
+\texttt{components/ScrollWheelColumn.\linebreak[0]test.tsx} & Tests for the duration picker primitive. \\
+\texttt{components/TimeLimitModal.\linebreak[0]test.tsx} & Tests for applying and cancelling post-send expiry changes. \\
+\texttt{components/TextMessageBubble.\linebreak[0]test.tsx} & Tests for replies and request response controls. \\
+\texttt{components/ViewOnceInChatModal.\linebreak[0]test.tsx} & Tests for view-once open, close, and consumption state. \\
+\texttt{components/ViewOnceSingleTick.\linebreak[0]test.tsx} & Snapshot test for the consumed indicator. \\
+\texttt{components/PrototypeStateSummary.\linebreak[0]test.tsx} & Tests that the state panel reflects the canonical record. \\
+\texttt{components/PhotoRevocationDemo.\linebreak[0]test.tsx} & Integration-style journeys covering revocation, forwarding, and request flows across handsets. \\
+\texttt{app/page.test.tsx} & Smoke test that the route mounts the orchestrator without error. \\
+\texttt{helpers/photoDemoUi.tsx} & Shared Testing Library locators and assertions reused across integration tests. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Documentation (\texttt{docs/})}
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{4.6cm}P{9.0cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{MANUAL\_TEST\_PLAN.md} & Manual cross-view verification checklist used after each significant change. \\
+\texttt{REQUIREMENT\_TRACEABILITY.md} & Mapping from functional and non-functional requirements to components and tests. \\
+\texttt{README.md} (root) & Quick-start instructions, architectural overview, and test commands. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Configuration (root)}
+
+\begin{center}
+\small
+\begin{tabular}{@{}P{4.6cm}P{9.0cm}@{}}
+\hline
+\textbf{File} & \textbf{Description} \\
+\hline
+\texttt{package.json} & Project manifest, dependency declarations, and \texttt{npm} scripts (\texttt{dev}, \texttt{build}, \texttt{start}, \texttt{test}, \texttt{test:coverage}, \texttt{lint}). \\
+\texttt{package-lock.json} & Resolved dependency lockfile for reproducible installs. \\
+\texttt{tsconfig.json} & TypeScript compiler configuration including the \texttt{@/*} path alias. \\
+\texttt{next.config.ts} & Next.js framework configuration. \\
+\texttt{next-env.d.ts} & Auto-generated Next.js TypeScript ambient declarations. \\
+\texttt{vitest.config.ts} & Vitest configuration: jsdom environment, alias resolution, and coverage settings. \\
+\texttt{vitest.setup.ts} & Test setup including \texttt{@testing-library/jest-dom} matchers. \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Notes for the examiner}
+\label{sec:source-notes}
+
+\begin{itemize}
+  \item All work on the prototype stopped once the archive was uploaded to KEATS. Several copies of the submitted version are retained locally and one of these copies will be used in the project examination.
+  \item The deployed demonstration at \url{https://smart-photos.vercel.app} is built from the same submitted source and is provided only as a convenience; the canonical artefact for marking is the submitted ZIP archive.
+  \item No third-party code is included in the archive beyond declared \texttt{npm} dependencies, which are installed at build time from \texttt{package.json} and \texttt{package-lock.json}.
+\end{itemize}
