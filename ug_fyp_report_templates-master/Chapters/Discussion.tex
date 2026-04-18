@@ -75,3 +75,38 @@ The limitations and evaluation findings identified above point to several direct
 
 
 
+
+
+\newpage
+\section{Evaluation Against WhatsApp and Requirements}
+
+Table~\ref{tab:whatsapp-smartphotos-comparison} compares Smart Photos against WhatsApp while also indicating the extent to which each intended capability was achieved within the prototype and its evaluation.
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\textwidth}{|p{3.5cm}|p{1.9cm}|p{1.3cm}|p{2.4cm}|X|}
+    \hline
+    \textbf{Capability / Requirement} & \textbf{WhatsApp (current)} & \textbf{Smart Photos} & \textbf{Extent achieved} & \textbf{Evidence / limitation} \\
+    \hline
+    Pre-send permission configuration & No & Yes & Achieved & Implemented in the prototype; participants valued sender control before sharing. \\
+    \hline
+    Post-send access revocation  & Partial (delete-for-everyone) & Yes & Partially achieved & Simulated in the prototype; cannot undo prior viewing, screenshots, or external capture. \\
+    \hline
+    Time-limited access  & Partial (chat-level only) & Yes & Achieved & Implemented as a per-photo state; not validated in a live deployed multi-user system. \\
+    \hline
+    Forwarding control  & No & Yes & Achieved & Implemented in the prototype model; provides finer-grained redistribution control than WhatsApp. \\
+    \hline
+    Download control& No & Yes & Achieved & Implemented in the prototype model; demonstrated at interface level, not OS-level enforcement. \\
+    \hline
+    Co-subject agency & No & Yes & Partially achieved & Co-subject inform and request flow implemented; identity verification and governance remain unresolved. \\
+    \hline
+    Explicit screenshot-limit communication & Partial & Yes & Achieved & Addressed through warnings and honest explanation of protection limits. \\
+    \hline
+    Recipient request for renewed access & No & Yes & Achieved & Implemented as a negotiation flow; evaluated conceptually through interview materials. \\
+    \hline
+    \end{tabularx}
+    \caption{Smart Photos versus WhatsApp and prototype achievement.}
+    \label{tab:whatsapp-smartphotos-comparison}
+    \end{table}
