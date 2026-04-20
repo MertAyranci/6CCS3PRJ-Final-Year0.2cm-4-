@@ -14,7 +14,7 @@ I verify that I am the sole author of the programs contained in this folder, exc
 \label{sec:source-submission}
 
 \noindent
-The complete source code is submitted alongside this report as a separate ZIP archive (named \texttt{photo-\linebreak[0]revocation-\linebreak[0]prototype.zip}). This appendix is intended as a navigation aid for that archive rather than a verbatim listing. It mirrors the structure of the prototype repository and gives a one-line description of every file or unit.
+The complete source code is submitted alongside this report as a separate ZIP file. This appendix is intended as a navigation aid for that archive rather than a verbatim listing. It mirrors the structure of the prototype repository and gives a one-line description of every file or unit.
 
 The prototype is a Next.js (App~Router) front-end written in TypeScript, styled with Tailwind CSS, and tested with Vitest and React Testing Library. Build and run instructions are provided in Appendix~\ref{app:user-guide}; the architectural narrative is given in Chapter~\ref{sec:components-state}.
 
@@ -35,7 +35,6 @@ At the top level the archive is organised as follows:
 \texttt{src/lib/photo-\linebreak[0]revocation-demo/} & Domain types, helper functions, constants, and initial in-memory state. \\
 \texttt{src/lib/} & Cross-cutting permission logic shared between components and tests. \\
 \texttt{tests/} & Vitest suite organised into \texttt{unit/}, \texttt{components/}, \texttt{app/}, and shared \texttt{helpers/}. \\
-\texttt{docs/} & Manual test plan and requirement traceability matrix. \\
 Root configuration & TypeScript, Next.js, Vitest, ESLint, Tailwind PostCSS, and package manifest files. \\
 \hline
 \end{tabular}
@@ -149,8 +148,6 @@ File names below are listed relative to the \texttt{tests/} root and are grouped
 \hline
 \textbf{File} & \textbf{Description} \\
 \hline
-\texttt{MANUAL\_TEST\_PLAN.md} & Manual cross-view verification checklist used after each significant change. \\
-\texttt{REQUIREMENT\_TRACEABILITY.md} & Mapping from functional and non-functional requirements to components and tests. \\
 \texttt{README.md} (root) & Quick-start instructions, architectural overview, and test commands. \\
 \hline
 \end{tabular}
