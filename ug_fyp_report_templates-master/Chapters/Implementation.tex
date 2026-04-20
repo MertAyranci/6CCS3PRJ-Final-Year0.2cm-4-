@@ -15,9 +15,9 @@ Next.js~16 was used as the application framework, providing project scaffolding,
 TypeScript was used to define and enforce the core data structures of the prototype at compile time \cite{typescript_docs}. This matters because the Smart Photos prototype relies on a structured permission model spanning message content, stakeholder roles alongside photo-specific controls. Several types were used throughout the implementation:
 
 \begin{itemize}
-  \item \texttt{PhotoPermissions} --- encodes revocation status, forwarding, view-once, download, time-limit, and co-subject flags;
-  \item \texttt{ChatMessage} --- a discriminated union distinguishing text messages from photo messages, each carrying different metadata;
-  \item \texttt{Participant} --- a literal union (\texttt{"sender"}, \texttt{"recipient"}, \texttt{"forwardedRecipient"}, \texttt{"coOwner"}) that restricts handler functions to valid stakeholder roles.
+  \item \texttt{PhotoPermissions}: encodes revocation status, forwarding, view-once, download, time-limit, and co-subject flags;
+  \item \texttt{ChatMessage}: a discriminated union distinguishing text messages from photo messages, each carrying different metadata;
+  \item \texttt{Participant}: a literal union (\texttt{"sender"}, \texttt{"recipient"}, \texttt{"forwardedRecipient"}, \texttt{"coOwner"}) that restricts handler functions to valid stakeholder roles.
 \end{itemize}
 
 \noindent
